@@ -14,6 +14,8 @@ Tent::Tent(QObject *parent)
 
 void Tent::initDevices()
 {
+
+    Device::createDataDir();
     addDevice(new Lights(LIGHTS_POWER_PIN,this));
     addDevice(new LightsSpectrum(this));
     addDevice(new Pump(MAIN_PUMP_PIN ,this));

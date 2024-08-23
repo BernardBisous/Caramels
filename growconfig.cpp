@@ -145,6 +145,8 @@ float GrowConfig::maxY()
 
 bool GrowConfig::openDefault() {
 
+
+
     if(open(CONFIG_PATH))
         return true;
 

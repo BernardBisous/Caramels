@@ -37,6 +37,8 @@ DevicePlot::DevicePlot(QWidget *parent):
 
 
     initStyle();
+ //   updatePlot();
+
 
 
 }
@@ -53,7 +55,7 @@ void DevicePlot::handle(Device *c)
 
     connect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
 
-   // initStyle();
+    initStyle();
     updatePlot();
 
 
@@ -81,12 +83,16 @@ void DevicePlot::initStyle()
 
     m_chart->setTitleBrush(textColor);
     m_chart->legend()->hide();
+    m_chart->update();
 }
 
 void DevicePlot::updatePlot()
 {
     chart()->removeSeries(m_series);
     m_series->clear();
+
+    if(!m_device)
+        return;
 
     auto l=m_device->historic();
     for(int i=0;i<l.count();i++)

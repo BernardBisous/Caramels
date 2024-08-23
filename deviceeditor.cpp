@@ -21,17 +21,28 @@ DeviceEditor::DeviceEditor(QWidget *parent)
     layout()->addWidget(m_valueSlider=new Slider);
 
 
-    /*
-    m_resultsWidget=new QWidget;
-    m_resultsWidget->setLayout(m_resultsLayout=new QFormLayout);
-    m_resultsLayout->setContentsMargins(0,0,0,0);
-    */
 
     m_dataWidget=new QWidget;
-    m_dataWidget->setLayout(m_dataLAyout=new QFormLayout);
+    m_dataWidget->setLayout(new QVBoxLayout);
+    m_dataWidget->layout()->setContentsMargins(0,0,0,0);
+    m_dataWidget->layout()->addWidget(new QLabel("Parameters:"));
+    QWidget* fw=new QWidget;
+    fw->setLayout(m_dataLAyout=new QFormLayout);
+    m_dataWidget->layout()->addWidget(fw);
     m_dataLAyout->setContentsMargins(0,0,0,0);
 
-  //  layout()->addWidget(m_resultsWidget);
+
+    m_resultWidget=new QWidget;
+    m_resultWidget->setLayout(new QVBoxLayout);
+    m_resultWidget->layout()->setContentsMargins(0,0,0,0);
+    m_resultWidget->layout()->addWidget(new QLabel("Results:"));
+    QWidget* rw=new QWidget;
+    rw->setLayout(m_resultLayout=new QFormLayout);
+    m_resultWidget->layout()->addWidget(rw);
+    m_resultLayout->setContentsMargins(0,0,0,0);
+
+
+    layout()->addWidget(m_resultWidget);
     layout()->addWidget(m_dataWidget);
 
     QFont f=font();
@@ -68,19 +79,37 @@ void DeviceEditor::handle(Device *c)
 
 
     auto l=m_client->dataKeys();
-    m_dataWidget->setHidden(l.isEmpty() || m_abstracted);
 
+    m_dataWidget->setHidden(l.isEmpty() || m_abstracted);
     for(int i=0;i<l.count();i++)
     {
         QLineEdit* el=new QLineEdit(this);
-       // el->setPalette(palette());
-
-
-
         el->setText(m_client->dataValue(l[i]));
         m_dataLAyout->addRow(l[i],el);
         connect(el, SIGNAL(editingFinished()),this,SLOT(editSlot()));
     }
+
+
+
+    auto lc=m_client->resultKeys();
+    m_resultWidget->setHidden(lc.isEmpty() || m_abstracted);
+
+    for(int i=0;i<lc.count();i++)
+    {
+        QLabel* la=new QLabel(this);
+        QString sl=lc[i];
+        QString units;
+        if(sl.contains("["))
+        {
+            units=sl.right(sl.indexOf("["));
+            units=units.remove("]").remove("[");
+            sl.resize(sl.indexOf("["));
+        }
+        la->setText(m_client->dataValue(lc[i]) +units);
+        m_resultLayout->addRow(sl,la);
+
+    }
+
 
     refresh();
 }

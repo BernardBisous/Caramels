@@ -3,10 +3,11 @@
 
 #define HELP_FILE "help.pdf"
 #include <QDesktopServices>
-
+#include <QApplication>
+#include <QStyleFactory>
 enum{Hardware=0,Configs};
-GrowingTent::GrowingTent()
-    : QMainWindow{}
+GrowingTent::GrowingTent(QWidget* parent)
+    : QMainWindow(parent)
 
 {
     loadStyle();
@@ -68,6 +69,11 @@ GrowingTent::GrowingTent()
 
 void GrowingTent::loadStyle()
 {
+    setStyleSheet("");
+
+
+
+
     QPalette darkPalette;
     darkPalette.setColor(QPalette::Window, QColor(49, 44, 64));
     darkPalette.setColor(QPalette::WindowText, QColor(215, 213, 218));
@@ -98,7 +104,10 @@ void GrowingTent::loadStyle()
      Qt::red);
     darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(127, 127, 127));
 
-    setPalette(darkPalette);
+    qApp->setStyle(QStyleFactory::create("Fusion"));
+    // setStyleSheet(ChatBot::loadResourceFile("://styleSheet"));
+
+    qApp->setPalette(darkPalette);
 }
 
 void GrowingTent::goToIndex(int i)

@@ -9,6 +9,8 @@ class Lights: public SwitchedActuator
     Q_OBJECT
 public:
     explicit Lights(int pint,QObject *parent = nullptr);
+
+    virtual float computeResult(QString s);
 };
 
 class LightsSpectrum: public Actuator

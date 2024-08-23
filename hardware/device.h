@@ -21,6 +21,10 @@ public:
     virtual void begin();
     virtual void save(QDataStream& s);
     virtual void load(QDataStream& s);
+
+    virtual float computeResult(QString){return 0;}
+    void computeResults();
+
     int possibleParameterId();
     bool acceptsParam(int id);
 
@@ -28,6 +32,10 @@ public:
     bool existData(QString key);
     void setDataValue(QString key, QString val);
 
+
+
+    void setResult(QString key);
+QStringList resultKeys();
     QStringList dataKeys();
     QString name() const;
     void setName(const QString &newName);
@@ -43,6 +51,7 @@ public:
     void applyPurcent(int t);
 
 
+    static bool createDataDir();
 
     float currentValue() const;
 
@@ -63,6 +72,8 @@ protected :
     QString m_name;
     float m_currentValue;
 };
+
+
 
 class Sensor : public Device
 {

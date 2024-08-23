@@ -1,5 +1,6 @@
 #include "device.h"
 #include "qdatetime.h"
+#include "qdir.h"
 #include <QFile>
 
 #define HISTO_PATH "data/"
@@ -25,6 +26,15 @@ void Device::load(QDataStream &s)
 {
     m_metaData.clear();
     s>>m_metaData;
+}
+
+void Device::computeResults()
+{
+    auto l=m_metaResults.keys();
+    for(int i=0;i<l.count();i++)
+    {
+        m_metaResults.insert(l[i],computeResult(l[i]));
+    }
 }
 
 int Device::possibleParameterId()
@@ -53,6 +63,16 @@ bool Device::existData(QString key)
 void Device::setDataValue(QString key, QString val)
 {
     m_metaData.insert(key,val);
+}
+
+void Device::setResult(QString key)
+{
+    m_metaResults.insert(key,computeResult(key));
+}
+
+QStringList Device::resultKeys()
+{
+ return m_metaResults.keys();
 }
 
 QStringList Device::dataKeys()
@@ -127,6 +147,21 @@ void Device::applyPurcent(int t)
 {
     //TODO put a gain
     applyValue(t);
+}
+
+bool Device::createDataDir()
+{
+    QString sp(HISTO_PATH);
+    sp.remove("/");
+    QDir r(sp);
+
+    if(!r.exists())
+    {
+        QDir d=QDir::current();
+        d.mkdir(sp);
+        return true;
+    }
+    return false;
 }
 
 void Device::storeValue(float t)

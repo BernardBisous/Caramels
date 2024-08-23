@@ -35,8 +35,10 @@ private:
     QLabel* m_status;
     Device* m_client;
     QFormLayout* m_dataLAyout;
+    QFormLayout* m_resultLayout;
     Slider* m_valueSlider;
     QWidget*m_dataWidget;
+    QWidget*m_resultWidget;
 
     bool m_abstracted;
    // QWidget*m_resultsWidget;

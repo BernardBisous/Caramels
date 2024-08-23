@@ -13,7 +13,7 @@ class GrowingTent : public QMainWindow
 {
     Q_OBJECT
 public:
-    explicit GrowingTent();
+    explicit GrowingTent(QWidget* parent=nullptr);
     void loadStyle();
 
 public slots:
