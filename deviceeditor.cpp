@@ -73,9 +73,9 @@ void DeviceEditor::handle(Device *c)
     for(int i=0;i<l.count();i++)
     {
         QLineEdit* el=new QLineEdit(this);
-        el->setPalette(palette());
+       // el->setPalette(palette());
 
-        el->setAutoFillBackground(false);
+
 
         el->setText(m_client->dataValue(l[i]));
         m_dataLAyout->addRow(l[i],el);

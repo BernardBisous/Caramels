@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/icons">
         <file alias="help">lib/help.png</file>
+        <file alias="logo">lib/logo.png</file>
     </qresource>
 </RCC>

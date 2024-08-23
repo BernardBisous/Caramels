@@ -1,4 +1,5 @@
 #include "tenteditor.h"
+#include "qlineedit.h"
 
 TentEditor::TentEditor(QWidget *parent)
     : QWidget{parent},m_client(nullptr)
@@ -11,6 +12,7 @@ TentEditor::TentEditor(QWidget *parent)
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
     list->layout()->addWidget(new QLabel("Périphériques disponibles:"));
+    //list->layout()->addWidget(new QLineEdit);
     list->layout()->addWidget(m_devices=new ScrollArea);
     list->layout()->setContentsMargins(0,0,0,0);
     list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);

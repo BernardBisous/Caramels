@@ -21,6 +21,11 @@ GrowingTent::GrowingTent()
 
     QWidget* bar=new QWidget;
     bar->setLayout(new QHBoxLayout);
+    QLabel* pix;
+
+    bar->layout()->addWidget(pix=new QLabel);
+    pix->setPixmap(QPixmap(":/icons/logo").scaled(40,40,Qt::KeepAspectRatio,Qt::SmoothTransformation));
+
     bar->layout()->addWidget(m_nameLab=new QLabel(m_tent->name()));
     bar->layout()->addWidget(m_selector=new DrawerSelector);
     bar->layout()->setContentsMargins(0,0,0,0);
