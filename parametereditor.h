@@ -2,6 +2,7 @@
 #define PARAMETEREDITOR_H
 
 #include "Interface/namelabel.h"
+#include "deviceeditor.h"
 #include "growconfig.h"
 #include "parameterplot.h"
 #include <QWidget>
@@ -17,17 +18,21 @@ public:
     void refresh();
 
 signals:
+    void editDevice(Device* d);
 
 private slots:
+    void deviceSlot();
     void nameChangedSlot(QString);
     void pointClickedSlot(QPointF);
 
 private:
     NameLabel* m_name;
-
-
+    QLabel* m_desc;
+    QLabel* m_deviceStatus;
 
     QWidget* m_editWidget;
+
+    ScrollArea* m_deviceArea;
 
 
     Parameter*m_client;

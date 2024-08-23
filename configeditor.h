@@ -19,7 +19,9 @@ public slots:
     void loadData();
     void addSlot();
     void editParameter(int i);
+    void editDevicePropagate(Device*d){emit editDevice(d);}
 signals:
+    void editDevice(Device* d);
 
 private:
     GrowConfig* m_client;

@@ -1,11 +1,17 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include "growconfig.h"
+#include "qdatetime.h"
 #include <QObject>
 
+#include <QHash>
 
-
+class RealTimeValue
+{
+public:
+    QDateTime time;
+    float value;
+};
 
 class Device : public QObject
 {
@@ -16,23 +22,46 @@ public:
     virtual void save(QDataStream& s);
     virtual void load(QDataStream& s);
     int possibleParameterId();
-    void attach(Parameter* p);
-    Parameter *client() const;
+    bool acceptsParam(int id);
 
     QString dataValue(QString key);
     bool existData(QString key);
     void setDataValue(QString key, QString val);
 
+    QStringList dataKeys();
+    QString name() const;
+    void setName(const QString &newName);
+
+    QString storageFile();
+    void startRecording(bool t);
+    QList<RealTimeValue> historic();
+    void retreiveLastValue();
+
+
+    void stop();
+    void applyValue(float v);
+    void applyPurcent(int t);
+
+
+
+    float currentValue() const;
+
+public slots:
+    void storeValue(float t);
+
 
 signals:
     void log(QString s);
+    void newValue(float t);
 
 protected :
     QHash<QString,QString> m_metaData;
+    QHash<QString,float> m_metaResults;
+    bool m_recording;
     int m_deviceId;
     int m_paramId;
     QString m_name;
-    Parameter*m_client;
+    float m_currentValue;
 };
 
 class Sensor : public Device
@@ -70,4 +99,6 @@ private:
     int m_pin;
     bool m_pwmAnalog;
 };
+
+
 #endif // DEVICE_H

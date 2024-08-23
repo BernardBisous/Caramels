@@ -1,57 +1,12 @@
 #ifndef GROWCONFIG_H
 #define GROWCONFIG_H
+
 #include "qdatetime.h"
 #include <QList>
 #include <QString>
-
-typedef enum parameterType{LightPower,LightSpectre}ParameterType;
-
-
-class TimedValue
-{
-public:
-    int hourIndex;
-    float value;
-};
-
-class Parameter
-{
-public:
-
-    Parameter(QString name="NoName",QString units="", int id=0);
-
-    QList<TimedValue> values() const;
-    void load(QDataStream&c);
-    void save(QDataStream&c);
-    int count();
-    int maxX();
-    float maxY();
-
-    void clear();
-
-    int append(TimedValue t);
-
-    void setName(const QString &newName);
-
-    void setUnits(const QString &newUnits);
-
-    void setId(int newId);
-
-    QString name() const;
-
-    int id() const;
-
-    QString units() const;
+#include "parameter.h"
 
 
-
-private:
-    int m_id;
-    ParameterType m_type;
-    QString m_name;
-    QString m_units;
-    QList<TimedValue> m_values;
-};
 
 class GrowConfig
 {

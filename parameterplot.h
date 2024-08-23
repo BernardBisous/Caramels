@@ -25,12 +25,7 @@ public:
     void refresh(Parameter*p);
     void setXrange(int t);
     void initStyle();
-
-
     void select(int);
-
-
-
 
 signals:
     void clicked(QPointF p);

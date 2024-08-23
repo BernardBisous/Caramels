@@ -118,6 +118,7 @@ void ScrollArea::addActionText(QString s)
 {
 
   ToolButton* a=new ToolButton(s);
+  a->setMode(ActionWidget::appearingBorder);
   addActionWidget(a);
 }
 

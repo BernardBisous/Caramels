@@ -1,14 +1,19 @@
 #include "device.h"
+#include "qdatetime.h"
+#include <QFile>
+
+#define HISTO_PATH "data/"
 
 Device::Device(QObject *parent)
-    : QObject{parent},m_client(nullptr)
+    : QObject{parent},m_currentValue(0)
 {
 
 }
 
 void Device::begin()
 {
-
+    retreiveLastValue();
+    startRecording(true);
 }
 
 void Device::save(QDataStream &s)
@@ -27,15 +32,13 @@ int Device::possibleParameterId()
     return m_paramId;
 }
 
-void Device::attach(Parameter *p)
+bool Device::acceptsParam(int id)
 {
-    m_client=p;
+    return id==m_paramId;
 }
 
-Parameter *Device::client() const
-{
-    return m_client;
-}
+
+
 
 QString Device::dataValue(QString key)
 {
@@ -50,6 +53,99 @@ bool Device::existData(QString key)
 void Device::setDataValue(QString key, QString val)
 {
     m_metaData.insert(key,val);
+}
+
+QStringList Device::dataKeys()
+{
+    return m_metaData.keys();
+}
+
+QString Device::name() const
+{
+    return m_name;
+}
+
+void Device::setName(const QString &newName)
+{
+    m_name = newName;
+}
+
+QString Device::storageFile()
+{
+    return HISTO_PATH+m_name.remove(" ");
+}
+
+void Device::startRecording(bool t)
+{
+    if(t)
+        connect(this,SIGNAL(newValue(float)),this,SLOT(storeValue(float)));
+    else
+        disconnect(this,SIGNAL(newValue(float)),this,SLOT(storeValue(float)));
+}
+
+QList<RealTimeValue> Device::historic()
+{
+    QList<RealTimeValue> output;
+    QFile file(storageFile());
+    if (!file.open(QIODevice::ReadOnly)) {
+
+
+        return output;
+    }
+
+    QDataStream out(&file);
+
+    while(!out.atEnd())
+    {
+        RealTimeValue v;
+        out>>v.time;
+        out>>v.value;
+        output.append(v);
+    }
+    file.close();
+    return output;
+}
+
+void Device::retreiveLastValue()
+{
+    auto l=historic();
+    if(l.isEmpty())
+        applyValue(0);
+
+    else
+        applyValue(l.last().value);
+}
+
+void Device::applyValue(float v)
+{
+    qDebug()<<"Device new value"<<name()<<v;
+    m_currentValue=v;
+    emit newValue(v);
+}
+
+void Device::applyPurcent(int t)
+{
+    //TODO put a gain
+    applyValue(t);
+}
+
+void Device::storeValue(float t)
+{
+    QFile file(storageFile());
+    if (!file.open(QIODevice::Append)) {
+
+        return;
+    }
+    QDataStream out(&file);
+    out << QDateTime::currentDateTime();
+    out << t;
+    file.close();
+    return;
+}
+
+float Device::currentValue() const
+{
+    return m_currentValue;
 }
 
 

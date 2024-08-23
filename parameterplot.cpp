@@ -83,7 +83,6 @@ void ParameterPlot::refresh(Parameter *parameter)
 
     m_view->chart()->addSeries(m_series);
 
-    qDebug()<<"freshch chart";
 
     initStyle();
 

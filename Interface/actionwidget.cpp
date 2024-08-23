@@ -135,7 +135,7 @@ QBrush ActionWidget::backgroundBrush()
     else if(m_press && !m_ignoreClick)
         b1= palette().button();
 
-    else if(m_hover)
+    else if(!m_hover)
         b1= palette().base();
 
     else
