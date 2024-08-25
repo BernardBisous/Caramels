@@ -2,7 +2,7 @@
 
 
 Parameter::Parameter(QString name, QString units, int id):
-    m_id(id),m_name(name),m_units(units),m_devices()
+    m_id(id),m_name(name),m_units(units)
 {
 
 }
@@ -54,14 +54,6 @@ float Parameter::maxY()
         }
     }
     return out;
-}
-
-void Parameter::attach(Device *d)
-{
-    if(m_devices.contains(d))
-        return;
-
-    m_devices.append(d);
 }
 
 void Parameter::clear()
@@ -146,7 +138,3 @@ void Parameter::setGroup(const QString &newGroup)
     m_group = newGroup;
 }
 
-QList<Device *> Parameter::devices() const
-{
-    return m_devices;
-}

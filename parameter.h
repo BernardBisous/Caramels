@@ -26,7 +26,7 @@ public:
     int count();
     int maxX();
     float maxY();
-    void attach(Device*p);
+
 
     void clear();
 
@@ -50,7 +50,6 @@ public:
     QString group() const;
     void setGroup(const QString &newGroup);
 
-    QList<Device *> devices() const;
 
 private:
     int m_id;
@@ -63,7 +62,6 @@ private:
 
     QList<TimedValue> m_values;
 
-    QList<Device*> m_devices;
 };
 
 

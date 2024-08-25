@@ -40,6 +40,7 @@ void ParameterEditor::handle(Parameter *p)
 
 
     m_deviceArea->clear();
+    /*
     auto l=p->devices();
 
     m_deviceStatus->setHidden(l.isEmpty());
@@ -54,6 +55,7 @@ void ParameterEditor::handle(Parameter *p)
 
         connect(de,SIGNAL(clicked()),this,SLOT(deviceSlot()));
     }
+    */
     m_deviceArea->addSpacer();
 
 }

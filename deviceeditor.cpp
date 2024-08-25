@@ -1,6 +1,7 @@
 #include "deviceeditor.h"
 #include "qboxlayout.h"
 #include "qlineedit.h"
+#include "qregularexpression.h"
 
 DeviceEditor::DeviceEditor(QWidget *parent)
     : ActionWidget{parent},m_client(nullptr),m_abstracted(false)
@@ -23,22 +24,22 @@ DeviceEditor::DeviceEditor(QWidget *parent)
 
 
     m_dataWidget=new QWidget;
-    m_dataWidget->setLayout(new QVBoxLayout);
-    m_dataWidget->layout()->setContentsMargins(0,0,0,0);
-    m_dataWidget->layout()->addWidget(new QLabel("Parameters:"));
-    QWidget* fw=new QWidget;
-    fw->setLayout(m_dataLAyout=new QFormLayout);
-    m_dataWidget->layout()->addWidget(fw);
+    m_dataWidget->setLayout(m_dataLAyout=new QFormLayout);
+  //  m_dataWidget->layout()->setContentsMargins(0,0,0,0);
+  //  m_dataWidget->layout()->addWidget(new QLabel("Parameters:"));
+  //  QWidget* fw=new QWidget;
+  //  fw->setLayout(m_dataLAyout=new QFormLayout);
+  //  m_dataWidget->layout()->addWidget(fw);
     m_dataLAyout->setContentsMargins(0,0,0,0);
 
 
     m_resultWidget=new QWidget;
-    m_resultWidget->setLayout(new QVBoxLayout);
-    m_resultWidget->layout()->setContentsMargins(0,0,0,0);
-    m_resultWidget->layout()->addWidget(new QLabel("Results:"));
-    QWidget* rw=new QWidget;
-    rw->setLayout(m_resultLayout=new QFormLayout);
-    m_resultWidget->layout()->addWidget(rw);
+    m_resultWidget->setLayout(m_resultLayout=new QFormLayout);
+  //  m_resultWidget->layout()->setContentsMargins(0,0,0,0);
+ //   m_resultWidget->layout()->addWidget(new QLabel("Results:"));
+ //   QWidget* rw=new QWidget;
+ //   rw->setLayout(m_resultLayout=new QFormLayout);
+//    m_resultWidget->layout()->addWidget(rw);
     m_resultLayout->setContentsMargins(0,0,0,0);
 
 
@@ -56,17 +57,18 @@ DeviceEditor::DeviceEditor(QWidget *parent)
 
 void DeviceEditor::handle(Device *c)
 {
+
+    if(m_client)
+    {
+         disconnect(c,SIGNAL(newValue(float)),this,SLOT(valueSlot(float)));
+    }
+    m_dataFields.clear();
+    clearField(m_dataLAyout);
+    clearField(m_resultLayout);
+
     m_client=c;
 
-    while(m_dataLAyout->count())
-    {
-        auto i=m_dataLAyout->takeAt(0);
 
-        if(i->widget())
-            delete i->widget();
-
-        delete i;
-    }
 
 
 
@@ -80,14 +82,18 @@ void DeviceEditor::handle(Device *c)
 
     auto l=m_client->dataKeys();
 
+
     m_dataWidget->setHidden(l.isEmpty() || m_abstracted);
     for(int i=0;i<l.count();i++)
     {
+
         QLineEdit* el=new QLineEdit(this);
         el->setText(m_client->dataValue(l[i]));
         m_dataLAyout->addRow(l[i],el);
+        m_dataFields.append(el);
         connect(el, SIGNAL(editingFinished()),this,SLOT(editSlot()));
     }
+
 
 
 
@@ -99,14 +105,17 @@ void DeviceEditor::handle(Device *c)
         QLabel* la=new QLabel(this);
         QString sl=lc[i];
         QString units;
-        if(sl.contains("["))
-        {
-            units=sl.right(sl.indexOf("["));
-            units=units.remove("]").remove("[");
-            sl.resize(sl.indexOf("["));
+
+        QRegularExpression regex(R"((\w+)(\[(\w+)\])?)");
+        QRegularExpressionMatch match = regex.match(sl);
+        if(match.hasMatch()) {
+           sl = match.captured(1);
+           units = match.captured(3);
         }
-        la->setText(m_client->dataValue(lc[i]) +units);
-        m_resultLayout->addRow(sl,la);
+
+
+        la->setText(QString::number(m_client->computeResult(lc[i])) +units);
+        m_resultLayout->addRow(sl+":",la);
 
     }
 
@@ -123,9 +132,6 @@ void DeviceEditor::refresh()
 {
     m_nameLabel->setText(m_client->name());
 
-    disconnect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
-    m_valueSlider->setValue(m_client->currentValue());
-    connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
 
     valueSlot(m_client->currentValue());
 
@@ -139,29 +145,42 @@ void DeviceEditor::setAbstracted(bool s)
     m_dataWidget->setHidden(s);
 }
 
-void DeviceEditor::editSlot()
+void DeviceEditor::clearField(QFormLayout *f)
 {
-    QObject* o=sender();
-    for(int i=0;i<m_dataLAyout->count();i++)
-    {
-        if(m_dataLAyout->itemAt(i)->widget()==o)
-        {
-            QLineEdit* el=dynamic_cast<QLineEdit*>(o);
-            if(el)
-            {
-                qDebug()<<"edited meta"<<m_client->dataKeys()[i]<<el->text();
-                emit edited(m_client->dataKeys()[i],el->text());
-            }
 
-        }
-    }
+    // Possible
+    while(f->count())
     {
-        auto i=m_dataLAyout->takeAt(0);
+        auto i=f->takeAt(0);
 
         if(i->widget())
             delete i->widget();
 
         delete i;
+    }
+}
+
+
+
+void DeviceEditor::editSlot()
+{
+    QObject* o=sender();
+
+
+    for(int i=0;i<m_dataFields.count();i++)
+    {
+        if(m_dataFields[i]==o)
+        {
+
+            QLineEdit* el=dynamic_cast<QLineEdit*>(o);
+            if(el)
+            {
+                QString sn=m_client->dataKeys()[i];
+                m_client->setDataValue(sn,el->text(),true);
+
+                emit edited(sn,el->text());
+            }
+        }
     }
 }
 
@@ -173,6 +192,11 @@ void DeviceEditor::sliderEdited(int i)
 void DeviceEditor::valueSlot(float t)
 {
     m_status->setText("Value:"+QString::number(t));
+
+    disconnect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
+    m_valueSlider->setValue(t);
+    connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
+
 
 }
 

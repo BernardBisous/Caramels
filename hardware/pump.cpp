@@ -1,9 +1,13 @@
 #include "pump.h"
-#include "hardware/Pinout.h"
 
-Pump::Pump(int pin, QObject *parent)
-    :SwitchedActuator(pin,false,parent)
+Pump::Pump(int pin, QString name,QObject *parent)
+    :SwitchedActuator(pin,false,name,parent)
 {
-    m_paramId=INJECTION;
-    m_name="Main Water Pump";
+
+}
+
+ChemicalPump::ChemicalPump(int pin, QString name, QObject *parent)
+    :SwitchedActuator(pin,false,name,parent)
+{
+    setDataValue("Flow[mL/s]","1.5");
 }

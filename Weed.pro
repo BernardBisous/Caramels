@@ -21,7 +21,10 @@ SOURCES += \
     deviceplot.cpp \
     growconfig.cpp \
     growingtent.cpp \
+    hardware/booleansensor.cpp \
+    hardware/chemicalinjector.cpp \
     hardware/device.cpp \
+    hardware/hardwareunit.cpp \
     hardware/lights.cpp \
     hardware/pump.cpp \
     main.cpp \
@@ -47,7 +50,10 @@ HEADERS += \
     growconfig.h \
     growingtent.h \
     hardware/Pinout.h \
+    hardware/booleansensor.h \
+    hardware/chemicalinjector.h \
     hardware/device.h \
+    hardware/hardwareunit.h \
     hardware/lights.h \
     hardware/pump.h \
     parameter.h \

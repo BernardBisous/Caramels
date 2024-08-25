@@ -1,5 +1,6 @@
 #include "tent.h"
 #include "hardware/Pinout.h"
+#include "hardware/booleansensor.h"
 #include "hardware/lights.h"
 #include "hardware/pump.h"
 
@@ -18,7 +19,10 @@ void Tent::initDevices()
     Device::createDataDir();
     addDevice(new Lights(LIGHTS_POWER_PIN,this));
     addDevice(new LightsSpectrum(this));
-    addDevice(new Pump(MAIN_PUMP_PIN ,this));
+    addDevice(new Pump(MAIN_PUMP_PIN,"Main pump",this));
+    addDevice(new BooleanSensor(WATER_LEVEL_PIN_1,"Niveau d'eau 1"));
+    addDevice(new BooleanSensor(WATER_LEVEL_PIN_2,"Niveau d'eau 2"));
+
 }
 
 void Tent::begin()
@@ -40,15 +44,17 @@ void Tent::setConfig(GrowConfig *e)
     mapDevices();
 }
 
-Device *Tent::deviceForId(int id)
+HardwareUnit *Tent::unitForId(int id)
 {
-    for(int i=0;i<m_devices.count();i++)
+    for(int i=0;i<m_units.count();i++)
     {
-        if(m_devices[i]->acceptsParam(id))
-            return m_devices[i];
+        if(m_units[i]->parameterPossibleId()==id)
+            return m_units[i];
     }
     return nullptr;
 }
+
+
 
 void Tent::mapDevices()
 {
@@ -57,18 +63,33 @@ void Tent::mapDevices()
 
         Parameter* p=m_config->parameterAddr(i);
 
-        Device*d=deviceForId(p->id());
+        HardwareUnit*d=unitForId(p->id());
         if(d)
         {
-            p->attach(d);
+
+
         }
+    }
+}
+
+void Tent::addUnit(HardwareUnit *u)
+{
+    m_units.append(u);
+    addDevice(u->devices());
+}
+
+void Tent::addDevice(QList<Device *> l)
+{
+    for(int i=0;i<l.count();i++)
+    {
+        addDevice(l[i]);
     }
 }
 
 void Tent::addDevice(Device *d)
 {
-
-    m_devices.append(d);
+    if(!m_devices.contains(d))
+        m_devices.append(d);
 }
 
 

@@ -4,9 +4,12 @@
 #include <QFile>
 
 #define HISTO_PATH "data/"
+#define PR_SAMPLING_RATE "Freq.[s]"
 
-Device::Device(QObject *parent)
-    : QObject{parent},m_currentValue(0)
+#include <QRandomGenerator>
+
+Device::Device(QString name,QObject *parent)
+    : QObject{parent},m_name(name),m_currentValue(0)
 {
 
 }
@@ -28,6 +31,13 @@ void Device::load(QDataStream &s)
     s>>m_metaData;
 }
 
+void Device::reactToDataEdited(QString key, QString val)
+{
+
+}
+
+
+
 void Device::computeResults()
 {
     auto l=m_metaResults.keys();
@@ -36,19 +46,6 @@ void Device::computeResults()
         m_metaResults.insert(l[i],computeResult(l[i]));
     }
 }
-
-int Device::possibleParameterId()
-{
-    return m_paramId;
-}
-
-bool Device::acceptsParam(int id)
-{
-    return id==m_paramId;
-}
-
-
-
 
 QString Device::dataValue(QString key)
 {
@@ -60,9 +57,11 @@ bool Device::existData(QString key)
     return m_metaData.contains(key);
 }
 
-void Device::setDataValue(QString key, QString val)
+void Device::setDataValue(QString key, QString val, bool notif)
 {
     m_metaData.insert(key,val);
+    if(notif)
+        reactToDataEdited(key,val);
 }
 
 void Device::setResult(QString key)
@@ -138,7 +137,6 @@ void Device::retreiveLastValue()
 
 void Device::applyValue(float v)
 {
-    qDebug()<<"Device new value"<<name()<<v;
     m_currentValue=v;
     emit newValue(v);
 }
@@ -184,17 +182,79 @@ float Device::currentValue() const
 }
 
 
-SwitchedActuator::SwitchedActuator(int pin, bool pwm, QObject *parent):Actuator(parent),m_pin(pin),m_pwmAnalog(pwm)
+SwitchedActuator::SwitchedActuator(int pin, bool pwm, QString name, QObject *parent)
+    :Actuator(name,parent),m_pin(pin),m_pwmAnalog(pwm)
 {
 
 }
 
-Actuator::Actuator(QObject *parent):Device(parent)
+
+Actuator::Actuator(QString name, QObject *parent):
+    Device(name,parent)
 {
 
 }
 
-Sensor::Sensor(QObject *parent):Device(parent)
+Sensor::Sensor(QString name, QObject *parent)
+    :Device(name,parent)
 {
+    setDataValue("Freq.[s]","1");
+}
+
+float Sensor::aquire()
+{
+    return QRandomGenerator::global()->generate() % 101;
+}
+
+void Sensor::reactToDataEdited(QString key, QString val)
+{
+    if(key==PR_SAMPLING_RATE)
+    {
+
+        updateSamplingRate();
+    }
+}
+
+void Sensor::begin()
+{
+    Device::begin();
+    startPolling(true);
+}
+
+void Sensor::updateSamplingRate()
+{
+    float s=dataValue(PR_SAMPLING_RATE).toFloat()*1000;
+
+    if(m_pollTimer)
+        m_pollTimer->setInterval(s);
+}
+
+void Sensor::startPolling(bool s)
+{
+    if(s)
+    {
+        if(!m_pollTimer)
+        {
+            m_pollTimer=new QTimer(this);
+            connect(m_pollTimer,SIGNAL(timeout()),this,SLOT(measure()));
+            updateSamplingRate();
+            m_pollTimer->start();
+        }
+    }
+    else if(m_pollTimer)
+        m_pollTimer->stop();
+}
+
+void Sensor::measure()
+{
+    float a=aquire();
+
+    if(a!=m_currentValue || m_continousStreaming)
+    {
+        m_currentValue=a;
+        emit newValue(a);
+    }
 
 }
+
+

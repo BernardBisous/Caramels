@@ -2,6 +2,7 @@
 #define TENT_H
 
 #include "growconfig.h"
+#include "hardware/hardwareunit.h"
 #include "qdatetime.h"
 #include <QObject>
 
@@ -18,11 +19,14 @@ public:
     QString configName() const;
     void setConfig(GrowConfig*e);
 
-    Device* deviceForId(int i);
 
+    HardwareUnit* unitForId(int id);
     void mapDevices();
 
+    void addUnit(HardwareUnit* u);
+    void addDevice(QList<Device*> l);
     void addDevice(Device*d);
+
     void restart();
     GrowConfig *config() const;
 
@@ -36,6 +40,7 @@ signals:
 
 private:
     QList<Device*> m_devices;
+    QList<HardwareUnit*> m_units;
     GrowConfig* m_config;
     QString m_configName;
     QDateTime m_startedDate;

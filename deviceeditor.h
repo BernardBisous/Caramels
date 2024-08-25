@@ -1,10 +1,11 @@
 #ifndef DEVICEEDITOR_H
 #define DEVICEEDITOR_H
 
-#include "Interface/scrollarea.h"
+#include "Interface/actionwidget.h"
 #include "Interface/slider.h"
 #include "hardware/device.h"
 #include "qlabel.h"
+#include "qlineedit.h"
 #include <QWidget>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -18,6 +19,8 @@ public:
     virtual QBrush backgroundBrush();
     void refresh();
     void setAbstracted(bool s);
+
+    void clearField(QFormLayout*);
 
 
     Device *client() const;
@@ -40,7 +43,11 @@ private:
     QWidget*m_dataWidget;
     QWidget*m_resultWidget;
 
+
+
     bool m_abstracted;
+
+    QList<QLineEdit*>m_dataFields;
    // QWidget*m_resultsWidget;
   //  QFormLayout* m_resultsLayout;
 

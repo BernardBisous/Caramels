@@ -3,7 +3,7 @@
 
 DevicePlot::DevicePlot(QWidget *parent):
     QChartView(parent), m_device(nullptr),
-    m_chart(new QChart()), m_series(new QLineSeries())
+    m_chart(new QChart()), m_series(new QLineSeries()),m_locked(true)
 
 {
 
@@ -24,7 +24,7 @@ DevicePlot::DevicePlot(QWidget *parent):
     m_xAxis->setFormat("hh:mm:ss");
     m_xAxis->setTitleText("Time");
     m_yAxis = new QValueAxis;
-    m_yAxis->setTitleText("Value");
+    m_yAxis->setTitleText("Value: ");
     m_chart->addAxis(m_xAxis, Qt::AlignBottom);
     m_chart->addAxis(m_yAxis, Qt::AlignLeft);
 
@@ -86,6 +86,16 @@ void DevicePlot::initStyle()
     m_chart->update();
 }
 
+bool DevicePlot::locked() const
+{
+    return m_locked;
+}
+
+void DevicePlot::setLocked(bool newLocked)
+{
+    m_locked = newLocked;
+}
+
 void DevicePlot::updatePlot()
 {
     chart()->removeSeries(m_series);
@@ -95,14 +105,43 @@ void DevicePlot::updatePlot()
         return;
 
     auto l=m_device->historic();
+
+    if(l.isEmpty())
+        return;
+
+
+    QDateTime min=QDateTime::currentDateTime().addSecs(-10);
+   // QDateTime max=QDateTime::currentDateTime();
+
+    float maxY=0;
+    float minY=0;
+
     for(int i=0;i<l.count();i++)
     {
-        m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
+        if(!locked() || l[i].time>min)
+        {
+
+            if(l[i].value>maxY)
+                maxY=l[i].value;
+
+            if(!i || l[i].value<minY)
+                minY=l[i].value;
+
+            m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
+        }
+
+
     }
 
 
     m_chart->addSeries(m_series);
 
-    //chart->axisX()->rescale();
-    //chart->axisY()->rescale();
+
+    m_yAxis->setMax(maxY);
+    m_yAxis->setMin(minY);
+
+  //  m_yAxis->applyNiceNumbers();
+    m_xAxis->setRange(l.first().time,l.last().time);
+
+
 }

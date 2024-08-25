@@ -16,9 +16,14 @@ public:
     void setXrange(int ms);
     void initStyle();
 
+    bool locked() const;
+    void setLocked(bool newLocked);
+
 public slots:
 
 private:
+
+    bool m_locked;
     Device* m_device;
     QChart* m_chart;
     QLineSeries* m_series;

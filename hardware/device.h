@@ -2,6 +2,7 @@
 #define DEVICE_H
 
 #include "qdatetime.h"
+#include "qtimer.h"
 #include <QObject>
 
 #include <QHash>
@@ -17,10 +18,11 @@ class Device : public QObject
 {
     Q_OBJECT
 public:
-    explicit Device(QObject *parent = nullptr);
+    explicit Device(QString namme="Device",QObject *parent = nullptr);
     virtual void begin();
     virtual void save(QDataStream& s);
     virtual void load(QDataStream& s);
+    virtual void reactToDataEdited(QString key,QString val);
 
     virtual float computeResult(QString){return 0;}
     void computeResults();
@@ -30,12 +32,12 @@ public:
 
     QString dataValue(QString key);
     bool existData(QString key);
-    void setDataValue(QString key, QString val);
+    void setDataValue(QString key, QString val, bool fromEditing=false);
 
 
 
     void setResult(QString key);
-QStringList resultKeys();
+    QStringList resultKeys();
     QStringList dataKeys();
     QString name() const;
     void setName(const QString &newName);
@@ -68,9 +70,10 @@ protected :
     QHash<QString,float> m_metaResults;
     bool m_recording;
     int m_deviceId;
-    int m_paramId;
+
     QString m_name;
     float m_currentValue;
+
 };
 
 
@@ -79,9 +82,19 @@ class Sensor : public Device
 {
     Q_OBJECT
 public:
-    explicit Sensor(QObject *parent = nullptr);
+    explicit Sensor(QString name="Sensor",QObject *parent = nullptr);
+    virtual float aquire();
+    virtual void reactToDataEdited(QString key,QString val);
+    virtual void begin();
+    void updateSamplingRate();
+    void startPolling(bool s);
+
+public slots:
+    void measure();
 
 protected :
+    QTimer* m_pollTimer;
+    bool m_continousStreaming;
 
 };
 
@@ -89,11 +102,10 @@ class Actuator : public Device
 {
     Q_OBJECT
 public:
-    explicit Actuator(QObject *parent = nullptr);
+    explicit Actuator(QString name="Acturator",QObject *parent = nullptr);
     void test();
-
-
     void applyValue(float v);
+
 
 protected :
 };
@@ -102,11 +114,16 @@ class SwitchedActuator : public Actuator
 {
     Q_OBJECT
 public:
-    explicit SwitchedActuator (int m_pin,bool pwm, QObject *parent = nullptr);
+    explicit SwitchedActuator (int m_pin,bool pwm, QString name="Switched Actuator",QObject *parent = nullptr);
+
+
+public slots:
+
 
 protected :
 
 private:
+
     int m_pin;
     bool m_pwmAnalog;
 };
