@@ -9,7 +9,7 @@ DeviceEditor::DeviceEditor(QWidget *parent)
     setLayout(new QVBoxLayout);
 
     setMode(noBorder);
-    setHoverable(false);
+   // setHoverable(false);
 
 
 

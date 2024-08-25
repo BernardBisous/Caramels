@@ -10,7 +10,7 @@ class ChemicalInjector : public HardwareUnit
 {
     Q_OBJECT
 public:
-    explicit ChemicalInjector(int id,QObject *parent = nullptr);
+    explicit ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int id,QObject *parent = nullptr);
     ChemicalPump *pump() const;
     void setPump(ChemicalPump *newPump);
 

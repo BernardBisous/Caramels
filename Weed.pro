@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     Interface/actionwidget.cpp \
+    Interface/devicelistwidget.cpp \
     Interface/drawerselector.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
     hardware/hardwareunit.cpp \
     hardware/lights.cpp \
     hardware/pump.cpp \
+    hardware/waterlevelmanager.cpp \
     main.cpp \
     parameter.cpp \
     parametereditor.cpp \
@@ -34,10 +36,12 @@ SOURCES += \
     parameterplot.cpp \
     tent.cpp \
     tenteditor.cpp \
-    tentlistwidget.cpp
+    tentlistwidget.cpp \
+    uniteditor.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
+    Interface/devicelistwidget.h \
     Interface/drawerselector.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
@@ -56,13 +60,15 @@ HEADERS += \
     hardware/hardwareunit.h \
     hardware/lights.h \
     hardware/pump.h \
+    hardware/waterlevelmanager.h \
     parameter.h \
     parametereditor.h \
     parameterlistwidget.h \
     parameterplot.h \
     tent.h \
     tenteditor.h \
-    tentlistwidget.h
+    tentlistwidget.h \
+    uniteditor.h
 
 FORMS +=
 

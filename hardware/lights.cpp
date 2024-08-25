@@ -1,4 +1,5 @@
 #include "lights.h"
+#include "hardware/Pinout.h"
 
 
 
@@ -16,7 +17,14 @@ float Lights::computeResult(QString s)
     return 1;
 }
 
-LightsSpectrum::LightsSpectrum(QObject *parent):Actuator("Spectrum Potentiometer",parent)
+LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):Actuator("Spectrum Potentiometer",parent)
 {
 
+}
+
+LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent}
+{
+    m_name="Lights";
+    attachDevice(m_power=new Lights(LIGHTS_POWER_PIN,this));
+    attachDevice(m_spectrum=new LightsSpectrum(LIGHTS_SPECTRUM_PIN,this));
 }

@@ -19,6 +19,8 @@ public:
     QList<Device *> devices() const;
     QList<Parameter *> parameters() const;
 
+    QString name() const;
+
 signals:
 
 protected:

@@ -131,5 +131,5 @@ void GrowingTent::help()
 void GrowingTent::editDevice(Device *s)
 {
     goToIndex(Hardware);
-    m_tentEdit->edit(s);
+   // m_tentEdit->edit(s);
 }

@@ -1,6 +1,7 @@
 #ifndef TENTEDITOR_H
 #define TENTEDITOR_H
 
+#include "Interface/devicelistwidget.h"
 #include "Interface/scrollarea.h"
 #include "deviceeditor.h"
 #include "deviceplot.h"
@@ -14,18 +15,25 @@ public:
     explicit TentEditor(QWidget *parent = nullptr);
     void handle(Tent*t);
     void edit(int index);
-    void edit(Device* s);
+    void edit(HardwareUnit* s);
+    int currentUnit();
 
+public slots:
+    void editDevice(int i);
 signals:
 
+
 private slots:
-    void listSlot(int, QWidget*);
+    void listSlot(int i, QWidget *);
+
+
 
 private:
     Tent*m_client;
-    ScrollArea*m_devices;
+    ScrollArea* m_units;
     DevicePlot* m_plot;
-    DeviceEditor* m_editor;
+    DeviceListWidget* m_editor;
+    int m_currentUnit;
 
 };
 

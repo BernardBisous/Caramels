@@ -1,8 +1,8 @@
 #include "tent.h"
 #include "hardware/Pinout.h"
-#include "hardware/booleansensor.h"
+#include "hardware/chemicalinjector.h"
 #include "hardware/lights.h"
-#include "hardware/pump.h"
+#include "hardware/waterlevelmanager.h"
 
 Tent::Tent(QObject *parent)
     : QObject{parent},m_config(nullptr)
@@ -11,17 +11,17 @@ Tent::Tent(QObject *parent)
     m_name="Tente 1";
     m_id=3;
     initDevices();
+
 }
 
 void Tent::initDevices()
 {
 
     Device::createDataDir();
-    addDevice(new Lights(LIGHTS_POWER_PIN,this));
-    addDevice(new LightsSpectrum(this));
-    addDevice(new Pump(MAIN_PUMP_PIN,"Main pump",this));
-    addDevice(new BooleanSensor(WATER_LEVEL_PIN_1,"Niveau d'eau 1"));
-    addDevice(new BooleanSensor(WATER_LEVEL_PIN_2,"Niveau d'eau 2"));
+    addUnit(new WaterLevelManager(this));
+    addUnit(new LightsUnit(this));
+   //addUnit(new ChemicalInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,CHEM_LEVEL_1_PIN,0,this));
+
 
 }
 
@@ -118,7 +118,18 @@ QList<Device *> Tent::devices() const
     return m_devices;
 }
 
-int Tent::indexOf(Device *s)
+int Tent::indexOfDevice(Device *s)
 {
+
     return m_devices.indexOf(s);
+}
+
+int Tent::indexOf(HardwareUnit *u)
+{
+    return m_units.indexOf(u);
+}
+
+QList<HardwareUnit *> Tent::units() const
+{
+    return m_units;
 }

@@ -34,7 +34,10 @@ public:
     void setName(const QString &newName);
 
     QList<Device *> devices() const;
-    int indexOf(Device*);
+    int indexOfDevice(Device*);
+
+    int indexOf(HardwareUnit*u);
+    QList<HardwareUnit *> units() const;
 
 signals:
 
@@ -48,5 +51,7 @@ private:
     QString m_name;
     int m_id;
 };
+
+
 
 #endif // TENT_H

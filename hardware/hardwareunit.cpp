@@ -63,3 +63,8 @@ QList<Parameter *> HardwareUnit::parameters() const
 {
     return m_parameters;
 }
+
+QString HardwareUnit::name() const
+{
+    return m_name;
+}
