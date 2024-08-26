@@ -5,6 +5,7 @@
 #include "configeditor.h"
 #include "tent.h"
 #include "tenteditor.h"
+#include "webcamwidget.h"
 #include <QMainWindow>
 #include <QWidget>
 #include <QStackedWidget>
@@ -31,6 +32,7 @@ private:
     Tent* m_tent;
     QStackedWidget* m_stack;
     DrawerSelector* m_selector;
+    WebcamWidget* m_webcam;
     QLabel*m_nameLab;
 };
 

@@ -1,4 +1,4 @@
-QT       += core gui charts
+QT       += core gui charts multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -46,7 +46,8 @@ SOURCES += \
     tent.cpp \
     tenteditor.cpp \
     tentlistwidget.cpp \
-    uniteditor.cpp
+    uniteditor.cpp \
+    webcamwidget.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
@@ -86,7 +87,8 @@ HEADERS += \
     tent.h \
     tenteditor.h \
     tentlistwidget.h \
-    uniteditor.h
+    uniteditor.h \
+    webcamwidget.h
 
 FORMS +=
 
