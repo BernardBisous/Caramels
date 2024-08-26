@@ -17,10 +17,9 @@ public:
     bool save(QString s);
     int countParameters();
     bool loadCsv(QString filename);
-
+    int indexOf(Parameter*c);
     void save(QDataStream&c);
     bool load(QDataStream&c);
-
     int maxHours();
     float maxY();
 
@@ -50,5 +49,7 @@ private:
 
     QList<Parameter*> m_parameters;
 };
+
+
 
 #endif // GROWCONFIG_H

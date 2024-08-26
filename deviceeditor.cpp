@@ -68,20 +68,13 @@ void DeviceEditor::handle(Device *c)
 
     m_client=c;
 
-
-
-
-
     if(!m_client)
         return;
 
     connect(c,SIGNAL(newValue(float)),this,SLOT(valueSlot(float)));
     m_valueSlider->setEnabled(dynamic_cast<Actuator*>(m_client));
 
-
-
     auto l=m_client->dataKeys();
-
 
     m_dataWidget->setHidden(l.isEmpty() || m_abstracted);
     for(int i=0;i<l.count();i++)
@@ -186,18 +179,17 @@ void DeviceEditor::editSlot()
 
 void DeviceEditor::sliderEdited(int i)
 {
-    m_client->applyPurcent(i);
+    Actuator*a=static_cast<Actuator*>(m_client);
+    a->applyPurcent(i);
 }
 
 void DeviceEditor::valueSlot(float t)
 {
-    m_status->setText("Value:"+QString::number(t));
+    m_status->setText("Value: "+QString::number(t));
 
     disconnect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
     m_valueSlider->setValue(t);
     connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
-
-
 }
 
 Device *DeviceEditor::client() const

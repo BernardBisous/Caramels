@@ -1,10 +1,10 @@
 #ifndef WATERLEVELMANAGER_H
 #define WATERLEVELMANAGER_H
 
-#include "hardware/booleansensor.h"
-#include "hardware/hardwareunit.h"
-#include "hardware/pump.h"
 #include <QObject>
+#include "hardware/booleansensor.h"
+#include "hardware/pump.h"
+#include "hardwareunit.h"
 
 class WaterLevelManager : public HardwareUnit
 {

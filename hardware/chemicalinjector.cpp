@@ -7,7 +7,7 @@ ChemicalInjector::ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int i
     attachDevice(m_mixer=new SwitchedActuator(mixPin,true,"Brasseur engrais "+QString::number(id),this));
     attachDevice(m_levelSensor=new BooleanSensor(LevelPin,"Niveau engrais "+QString::number(id),this));
 
-    m_idParameter=id;
+    m_idParameters<<id;
 }
 
 

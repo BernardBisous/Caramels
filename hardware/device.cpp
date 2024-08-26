@@ -9,7 +9,7 @@
 #include <QRandomGenerator>
 
 Device::Device(QString name,QObject *parent)
-    : QObject{parent},m_name(name),m_currentValue(0)
+    : QObject{parent},m_recording(true),m_name(name),m_currentValue(0)
 {
 
 }
@@ -31,7 +31,7 @@ void Device::load(QDataStream &s)
     s>>m_metaData;
 }
 
-void Device::reactToDataEdited(QString key, QString val)
+void Device::reactToDataEdited(QString, QString)
 {
 
 }
@@ -91,15 +91,12 @@ void Device::setName(const QString &newName)
 
 QString Device::storageFile()
 {
-    return HISTO_PATH+m_name.remove(" ");
+    return HISTO_PATH+m_name;
 }
 
 void Device::startRecording(bool t)
 {
-    if(t)
-        connect(this,SIGNAL(newValue(float)),this,SLOT(storeValue(float)));
-    else
-        disconnect(this,SIGNAL(newValue(float)),this,SLOT(storeValue(float)));
+    m_recording=t;
 }
 
 QList<RealTimeValue> Device::historic()
@@ -122,30 +119,21 @@ QList<RealTimeValue> Device::historic()
         output.append(v);
     }
     file.close();
+
     return output;
 }
 
 void Device::retreiveLastValue()
 {
     auto l=historic();
-    if(l.isEmpty())
-        applyValue(0);
+    float v=0;
+    if(!l.isEmpty())
+        v=l.last().value;
 
-    else
-        applyValue(l.last().value);
+    appendValue(v);
 }
 
-void Device::applyValue(float v)
-{
-    m_currentValue=v;
-    emit newValue(v);
-}
 
-void Device::applyPurcent(int t)
-{
-    //TODO put a gain
-    applyValue(t);
-}
 
 bool Device::createDataDir()
 {
@@ -176,6 +164,17 @@ void Device::storeValue(float t)
     return;
 }
 
+void Device::appendValue(float v)
+{
+
+    m_currentValue=v;
+
+    if(m_recording)
+        storeValue(v);
+
+    emit newValue(v);
+}
+
 float Device::currentValue() const
 {
     return m_currentValue;
@@ -188,6 +187,14 @@ SwitchedActuator::SwitchedActuator(int pin, bool pwm, QString name, QObject *par
 
 }
 
+float SwitchedActuator::filterInputValue(float v)
+{
+    if(!m_pwmAnalog)
+        return v;
+
+    return (v>50)*100;
+}
+
 
 Actuator::Actuator(QString name, QObject *parent):
     Device(name,parent)
@@ -195,8 +202,18 @@ Actuator::Actuator(QString name, QObject *parent):
 
 }
 
+void Actuator::applyValue(float v)
+{
+    appendValue(filterInputValue(v));
+}
+
+void Actuator::applyPurcent(int o)
+{
+    applyValue(o);
+}
+
 Sensor::Sensor(QString name, QObject *parent)
-    :Device(name,parent)
+    :Device(name,parent),m_pollTimer(nullptr)
 {
     setDataValue("Freq.[s]","1");
 }
@@ -206,7 +223,7 @@ float Sensor::aquire()
     return QRandomGenerator::global()->generate() % 101;
 }
 
-void Sensor::reactToDataEdited(QString key, QString val)
+void Sensor::reactToDataEdited(QString key, QString )
 {
     if(key==PR_SAMPLING_RATE)
     {
@@ -231,15 +248,16 @@ void Sensor::updateSamplingRate()
 
 void Sensor::startPolling(bool s)
 {
+
     if(s)
     {
         if(!m_pollTimer)
         {
             m_pollTimer=new QTimer(this);
             connect(m_pollTimer,SIGNAL(timeout()),this,SLOT(measure()));
-            updateSamplingRate();
-            m_pollTimer->start();
         }
+        updateSamplingRate();
+        m_pollTimer->start();
     }
     else if(m_pollTimer)
         m_pollTimer->stop();
@@ -251,8 +269,8 @@ void Sensor::measure()
 
     if(a!=m_currentValue || m_continousStreaming)
     {
-        m_currentValue=a;
-        emit newValue(a);
+        appendValue(a);
+
     }
 
 }

@@ -4,12 +4,14 @@
 #include "hardware/lights.h"
 #include "hardware/waterlevelmanager.h"
 
+#include <QSettings>
 Tent::Tent(QObject *parent)
     : QObject{parent},m_config(nullptr)
 {
 
     m_name="Tente 1";
     m_id=3;
+    loadSetting();
     initDevices();
 
 }
@@ -27,10 +29,11 @@ void Tent::initDevices()
 
 void Tent::begin()
 {
-    for(int i=0;i<m_devices.count();i++)
+    for(int i=0;i<m_units.count();i++)
     {
-        m_devices[i]->begin();
+        m_units[i]->begin();
     }
+    restart();
 }
 
 QString Tent::configName() const
@@ -48,7 +51,7 @@ HardwareUnit *Tent::unitForId(int id)
 {
     for(int i=0;i<m_units.count();i++)
     {
-        if(m_units[i]->parameterPossibleId()==id)
+        if(m_units[i]->idParameters().contains(id))
             return m_units[i];
     }
     return nullptr;
@@ -58,16 +61,18 @@ HardwareUnit *Tent::unitForId(int id)
 
 void Tent::mapDevices()
 {
+
     for(int i=0;i<m_config->countParameters();i++)
     {
 
         Parameter* p=m_config->parameterAddr(i);
 
+
         HardwareUnit*d=unitForId(p->id());
         if(d)
         {
 
-
+             d->attachParameter(p);
         }
     }
 }
@@ -75,6 +80,7 @@ void Tent::mapDevices()
 void Tent::addUnit(HardwareUnit *u)
 {
     m_units.append(u);
+    u->setStartTime(m_startedDate);
     addDevice(u->devices());
 }
 
@@ -92,10 +98,30 @@ void Tent::addDevice(Device *d)
         m_devices.append(d);
 }
 
+void Tent::saveSettings()
+{
+    QSettings settings("YourOrganization", "YourApplication"); // Replace with your organization and application names
+    settings.setValue("StartDate", m_startedDate.toString());
+}
+
+void Tent::loadSetting()
+{
+    QSettings settings("YourOrganization", "YourApplication");
+    QString startDateString = settings.value("StartDate").toString();
+
+
+}
+
 
 void Tent::restart()
 {
     m_startedDate=QDateTime::currentDateTime();
+    for(int i=0;i<m_units.count();i++)
+    {
+        m_units[i]->setStartTime(m_startedDate);
+    }
+    saveSettings();
+
 }
 
 GrowConfig *Tent::config() const

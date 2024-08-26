@@ -1,11 +1,11 @@
 #include "parameterlistwidget.h"
 #include "Interface/toolbutton.h"
-#include "interface/actionwidget.h"
+#include "Interface/actionwidget.h"
 #include "qboxlayout.h"
 #include "qlabel.h"
 
 ParameterListWidget::ParameterListWidget(QWidget *parent)
-    : QWidget{parent},m_client(nullptr)
+    : QWidget{parent}
 {
     setLayout(new QVBoxLayout);
 
@@ -21,8 +21,27 @@ ParameterListWidget::ParameterListWidget(QWidget *parent)
 
 void ParameterListWidget::handle(GrowConfig *c)
 {
-    m_client=c;
-    refreshList();
+
+    int n=currentSelected();
+
+    if(!c)
+        return;
+
+     m_list->fillList(c->parameterNames());
+     if(n>=0)
+         setSelected(n);
+}
+
+void ParameterListWidget::handleHadware(HardwareUnit *h)
+{
+    int n=currentSelected();
+
+    if(!h)
+        return;
+
+     m_list->fillList(h->parametersName());
+     if(n>=0)
+         setSelected(n);
 }
 
 void ParameterListWidget::setSelected(int index)
@@ -35,18 +54,7 @@ void ParameterListWidget::setSelected(int index)
 
 }
 
-void ParameterListWidget::refreshList()
-{
 
-    int n=currentSelected();
-
-    if(!m_client)
-        return;
-
-     m_list->fillList(m_client->parameterNames());
-     if(n>=0)
-         setSelected(n);
-}
 
 int ParameterListWidget::currentSelected()
 {

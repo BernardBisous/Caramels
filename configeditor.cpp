@@ -42,8 +42,14 @@ void ConfigEditor::editParameter(int i)
 
     m_editor->handle(a);
     m_list->setSelected(i);
-
     m_editor->setXRange(m_client->maxHours());
+}
+
+void ConfigEditor::editParameter(Parameter *p)
+{
+    m_editor->handle(p);
+    m_list->setSelected(m_client->indexOf(p));
+
 }
 
 void ConfigEditor::addSlot()
@@ -51,7 +57,7 @@ void ConfigEditor::addSlot()
     if(!m_client->browse())
         return;
 
-    m_list->refreshList();
+    m_list->handle(m_client);
     editParameter(m_client->countParameters()-1);
 
 }

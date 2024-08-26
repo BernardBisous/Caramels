@@ -5,7 +5,9 @@
 #include "Interface/scrollarea.h"
 #include "deviceeditor.h"
 #include "deviceplot.h"
+#include "parameterlistwidget.h"
 #include "tent.h"
+#include "uniteditor.h"
 #include <QWidget>
 
 class TentEditor : public QWidget
@@ -16,24 +18,24 @@ public:
     void handle(Tent*t);
     void edit(int index);
     void edit(HardwareUnit* s);
-    int currentUnit();
+    HardwareUnit* currentUnit();
 
-public slots:
-    void editDevice(int i);
+
 signals:
+    void editParam(Parameter*p);
 
 
 private slots:
     void listSlot(int i, QWidget *);
+    void paramListSlot(Parameter*p);
 
 
 
 private:
     Tent*m_client;
     ScrollArea* m_units;
-    DevicePlot* m_plot;
-    DeviceListWidget* m_editor;
     int m_currentUnit;
+    UnitEditor* m_editor;
 
 };
 

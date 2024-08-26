@@ -4,6 +4,7 @@
 #include "Interface/actionwidget.h"
 #include "Interface/scrollarea.h"
 #include "growconfig.h"
+#include "hardware/hardwareunit.h"
 #include <QWidget>
 #include <QScrollArea>
 
@@ -13,8 +14,8 @@ class ParameterListWidget : public QWidget
 public:
     explicit ParameterListWidget(QWidget *parent = nullptr);
     void handle(GrowConfig* c);
+    void handleHadware(HardwareUnit* h);
     void setSelected(int i);
-    void refreshList();
     int currentSelected();
     QList<ActionWidget*> items();
 
@@ -32,7 +33,7 @@ private slots:
 private:
     ActionWidget* m_add;
     ScrollArea* m_list;
-    GrowConfig* m_client;
+
 
 };
 

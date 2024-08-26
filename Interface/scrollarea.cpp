@@ -124,8 +124,6 @@ void ScrollArea::addActionText(QString s)
 
 void ScrollArea::addActionWidget(ActionWidget *a)
 {
-
-
     connect(a, SIGNAL(clicked()),this,SLOT(trigSlot()));
     addWidget(a);
 }
@@ -173,7 +171,7 @@ QList<QWidget *> ScrollArea::widgets()
 
 void ScrollArea::trigSlot()
 {
-    QWidget* w=dynamic_cast<ToolButton*>(sender());
+    QWidget* w=dynamic_cast<ActionWidget*>(sender());
     if(w)
         emit trigger(indexOf(w),w);
 

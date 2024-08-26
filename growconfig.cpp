@@ -225,6 +225,11 @@ bool GrowConfig::loadCsv(QString filename) {
        return true;
 }
 
+int GrowConfig::indexOf(Parameter *c)
+{
+    return m_parameters.indexOf(c);
+}
+
 bool GrowConfig::browse()
 {
     QString fileName = QFileDialog::getOpenFileName(nullptr,"Ouvrir un fichier de configuration","","Fichiers de configuration (*.csv)");

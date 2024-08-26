@@ -19,20 +19,19 @@ DevicePlot::DevicePlot(QWidget *parent):
     setChart(m_chart);
     m_chart->layout()->setContentsMargins(0,0,0,0);
 
+
     // Create the axes
     m_xAxis = new QDateTimeAxis;
     m_xAxis->setFormat("hh:mm:ss");
     m_xAxis->setTitleText("Time");
     m_yAxis = new QValueAxis;
-    m_yAxis->setTitleText("Value: ");
+    m_yAxis->setTitleText("Value [%]");
     m_chart->addAxis(m_xAxis, Qt::AlignBottom);
     m_chart->addAxis(m_yAxis, Qt::AlignLeft);
 
     // Add the series to the chart
 
-    m_chart->addSeries(m_series);
-    m_series->attachAxis(m_xAxis);
-    m_series->attachAxis(m_yAxis);
+
 
 
 
@@ -45,6 +44,8 @@ DevicePlot::DevicePlot(QWidget *parent):
 
 void DevicePlot::handle(Device *c)
 {
+    if(m_device)
+        disconnect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
 
     m_device=c;
 
@@ -104,16 +105,18 @@ void DevicePlot::updatePlot()
     if(!m_device)
         return;
 
-    auto l=m_device->historic();
-
-    if(l.isEmpty())
-        return;
-
 
     QDateTime min=QDateTime::currentDateTime().addSecs(-10);
+
+    auto l=m_device->historic();
+
+
+
+
+
    // QDateTime max=QDateTime::currentDateTime();
 
-    float maxY=0;
+    float maxY=100;
     float minY=0;
 
     for(int i=0;i<l.count();i++)
@@ -121,11 +124,13 @@ void DevicePlot::updatePlot()
         if(!locked() || l[i].time>min)
         {
 
+
             if(l[i].value>maxY)
                 maxY=l[i].value;
 
             if(!i || l[i].value<minY)
                 minY=l[i].value;
+
 
             m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
         }
@@ -134,14 +139,30 @@ void DevicePlot::updatePlot()
     }
 
 
+    if(m_series->count()<=1)
+    {
+        m_series->append(min.toMSecsSinceEpoch(),m_device->currentValue());
+    }
+
+    m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
+
+
+
+
+     m_yAxis->setMax(maxY+5);
+     m_yAxis->setMin(minY-5);
+
+
     m_chart->addSeries(m_series);
+    m_series->attachAxis(m_xAxis);
+    m_series->attachAxis(m_yAxis);
 
-
-    m_yAxis->setMax(maxY);
-    m_yAxis->setMin(minY);
 
   //  m_yAxis->applyNiceNumbers();
-    m_xAxis->setRange(l.first().time,l.last().time);
+    m_xAxis->setRange(min,QDateTime::currentDateTime());
+
+
+
 
 
 }

@@ -58,8 +58,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     connect(m_selector,SIGNAL(triggered(int)),this,SLOT(goToIndex(int)));
     connect(m_selector,SIGNAL(help()),this,SLOT(help()));
 
-    connect(m_editor,SIGNAL(editDevice(Device*)),this,SLOT(editDevice(Device*)));
-
+    connect(m_tentEdit,SIGNAL(editParam(Parameter*)),this,SLOT(editParam(Parameter*)));
     goToIndex(Hardware);
 
 
@@ -128,8 +127,16 @@ void GrowingTent::help()
        }
 }
 
-void GrowingTent::editDevice(Device *s)
+void GrowingTent::editUnit(HardwareUnit *s)
 {
     goToIndex(Hardware);
-   // m_tentEdit->edit(s);
+    m_tentEdit->edit(s);
+}
+
+
+
+void GrowingTent::editParam(Parameter *p)
+{
+    goToIndex(Configs);
+    m_editor->editParameter(p);
 }

@@ -19,6 +19,7 @@ public slots:
     void loadData();
     void addSlot();
     void editParameter(int i);
+    void editParameter(Parameter*p);
     void editDevicePropagate(Device*d){emit editDevice(d);}
 signals:
     void editDevice(Device* d);

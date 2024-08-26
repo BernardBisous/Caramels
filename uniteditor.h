@@ -12,14 +12,22 @@ class UnitEditor : public QWidget
     Q_OBJECT
 public:
     explicit UnitEditor(QWidget *parent = nullptr);
+    void handle(HardwareUnit* h);
 
 signals:
+    void editParameter(Parameter* p);
+    public slots:
+    void editDevice(int i);
+
+private slots:
+    void paramSlot(int i,QWidget*);
 
 private:
+    HardwareUnit* m_client;
     DeviceListWidget*m_devices;
     DevicePlot*m_devicePlot;
-    ParameterPlot* m_paramPlot;
-    ParameterListWidget*m_parameters;
+    ScrollArea*m_parameters;
+    QWidget* m_parametersWidget;
 };
 
 #endif // UNITEDITOR_H

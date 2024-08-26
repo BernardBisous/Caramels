@@ -26,6 +26,7 @@ public:
     int count();
     int maxX();
     float maxY();
+    QPointF at(int i);
 
 
     void clear();

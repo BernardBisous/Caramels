@@ -56,6 +56,11 @@ float Parameter::maxY()
     return out;
 }
 
+QPointF Parameter::at(int i)
+{
+    return QPointF(m_values[i].hourIndex,m_values[i].value);
+}
+
 void Parameter::clear()
 {
     m_values.clear();

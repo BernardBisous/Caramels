@@ -3,27 +3,31 @@
 HardwareUnit::HardwareUnit(QObject *parent)
     : QObject{parent}
 {
+    m_timer=new QTimer(this);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
+
+}
+
+void HardwareUnit::begin()
+{
+    for(int i=0;i<m_devices.count();i++)
+        m_devices[i]->begin();
 
 }
 
 void HardwareUnit::attachDevice(Device *d)
 {
-    if(devFromName(d->name()))
-        renameDev(d);
-
-
      m_devices.append(d);
 }
 
 void HardwareUnit::attachParameter(Parameter *p)
 {
+    if(!p)
+        return;
     m_parameters.append(p);
 }
 
-int HardwareUnit::parameterPossibleId()
-{
-    return m_idParameter;
-}
+
 
 Device *HardwareUnit::devFromName(QString s)
 {
@@ -36,23 +40,38 @@ Device *HardwareUnit::devFromName(QString s)
 
 }
 
-void HardwareUnit::renameDev(Device *d)
+Parameter *HardwareUnit::paramFromName(QString s)
 {
-    QString nouv=d->name();
-    // remove index
-    while(!nouv.isEmpty() && nouv.at(nouv.length()-1).isDigit())
+    for(int i=0;i<m_parameters.count();i++)
     {
-        nouv.remove(nouv.length()-1,1);
+        if(m_parameters[i]->name()==s)
+            return m_parameters[i];
     }
-
-    // find new index
-    int index=0;
-    while(devFromName(nouv+QString::number(index+1)))
-    {
-        index++;
-    }
-    d->setName(nouv+QString::number(index+1));
+    return nullptr;
 }
+
+QStringList HardwareUnit::parametersName()
+{
+    QStringList out;
+    for(int i=0;i<m_parameters.count();i++)
+    {
+        out<<m_parameters[i]->name();
+    }
+    return out;
+}
+
+Parameter *HardwareUnit::parameterFromId(int id)
+{
+    for(int i=0;i<m_parameters.count();i++)
+    {
+        if(m_parameters[i]->id()==id)
+            return m_parameters[i];
+    }
+    return nullptr;
+}
+
+
+
 
 QList<Device *> HardwareUnit::devices() const
 {
@@ -68,3 +87,25 @@ QString HardwareUnit::name() const
 {
     return m_name;
 }
+
+QList<int> HardwareUnit::idParameters() const
+{
+    return m_idParameters;
+}
+
+QDateTime HardwareUnit::startTime() const
+{
+    return m_startTime;
+}
+
+void HardwareUnit::setStartTime(const QDateTime &newStartTime)
+{
+    m_startTime = newStartTime;
+}
+
+void HardwareUnit::timerSlot()
+{
+    update();
+}
+
+

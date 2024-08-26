@@ -27,6 +27,7 @@ public:
     virtual float computeResult(QString){return 0;}
     void computeResults();
 
+
     int possibleParameterId();
     bool acceptsParam(int id);
 
@@ -48,9 +49,7 @@ public:
     void retreiveLastValue();
 
 
-    void stop();
-    void applyValue(float v);
-    void applyPurcent(int t);
+
 
 
     static bool createDataDir();
@@ -66,6 +65,9 @@ signals:
     void newValue(float t);
 
 protected :
+
+    void appendValue(float v);
+
     QHash<QString,QString> m_metaData;
     QHash<QString,float> m_metaResults;
     bool m_recording;
@@ -105,6 +107,8 @@ public:
     explicit Actuator(QString name="Acturator",QObject *parent = nullptr);
     void test();
     void applyValue(float v);
+    void applyPurcent(int o);
+    virtual float filterInputValue(float v){return v;}
 
 
 protected :
@@ -115,7 +119,7 @@ class SwitchedActuator : public Actuator
     Q_OBJECT
 public:
     explicit SwitchedActuator (int m_pin,bool pwm, QString name="Switched Actuator",QObject *parent = nullptr);
-
+virtual float filterInputValue(float v);
 
 public slots:
 

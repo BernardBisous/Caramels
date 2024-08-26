@@ -27,6 +27,9 @@ public:
     void addDevice(QList<Device*> l);
     void addDevice(Device*d);
 
+    void saveSettings();
+    void loadSetting();
+
     void restart();
     GrowConfig *config() const;
 

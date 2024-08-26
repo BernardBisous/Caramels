@@ -1,5 +1,6 @@
 #include "tenteditor.h"
 #include "qlineedit.h"
+#include "Interface/toolbutton.h"
 
 TentEditor::TentEditor(QWidget *parent)
     : QWidget{parent},m_client(nullptr),m_currentUnit(-1)
@@ -19,15 +20,13 @@ TentEditor::TentEditor(QWidget *parent)
 
 
     layout()->addWidget(list);
-    layout()->addWidget(m_plot=new DevicePlot(this));
-    layout()->addWidget(m_editor=new DeviceListWidget(this));
-
+    layout()->addWidget(m_editor=new UnitEditor);
 
 
     list->setFixedWidth(200);
-    m_editor->setFixedWidth(250);
-    connect(m_editor,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
+
     connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
+    connect(m_editor,SIGNAL(editParameter(Parameter*)),this,SLOT(paramListSlot(Parameter*)));
 }
 
 void TentEditor::handle(Tent *t)
@@ -47,6 +46,8 @@ void TentEditor::handle(Tent *t)
         edit(0);
 
 
+
+
 }
 
 void TentEditor::edit(int index)
@@ -57,9 +58,10 @@ void TentEditor::edit(int index)
 
     HardwareUnit*c=m_client->units()[index];
     m_currentUnit=index;
+    m_editor->handle(c);
 
-    m_editor->fillList(c);
-    //m_plot->handle(c);
+
+
 
     auto l=m_units->widgets();
     for(int i=0;i<l.count();i++)
@@ -71,6 +73,26 @@ void TentEditor::edit(int index)
         }
     }
 
+    /*
+
+    while(m_parameters->layout()->count())
+    {
+        auto i=m_parameters->layout()->takeAt(0);
+        if(i->widget())
+            delete i->widget();
+        delete i;
+    }
+    auto lp=c->parameters();
+    for(int i=0;i<lp.count();i++)
+    {
+        ToolButton*a=new ToolButton(lp[i]->name());
+        connect(a,SIGNAL(clicked()),this,SLOT(paramListSlot()));
+        m_parameters->layout()->addWidget(a);
+    }
+
+    editDevice(0);
+    */
+
 
 
 }
@@ -80,21 +102,27 @@ void TentEditor::edit(HardwareUnit *s)
     edit(m_client->indexOf(s));
 }
 
-int TentEditor::currentUnit()
+HardwareUnit* TentEditor::currentUnit()
 {
-    return m_currentUnit;
+    if(!m_client || m_client->units().count()<=m_currentUnit || m_currentUnit<0)
+        return nullptr;
+
+    return m_client->units()[m_currentUnit];
 }
 
-void TentEditor::editDevice(int i)
-{
 
-    m_editor->setChecked(i);
-    m_plot->handle(m_client->units()[m_currentUnit]->devices()[i]);
-}
 
 void TentEditor::listSlot(int i, QWidget *)
 {
 
     edit(i);
+
+}
+
+void TentEditor::paramListSlot(Parameter *p)
+{
+
+    qDebug()<<"editww"<<p->name();
+    emit editParam(p);
 
 }

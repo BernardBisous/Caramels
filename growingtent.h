@@ -19,7 +19,8 @@ public:
 public slots:
     void goToIndex(int i);
     void help();
-    void editDevice(Device*s);
+    void editUnit(HardwareUnit*s);
+    void editParam(Parameter*p);
 
 signals:
 
