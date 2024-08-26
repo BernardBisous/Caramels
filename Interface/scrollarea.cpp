@@ -101,6 +101,7 @@ void ScrollArea::fillList(QStringList s)
     clear();
     for (int i=0;i<s.count();i++)
         addActionText(s[i]);
+
     addSpacer();
 }
 

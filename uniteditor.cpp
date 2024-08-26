@@ -16,7 +16,6 @@ UnitEditor::UnitEditor(QWidget *parent)
     m_parametersWidget->setLayout(new QVBoxLayout);
     m_parametersWidget->layout()->addWidget(new QLabel("Parametres associés:"));
     m_parametersWidget->layout()->addWidget(m_parameters=new ScrollArea);
-    m_parametersWidget->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
     layout()->addWidget(m_devicePlot=new DevicePlot);
     layout()->addWidget(edit);
 
@@ -32,8 +31,6 @@ void UnitEditor::handle(HardwareUnit *h)
     m_parametersWidget->setHidden(h->parameters().isEmpty());
     m_devices->fillList(h );
     editDevice(0);
-
-
 }
 
 void UnitEditor::editDevice(int i)

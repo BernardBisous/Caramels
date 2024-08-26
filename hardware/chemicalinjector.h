@@ -12,6 +12,7 @@ class ChemicalInjector : public HardwareUnit
 public:
     explicit ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int id,QObject *parent = nullptr);
     ChemicalPump *pump() const;
+    virtual void attachParameter(Parameter* p);
     void setPump(ChemicalPump *newPump);
 
 

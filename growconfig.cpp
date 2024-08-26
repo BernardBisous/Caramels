@@ -3,7 +3,7 @@
 #include <QFileDialog>
 
 #define CONFIG_PATH "config.weed"
-#define COMFIG_CSV_PATH "config.csv"
+#define COMFIG_CSV_PATH "://config"
 #define SUFIX_BINARY ".weed"
 #define SUFIX_CSV ".csv"
 #define SUFFIX_TXT ".txt"

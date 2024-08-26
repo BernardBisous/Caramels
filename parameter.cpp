@@ -1,10 +1,16 @@
 #include "parameter.h"
 
+#define TIME_FACTOR 1
 
 Parameter::Parameter(QString name, QString units, int id):
     m_id(id),m_name(name),m_units(units)
 {
 
+}
+
+float Parameter::timeMultiplicator()
+{
+    return TIME_FACTOR;
 }
 
 
@@ -59,6 +65,31 @@ float Parameter::maxY()
 QPointF Parameter::at(int i)
 {
     return QPointF(m_values[i].hourIndex,m_values[i].value);
+}
+
+float Parameter::currentValue(QDateTime startTime,bool*e)
+{
+    int h=startTime.secsTo(QDateTime::currentDateTime())/TIME_FACTOR;
+    return valueAtTime(h,e);
+}
+
+float Parameter::valueAtTime(int h, bool *e)
+{
+
+    *e=true;
+    for(int i=0;i<m_values.count();i++)
+    {
+        if( m_values[i].hourIndex>=h)
+        {
+            if(i)
+                return m_values[i-1].value;
+
+            else
+                 return m_values[0].value;
+        }
+    }
+    *e=false;
+    return 0;
 }
 
 void Parameter::clear()

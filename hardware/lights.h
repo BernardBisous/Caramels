@@ -20,6 +20,7 @@ class LightsSpectrum: public Actuator
     Q_OBJECT
 public:
     explicit LightsSpectrum(int pwmPin,QObject *parent = nullptr);
+
 };
 class LightsUnit: public HardwareUnit
 {
@@ -27,16 +28,20 @@ class LightsUnit: public HardwareUnit
 public:
     explicit LightsUnit(QObject *parent = nullptr);
     virtual void begin();
-    virtual void update();
-    QDateTime nextSwitch();
+    virtual void reactToParamChanged(Parameter*, float );
+    int nextSwitchms();
+    void updateSpectrum(float);
 
     Parameter* night(){return parameterFromId(LIGHTS_SLEEP);}
     Parameter* day(){return parameterFromId(LIGHTS_DAY);}
     Parameter* spectrum(){return parameterFromId(LIGHTS_SPECTRUM);}
-    Parameter* heigh(){return parameterFromId(LIGHTS_HEIGH);}
+
+public slots:
+    void switchLights();
 
 private:
 
+    QTimer * m_switchTimer;
     Lights* m_power;
     LightsSpectrum* m_spectrum;
 };

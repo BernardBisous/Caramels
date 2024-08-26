@@ -1,5 +1,6 @@
 #include "hardwareunit.h"
 
+
 HardwareUnit::HardwareUnit(QObject *parent)
     : QObject{parent}
 {
@@ -13,6 +14,30 @@ void HardwareUnit::begin()
     for(int i=0;i<m_devices.count();i++)
         m_devices[i]->begin();
 
+    m_timer->setInterval(Parameter::timeMultiplicator()*1000);
+    m_timer->start();
+}
+
+void HardwareUnit::update()
+{
+    bool atEnd=true;
+    for(int i=0;i<m_parameters.count();i++)
+    {
+        bool ok;
+        float v=m_parameters[i]->currentValue(m_startTime,&ok);
+
+        if(ok)
+        {
+            atEnd=false;
+            reactToParamChanged(m_parameters[i],v);
+        }
+    }
+
+    if(atEnd)
+    {
+        m_timer->stop();
+        emit finished();
+    }
 }
 
 void HardwareUnit::attachDevice(Device *d)

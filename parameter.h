@@ -20,6 +20,7 @@ public:
 
     Parameter(QString name="NoName",QString units="", int id=0);
 
+    static float timeMultiplicator();
     QList<TimedValue> values() const;
     void load(QDataStream&c);
     void save(QDataStream&c);
@@ -28,6 +29,8 @@ public:
     float maxY();
     QPointF at(int i);
 
+    float currentValue(QDateTime startTime,bool*e);
+    float valueAtTime(int h,bool*e);
 
     void clear();
 

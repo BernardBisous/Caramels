@@ -11,10 +11,11 @@ class HardwareUnit : public QObject
 public:
     explicit HardwareUnit(QObject *parent = nullptr);
     virtual void begin();
-    virtual void update(){};
+    virtual void update();
+    virtual void reactToParamChanged(Parameter*, float ){}
 
     void attachDevice(Device* d);
-    void attachParameter(Parameter* p);
+    virtual void attachParameter(Parameter* p);
     Device* devFromName(QString s);
     Parameter* paramFromName(QString s);
     QStringList parametersName();
@@ -34,6 +35,7 @@ public:
 
 signals:
 
+    void finished();
 private slots:
     void timerSlot();
 
@@ -44,6 +46,8 @@ protected:
     QList<Parameter*> m_parameters;
 
     QDateTime m_startTime;
+
+private:
     QTimer* m_timer;
 
 };

@@ -1,7 +1,11 @@
 #include "tent.h"
+#include "Interface/windmanager.h"
 #include "hardware/Pinout.h"
 #include "hardware/chemicalinjector.h"
+#include "hardware/co2manager.h"
 #include "hardware/lights.h"
+#include "hardware/temperaturemanager.h"
+#include "hardware/tolleveler.h"
 #include "hardware/waterlevelmanager.h"
 
 #include <QSettings>
@@ -22,17 +26,28 @@ void Tent::initDevices()
     Device::createDataDir();
     addUnit(new WaterLevelManager(this));
     addUnit(new LightsUnit(this));
-   //addUnit(new ChemicalInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,CHEM_LEVEL_1_PIN,0,this));
+    addUnit(new TolLeveler(this));
+    addUnit(new TemperatureManager(this));
+    addUnit(new WindManager(this));
+    addUnit(new CO2Manager(this));
+
+
+    addUnit(new ChemicalInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,CHEM_LEVEL_PIN,0,this));
+    addUnit(new ChemicalInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,CHEM_LEVEL_PIN,1,this));
+    addUnit(new ChemicalInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,CHEM_LEVEL_PIN,2,this));
 
 
 }
 
 void Tent::begin()
 {
+    RasPi::begin();
+
     for(int i=0;i<m_units.count();i++)
     {
         m_units[i]->begin();
     }
+
     restart();
 }
 

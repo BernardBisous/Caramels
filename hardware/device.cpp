@@ -1,4 +1,5 @@
 #include "device.h"
+#include "hardware/rasppi.h"
 #include "qdatetime.h"
 #include "qdir.h"
 #include <QFile>
@@ -195,6 +196,18 @@ float SwitchedActuator::filterInputValue(float v)
     return (v>50)*100;
 }
 
+void SwitchedActuator::begin()
+{
+    Device::begin();
+    RasPi::initPin(m_pin,RasPi::OUTPUT);
+}
+
+void SwitchedActuator::applyValue(float v, int ms)
+{
+    Actuator::applyValue(v,ms);
+    RasPi::write(m_pin,filterInputValue(v));
+}
+
 
 Actuator::Actuator(QString name, QObject *parent):
     Device(name,parent)
@@ -202,9 +215,23 @@ Actuator::Actuator(QString name, QObject *parent):
 
 }
 
-void Actuator::applyValue(float v)
+void Actuator::applyValue(float v, int t)
 {
-    appendValue(filterInputValue(v));
+
+  // float val=currentValue();
+    appendValue(v);
+
+    if(t>0)
+    {
+        float gain=dataValue("Speed[cm/s]").toFloat();
+        int ms=t/gain;
+
+        QTimer::singleShot(ms, [this]() {
+               applyValue(0);
+            });
+    }
+
+
 }
 
 void Actuator::applyPurcent(int o)
@@ -220,7 +247,7 @@ Sensor::Sensor(QString name, QObject *parent)
 
 float Sensor::aquire()
 {
-    return QRandomGenerator::global()->generate() % 101;
+    return 0;
 }
 
 void Sensor::reactToDataEdited(QString key, QString )
@@ -275,4 +302,25 @@ void Sensor::measure()
 
 }
 
+
+
+Motor::Motor(int dirpin, int pwm, QString name, QObject *parent):
+    Actuator(name,parent),m_dirPin(dirpin),m_pwmPin(pwm)
+{
+
+}
+
+void Motor::begin()
+{
+    RasPi::initPin(m_dirPin,RasPi::OUTPUT);
+    RasPi::initPin(m_dirPin,RasPi::OUTPUT);
+}
+
+void Motor::applyValue(float v, int ms)
+{
+    Actuator::applyValue(v,ms);
+    bool dir=v>0;
+    RasPi::write(m_dirPin,dir);
+    RasPi::write(m_pwmPin,qAbs(v));
+}
 

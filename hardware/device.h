@@ -7,10 +7,13 @@
 
 #include <QHash>
 
+#include "rasppi.h"
+
 class RealTimeValue
 {
 public:
     QDateTime time;
+
     float value;
 };
 
@@ -92,13 +95,16 @@ public:
     void startPolling(bool s);
 
 public slots:
-    void measure();
+    virtual void measure();
 
 protected :
+
     QTimer* m_pollTimer;
     bool m_continousStreaming;
 
 };
+
+
 
 class Actuator : public Device
 {
@@ -106,7 +112,8 @@ class Actuator : public Device
 public:
     explicit Actuator(QString name="Acturator",QObject *parent = nullptr);
     void test();
-    void applyValue(float v);
+    virtual void applyValue(float v, int ms=-1);
+
     void applyPurcent(int o);
     virtual float filterInputValue(float v){return v;}
 
@@ -119,7 +126,9 @@ class SwitchedActuator : public Actuator
     Q_OBJECT
 public:
     explicit SwitchedActuator (int m_pin,bool pwm, QString name="Switched Actuator",QObject *parent = nullptr);
-virtual float filterInputValue(float v);
+    virtual float filterInputValue(float v);
+    virtual void begin();
+    virtual void applyValue(float v,int ms=-1);
 
 public slots:
 
@@ -130,6 +139,24 @@ private:
 
     int m_pin;
     bool m_pwmAnalog;
+};
+
+class Motor : public Actuator
+{
+    Q_OBJECT
+public:
+    explicit Motor (int dirpin,int pwm, QString name="Motor",QObject *parent = nullptr);
+    virtual void begin();
+    virtual void applyValue(float v,int ms);
+
+public slots:
+
+
+protected :
+
+private:
+    int m_dirPin;
+    int m_pwmPin;
 };
 
 

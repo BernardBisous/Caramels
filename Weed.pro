@@ -17,17 +17,26 @@ SOURCES += \
     Interface/scrollarea.cpp \
     Interface/slider.cpp \
     Interface/toolbutton.cpp \
+    Interface/windmanager.cpp \
     configeditor.cpp \
     deviceeditor.cpp \
     deviceplot.cpp \
     growconfig.cpp \
     growingtent.cpp \
+    hardware/analogsensor.cpp \
     hardware/booleansensor.cpp \
     hardware/chemicalinjector.cpp \
+    hardware/co2manager.cpp \
     hardware/device.cpp \
+    hardware/distancepoller.cpp \
+    hardware/distancesensor.cpp \
     hardware/hardwareunit.cpp \
     hardware/lights.cpp \
+    hardware/phmanager.cpp \
     hardware/pump.cpp \
+    hardware/rasppi.cpp \
+    hardware/temperaturemanager.cpp \
+    hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
     main.cpp \
     parameter.cpp \
@@ -48,18 +57,27 @@ HEADERS += \
     Interface/scrollarea.h \
     Interface/slider.h \
     Interface/toolbutton.h \
+    Interface/windmanager.h \
     configeditor.h \
     deviceeditor.h \
     deviceplot.h \
     growconfig.h \
     growingtent.h \
     hardware/Pinout.h \
+    hardware/analogsensor.h \
     hardware/booleansensor.h \
     hardware/chemicalinjector.h \
+    hardware/co2manager.h \
     hardware/device.h \
+    hardware/distancepoller.h \
+    hardware/distancesensor.h \
     hardware/hardwareunit.h \
     hardware/lights.h \
+    hardware/phmanager.h \
     hardware/pump.h \
+    hardware/rasppi.h \
+    hardware/temperaturemanager.h \
+    hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
     parameter.h \
     parametereditor.h \
@@ -78,4 +96,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    Config.qrc \
     icons.qrc

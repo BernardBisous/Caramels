@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="config">lib/Config.csv</file>
+    </qresource>
+</RCC>

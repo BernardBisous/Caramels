@@ -24,29 +24,32 @@ LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):
 
 }
 
+
+
 LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent}
 {
     m_name="Lights";
+    m_switchTimer=new QTimer(this);
+    connect(m_switchTimer,SIGNAL(timeout()),this,SLOT(switchLights()));
+
     attachDevice(m_power=new Lights(LIGHTS_POWER_PIN,this));
     attachDevice(m_spectrum=new LightsSpectrum(LIGHTS_SPECTRUM_PIN,this));
 
-    m_idParameters<<LIGHTS_DAY<<LIGHTS_SLEEP<<LIGHTS_SPECTRUM<<LIGHTS_HEIGH;
+    m_idParameters<<LIGHTS_DAY<<LIGHTS_SLEEP<<LIGHTS_SPECTRUM;
 }
 
 void LightsUnit::begin()
 {
     HardwareUnit::begin();
 
-    m_power->retreiveLastValue();
-    QDateTime t=nextSwitch();
 
-    int n=t.secsTo(t);// /3600 !!
-    m_timer->setInterval(n);
-    m_timer->start();
 
+    int t=nextSwitchms();
+    m_switchTimer->setInterval(t);
+    m_switchTimer->start();
 }
 
-void LightsUnit::update()
+void LightsUnit::switchLights()
 {
     if(m_power->currentValue()>50)
     {
@@ -55,47 +58,62 @@ void LightsUnit::update()
     else
         m_power->applyValue(100);
 
-    QDateTime t=nextSwitch();
+    int t=nextSwitchms();
 
-    int n=t.secsTo(t);// /3600!!
-    m_timer->setInterval(500);
-    m_timer->start();
 
-    qDebug()<<"swited lights for the next hours"<<n<<m_power->currentValue();
+    m_switchTimer->setInterval(t);
+    m_switchTimer->start();
+
 }
 
-QDateTime LightsUnit::nextSwitch()
+void LightsUnit::reactToParamChanged(Parameter *p, float f)
 {
+    if(p==spectrum())
+    {
+        updateSpectrum(f);
+        return;
+    }
+}
+
+int LightsUnit::nextSwitchms()
+{
+
     int h=m_startTime.secsTo(QDateTime::currentDateTime());
     auto a=night();
     auto b=day();
     int ht=0;
-    qDebug()<<"Cannot compute next switch "<<h;
+    //qDebug()<<"Cannot compute next switch "<<h;
     for(int i=0;i<b->count();i++)
     {
         float j=b->at(i).y();
         float n=a->at(i).y();
-         qDebug()<<"made rev"<<i<<j<<n<<ht<<h;
+         //qDebug()<<"made rev"<<i<<j<<n<<ht<<h;
 
         ht+=j;
         if(ht>h)
         {
-            return QDateTime::currentDateTime().addSecs(ht);
+            return j*1000;
         }
 
 
         ht+=n;
         if(ht>h)
         {
-            return QDateTime::currentDateTime().addSecs(ht);
+             return n*1000;
         }
 
 
     }
 
-    qDebug()<<"Cannot compute next switch ";
-    return QDateTime::currentDateTime().addSecs(5);
+  //  qDebug()<<"Cannot compute next switch ";
+    return 500;
 
+}
+
+void LightsUnit::updateSpectrum(float t)
+{
+   // qDebug()<<"updateSpectrum"<<t;
+    m_spectrum->applyValue(t);
 }
 
 
