@@ -41,4 +41,6 @@ private:
 };
 
 
+
+
 #endif // WEBCAMWIDGET_H

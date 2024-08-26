@@ -66,6 +66,11 @@ QString WebcamWidget::nextName()
     return filename;
 }
 
+void WebcamWidget::lightSlot(int)
+{
+
+}
+
 void WebcamWidget::capture()
 {
 
