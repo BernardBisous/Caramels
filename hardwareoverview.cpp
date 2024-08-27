@@ -12,11 +12,26 @@ HardwareOverview::HardwareOverview(QWidget *parent)
     setScene(m_scene);
 
             // Load plant image as background
-    QPixmap plantPixmap("path/to/your/plant.png");
-    m_scene->addPixmap(plantPixmap);
+    QPixmap plantPixmap(":/icons/plant");
+    m_scene->addPixmap(plantPixmap.scaledToHeight(300));
 
     connect(m_timer, &QTimer::timeout, this, &HardwareOverview::update);
     m_timer->start(1000); // Update every second
+
+
+
+
+    QPen p(palette().highlight().color());
+
+    QLineF l1(-100,4,100,10);
+    m_scene->addLine(l1,p);
+
+    QRectF rpot(-50,420,150,50);
+    m_scene->addRect(rpot,p);
+
+    rpot.setTop(300);
+    rpot.setBottom(350);
+    m_scene->addRect(rpot,p);
 }
 
 QGraphicsTextItem * HardwareOverview::printTextParameters(const QString &text, QPointF position)

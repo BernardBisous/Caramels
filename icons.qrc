@@ -2,5 +2,6 @@
     <qresource prefix="/icons">
         <file alias="help">lib/help.png</file>
         <file alias="logo">lib/logo.png</file>
+        <file alias="plant">lib/plant.png</file>
     </qresource>
 </RCC>
