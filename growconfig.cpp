@@ -98,6 +98,7 @@ Parameter *GrowConfig::fromName(QString s)
 
 
 
+
 bool GrowConfig::load(QDataStream& c) {
 
     if(c.atEnd())

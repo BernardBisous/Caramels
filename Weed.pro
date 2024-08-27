@@ -14,11 +14,17 @@ SOURCES += \
     Interface/drawerselector.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
+    Interface/overview.cpp \
+    Interface/progressbar.cpp \
+    Interface/progresswidget.cpp \
+    Interface/roundedpicture.cpp \
     Interface/scrollarea.cpp \
     Interface/slider.cpp \
+    Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
     Interface/windmanager.cpp \
     configeditor.cpp \
+    configoverview.cpp \
     deviceeditor.cpp \
     deviceplot.cpp \
     growconfig.cpp \
@@ -38,11 +44,13 @@ SOURCES += \
     hardware/temperaturemanager.cpp \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
+    hardwareoverview.cpp \
     main.cpp \
     parameter.cpp \
     parametereditor.cpp \
     parameterlistwidget.cpp \
     parameterplot.cpp \
+    plantation.cpp \
     tent.cpp \
     tenteditor.cpp \
     tentlistwidget.cpp \
@@ -55,11 +63,17 @@ HEADERS += \
     Interface/drawerselector.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
+    Interface/overview.h \
+    Interface/progressbar.h \
+    Interface/progresswidget.h \
+    Interface/roundedpicture.h \
     Interface/scrollarea.h \
     Interface/slider.h \
+    Interface/switchcheckbox.h \
     Interface/toolbutton.h \
     Interface/windmanager.h \
     configeditor.h \
+    configoverview.h \
     deviceeditor.h \
     deviceplot.h \
     growconfig.h \
@@ -80,10 +94,12 @@ HEADERS += \
     hardware/temperaturemanager.h \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
+    hardwareoverview.h \
     parameter.h \
     parametereditor.h \
     parameterlistwidget.h \
     parameterplot.h \
+    plantation.h \
     tent.h \
     tenteditor.h \
     tentlistwidget.h \

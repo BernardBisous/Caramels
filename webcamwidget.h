@@ -2,7 +2,7 @@
 #define WEBCAMWIDGET_H
 
 #include "Interface/menubutton.h"
-#include "Interface/slider.h"
+#include "Interface/switchcheckbox.h"
 #include "qmediacapturesession.h"
 #include <QWidget>
 #include <QLabel>
@@ -21,21 +21,31 @@ public:
     explicit WebcamWidget(QWidget *parent = nullptr) ;
     QStringList avalaible;
     QString nextName();
+    static bool createDataDir();
+    void setLiveMode(bool s=true);
 
 private slots:
-    void lightSlot(int);
+
+    void modeSlot();
     void capture();
+    void enableSlot();
+    void capturedSlot(int id, const QString &fileName);
+    void capturingSlot();
 
 private:
     QWidget* m_settings;
     MenuButton* m_selectMenu;
+    QLabel* m_picLabel;
+
     QVideoWidget* m_screen;
-    Slider * m_lightSlider;
-    Slider * m_zoomSlider;
+
     QCamera* m_cam;
     QImageCapture* m_capture;
     QMediaCaptureSession m_session;
+    SwitchCheckBox* m_modeSwitch;
+    SwitchCheckBox* m_enableSwitch;
     QTimer* m_timer;
+    QString m_lastPixmap;
 
 
 };

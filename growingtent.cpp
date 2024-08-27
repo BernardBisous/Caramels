@@ -5,7 +5,7 @@
 #include <QDesktopServices>
 #include <QApplication>
 #include <QStyleFactory>
-enum{Hardware=0,Configs};
+enum {General=0,Hardware,Configs,Webcam};
 GrowingTent::GrowingTent(QWidget* parent)
     : QMainWindow(parent)
 
@@ -41,9 +41,11 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_editor=new ConfigEditor(this);
     m_editor->handle(m_currentConfig);
 
+    m_stack->addWidget(m_overview=new Overview);
     m_stack->addWidget(m_tentEdit=new TentEditor(this));
     m_stack->addWidget(m_editor);
     m_stack->addWidget(m_webcam=new WebcamWidget);
+
 
     m_tentEdit->handle(m_tent);
 
@@ -51,7 +53,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     f.setPointSize(f.pointSize()+15);
     m_nameLab->setFont(f);
 
-    m_selector->setActions(QStringList()<<"Hardware"<<"Configurations"<<"Camera"); // dirty
+    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Configurations"<<"Camera"); // dirty
 
     setCentralWidget(c);
 

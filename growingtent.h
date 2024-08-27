@@ -2,6 +2,7 @@
 #define GROWINGTENT_H
 
 #include "Interface/drawerselector.h"
+#include "Interface/overview.h"
 #include "configeditor.h"
 #include "tent.h"
 #include "tenteditor.h"
@@ -34,6 +35,7 @@ private:
     DrawerSelector* m_selector;
     WebcamWidget* m_webcam;
     QLabel*m_nameLab;
+    Overview* m_overview;
 };
 
 #endif // GROWINGTENT_H
