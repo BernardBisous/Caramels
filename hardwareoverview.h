@@ -29,6 +29,7 @@ private:
     QGraphicsTextItem * m_airTemp;
     QGraphicsPixmapItem* m_sun;
     QGraphicsTextItem * m_spectrum;
+    QGraphicsTextItem * m_pumps;
 
 
 };

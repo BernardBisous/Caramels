@@ -153,7 +153,8 @@ public:
     void impulse(float val, int ms, float valEnd);
     void impulseHigh(int ms);
 
-
+signals:
+    void impulseDone();
 
 private slots:
     void impulseSlot();

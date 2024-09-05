@@ -1,17 +1,23 @@
 #include "chemicalinjector.h"
 
+#define DELAY_MIX 1000
 
 ChemicalInjector::ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int ID, QObject*parent )
-    : QObject(parent),m_maxMsInjection(2000),m_id(ID)
+    : QObject(parent),m_maxMsInjection(2000),m_id(ID),m_injecting(false)
 {
 
     m_pump=new ChemicalPump(pumpPin,"Pompe engrais ",this);
     m_mixer=new SwitchedActuator(mixPin,true,"Brasseur engrais ",this);
 
+    connect(m_mixer,SIGNAL(impulseDone()),this,SLOT(mixerSlot()));
+    connect(m_pump,SIGNAL(impulseDone()),this,SLOT(pumpSlot()));
+
     if(LevelPin>0)
         m_levelSensor=new BooleanSensor(LevelPin,"Niveau engrais ",this);
     else
         m_levelSensor=nullptr;
+
+
 }
 
 
@@ -34,8 +40,14 @@ void ChemicalInjector::injectMl(float v)
     {
 
         //m_pump->console("Injecting "+name()+" "+QString::number(v));
+
+        m_injectingValue=v;
         m_lastInjection=QDateTime::currentDateTime();
-        m_pump->impulseHigh(msForMl(v));
+        m_mixer->impulseHigh(DELAY_MIX);
+        emit injection(DELAY_MIX + msForMl(v));
+        emit console(QString::number(m_id)+" Inject "+QString::number(v)+"ml, "+QString::number(msForMl(v)));
+
+
     }
 }
 
@@ -74,8 +86,28 @@ BooleanSensor *ChemicalInjector::levelSensor() const
     return m_levelSensor;
 }
 
+
+
 int ChemicalInjector::id() const
 {
     return m_id;
 }
+
+void ChemicalInjector::mixerSlot()
+{
+
+
+    m_pump->impulseHigh(msForMl(m_injectingValue));
+}
+
+void ChemicalInjector::pumpSlot()
+{
+    emit injection(0);
+}
+
+bool ChemicalInjector::injecting() const
+{
+    return m_injecting;
+}
+
 

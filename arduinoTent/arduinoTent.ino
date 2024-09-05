@@ -1,11 +1,11 @@
-#define NUM_IN_ANALOG_PINS 6
-#define NUM_IN_PULL_PINS 6
-#define NUM_OUT_PINS 4
+#define NUM_IN_ANALOG_PINS 7
+#define NUM_IN_PULL_PINS 2
+#define NUM_OUT_PINS 22
 #define NUM_CONFIG 3
 
-const int inputAnalogPins[NUM_IN_ANALOG_PINS] = {A0, A1, A2, A3, A4,A5};
-const int inputPinsPull[NUM_IN_PULL_PINS] = {30, 31, 32, 33, 34,35};
-const int outputPins[NUM_OUT_PINS] = {8, 10, 11, 12};
+const int inputAnalogPins[NUM_IN_ANALOG_PINS] = {A0,A1,A2,A3,A4,A5,A6};
+const int inputPinsPull[NUM_IN_PULL_PINS] = {47,48};
+const int outputPins[NUM_OUT_PINS] = {2,3,4,5,6,7,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39};
 
 
 boolean configReceived = false;

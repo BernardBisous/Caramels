@@ -411,13 +411,15 @@ void Actuator::impulseHigh(int ms)
 
 void Actuator::impulseSlot()
 {
+
     m_impulseTimer->stop();
     applyValue(m_nextVal);
+    emit impulseDone();
 
 }
 
 Sensor::Sensor(int pin,QString name, QObject *parent)
-    :Device(name,parent),m_pollTimer(nullptr),m_pin(pin)
+    :Device(name,parent),m_pollTimer(nullptr),m_pin(pin),m_continousStreaming(false)
 {
 
     if(AUTO_POLL_SENSOR)
@@ -478,7 +480,7 @@ void Sensor::measure()
 {
     float a=aquire();
 
-    if(a!=currentValue() || m_continousStreaming)
+    if(m_continousStreaming || a!=currentValue())
     {
         appendValue(a);
     }

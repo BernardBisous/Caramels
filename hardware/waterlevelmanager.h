@@ -13,8 +13,24 @@ class WaterLevelManager : public HardwareUnit
 public:
     explicit WaterLevelManager(QObject *parent = nullptr);
     void attachInjector(ChemicalInjector* c);
+    virtual void reactToSensorsChanged();
+    void fillTank();
+
+
+    QString injectingState() const;
+    bool injecting();
+
+private slots:
+    void injectorSlot(int i);
+    void pumpSlot();
+    void injectorConsole(QString s){console(s);}
+
+
+
 
 signals:
+    void injecting(bool t);
+    void injectingStateChanged(QString s);
 
 private:
     Pump* m_pump;
@@ -22,6 +38,10 @@ private:
     BooleanSensor* m_levelUp;
     SwitchedActuator* m_entryValve;
     QList<ChemicalInjector*> m_injectors;
+    QString m_injectingState;
+
+
+
 };
 
 #endif // WATERLEVELMANAGER_H

@@ -19,12 +19,15 @@ HardwareOverview::HardwareOverview(QWidget *parent)
 
     connect(m_timer, &QTimer::timeout, this, &HardwareOverview::update);
 
+    m_pumps=printTextParameters("Stock d'eau:",QPointF(20,320));
+
     m_ph=printTextParameters("PH:",QPointF(20,280));
     m_waterTemp=printTextParameters("Temp:",QPointF(80,280));
 
     m_CO2=printTextParameters("CO2:",QPointF(10,110));
     m_humidity=printTextParameters("Humidity:",QPointF(10,160));
     m_airTemp=printTextParameters("Temperature:",QPointF(10,210));
+
 
     m_sun=m_scene->addPixmap(QPixmap(":/icons/sun").scaled(60,60,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     m_sun->setPos(QPointF(10,-80));
@@ -67,6 +70,7 @@ void HardwareOverview::handle(Tent *t)
 
 void HardwareOverview::update()
 {
+
     if(!m_tent)
         return;
 
@@ -76,6 +80,13 @@ void HardwareOverview::update()
     m_airTemp->setPlainText(QString::number(m_tent->temperature(1),'f',1)+"°c");
     m_humidity->setPlainText(QString::number(m_tent->humidity(),'f',1)+"%");
     m_CO2->setPlainText(QString::number(m_tent->CO2(),'f',1)+"ppm");
+
+    QString sp=m_tent->injectingState();
+    if(sp.isEmpty())
+        m_pumps->hide();
+    else
+        m_pumps->show();
+    m_pumps->setPlainText(sp);
 
     if(m_tent->lightPower()==0)
     {

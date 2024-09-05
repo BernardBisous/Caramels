@@ -4,43 +4,58 @@
 
 #define NO_PIN -1
 
-#define LIGHTS_POWER_PIN 5
-#define LIGHTS_SPECTRUM_PIN 5
-#define MAIN_PUMP_PIN 103
-#define MAIN_VALVE_PIN 104
-#define HEIGH_LIFTER_PWM 105
-#define HEIGH_LIFTER_DIR 106
-#define HUMIDIFIER_PIN 107
-#define WIND_POWER_PIN 108
-#define WIND_ROTATION_PIN 109
-#define CO2_INJECTOR_PIN 110
+//PWM
+#define LIGHTS_SPECTRUM_PIN 2
+#define HEIGH_LIFTER_PWM 3
+#define HEIGH_LIFTER_DIR 4
+#define CO2_INJECTOR_PIN 5
+#define WIND_ROTATION_PIN 6
+#define INTERNAL_FAN_PIN 7
 
-#define CHEM_MIX_1_PIN 107
-#define CHEM_PUMP_1_PIN 108
-#define CHEM_MIX_2_PIN 109
-#define CHEM_PUMP_2_PIN 110
-#define CHEM_MIX_3_PIN 111
-#define CHEM_PUMP_3_PIN 112
 
-#define CHEM_PUMP_PH_PLUS_PIN 8
-#define CHEM_MIX_PH_PLUS_PIN 114
-#define CHEM_PUMP_PH_MINUS_PIN 10
-#define CHEM_MIX_PH_MINUS_PIN 116
 
-#define WATER_LEVEL_PIN_1 1
-#define WATER_LEVEL_PIN_2 2
 
-// i2C virtual poins
+//Digital
+#define CHEM_PUMP_PH_PLUS_PIN 24
+#define CHEM_MIX_PH_PLUS_PIN 25
+#define CHEM_PUMP_PH_MINUS_PIN 26
+#define CHEM_MIX_PH_MINUS_PIN 27
+#define CHEM_MIX_1_PIN 28
+#define CHEM_PUMP_1_PIN 29
+#define CHEM_MIX_2_PIN 30
+#define CHEM_PUMP_2_PIN 31
+#define CHEM_MIX_3_PIN 32
+#define CHEM_PUMP_3_PIN 33
+#define CHEM_MIX_4_PIN 34
+#define CHEM_PUMP_4_PIN 35
+#define CHEM_MIX_5_PIN 36
+#define CHEM_PUMP_5_PIN 337
+#define CHEM_MIX_6_PIN 38
+#define CHEM_PUMP_6_PIN 39
+
+
+//Relays
+#define LIGHTS_POWER_PIN 40
+#define MAIN_PUMP_PIN 41
+#define MAIN_VALVE_PIN 42
+#define HUMIDIFIER_PIN 43
+#define WIND_POWER_PIN 44
+
+//Input pins
+#define WATER_LEVEL_PIN_1 47
+#define WATER_LEVEL_PIN_2 48
+
+// i2C virtual pins
 #define HEIGH_SENSE 200
 
-
 //Analog pins
-#define TEMP_1_PIN 54
-#define TEMP_2_PIN 59
 #define HUMIDTY_PIN 56
 #define TEMP_4_PIN 57
 #define CO2_SENSOR_PIN 58
 #define PH_SENSOR_PIN 55
+#define TEMP_1_PIN 54
+#define TEMP_2_PIN 59
+#define TEMP_3_PIN 59
 
 enum {LIGHTS_DAY=0,
       LIGHTS_SLEEP=1,

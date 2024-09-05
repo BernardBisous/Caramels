@@ -61,6 +61,7 @@ public:
     float humidity();
     float lightPower();
     float lightSpectrum();
+    QString injectingState();
 
     QDateTime startedDate() const;
     QString consoleFile();

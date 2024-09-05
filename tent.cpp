@@ -82,6 +82,9 @@ void Tent::begin()
 void Tent::exportAll(QString dir)
 {
 
+    if(dir.isEmpty())
+        return;
+
     console("exporting all at "+dir);
     QDir root(dir);
     for(int i=0;i<m_units.count();i++)
@@ -161,6 +164,7 @@ void Tent::addUnit(HardwareUnit *u)
     m_units.append(u);
     u->setStartTime(m_startedDate);
     addDevice(u->devices());
+    connect(u,SIGNAL(consoleRequest(QString)),this,SLOT(console(QString)));
 }
 
 void Tent::addDevice(QList<Device *> l)
@@ -312,6 +316,11 @@ float Tent::lightSpectrum()
     return m_lights->spectrumValue();
 }
 
+QString Tent::injectingState()
+{
+    return m_pumps->injectingState();
+}
+
 QDateTime Tent::startedDate() const
 {
     return m_startedDate;
@@ -332,6 +341,7 @@ void Tent::finish()
 void Tent::console(QString s)
 {
 
+    qDebug()<<"Conlsole:"<<s;
 
     QFile file(consoleFile());
     if (!file.open(QIODevice::Append)) {

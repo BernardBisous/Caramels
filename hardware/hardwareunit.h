@@ -42,9 +42,12 @@ public:
     void setStartTime(const QDateTime &newStartTime);
 
 
+    void console(QString s){emit consoleRequest(s);}
+
 signals:
 
     void finished();
+    void consoleRequest(QString);
 
 
 protected:
