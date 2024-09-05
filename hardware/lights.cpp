@@ -5,9 +5,8 @@
 
 Lights::Lights(int pin, QObject* parent):SwitchedActuator(pin,false,"Lighs 400W_XE",parent)
 {
-
-    setDataValue("Gain [m2/W]","10");
-    setResult("Power[W]");
+    setUnits("W");
+    setRange(0,150);//Total lights power
 
 }
 
@@ -19,9 +18,10 @@ float Lights::computeResult(QString s)
 }
 
 LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):
-    Actuator("Spectrum Potentiometer",parent)
+    SwitchedActuator(pwmPin,true,"Spectrum Potentiometer",parent)
 {
-
+    setRange(400,700);//Total lights power
+    setUnits("Nm");
 }
 
 
@@ -43,25 +43,24 @@ void LightsUnit::begin()
     HardwareUnit::begin();
 
 
-
-    int t=nextSwitchms();
-    m_switchTimer->setInterval(t);
-    m_switchTimer->start();
+   // switchLights();
 }
 
 void LightsUnit::switchLights()
 {
-    if(m_power->currentValue()>50)
+    bool b=m_power->currentValue()>0;
+
+    if(b)
     {
-        m_power->applyValue(0);
+        m_switchTimer->setInterval(m_delayNight);
+        m_power->userApplyPurcent(0);
     }
     else
-        m_power->applyValue(100);
+    {
+        m_switchTimer->setInterval(m_delayDay);
+        m_power->userApplyPurcent(100);
+    }
 
-    int t=nextSwitchms();
-
-
-    m_switchTimer->setInterval(t);
     m_switchTimer->start();
 
 }
@@ -73,47 +72,40 @@ void LightsUnit::reactToParamChanged(Parameter *p, float f)
         updateSpectrum(f);
         return;
     }
+    else if(p==day())
+    {
+
+        m_delayDay=f*100;
+        if(!m_switchTimer->isActive())
+            switchLights();
+    }
+    else if(p==night())
+    {
+        m_delayNight=f*100;
+    }
 }
 
-int LightsUnit::nextSwitchms()
+void LightsUnit::finish()
 {
-
-    int h=m_startTime.secsTo(QDateTime::currentDateTime());
-    auto a=night();
-    auto b=day();
-    int ht=0;
-    //qDebug()<<"Cannot compute next switch "<<h;
-    for(int i=0;i<b->count();i++)
-    {
-        float j=b->at(i).y();
-        float n=a->at(i).y();
-         //qDebug()<<"made rev"<<i<<j<<n<<ht<<h;
-
-        ht+=j;
-        if(ht>h)
-        {
-            return j*1000;
-        }
-
-
-        ht+=n;
-        if(ht>h)
-        {
-             return n*1000;
-        }
-
-
-    }
-
-  //  qDebug()<<"Cannot compute next switch ";
-    return 500;
-
+    m_switchTimer->stop();
+    m_power->applyPurcent(0);
+    HardwareUnit::finish();
 }
 
 void LightsUnit::updateSpectrum(float t)
 {
    // qDebug()<<"updateSpectrum"<<t;
     m_spectrum->applyValue(t);
+}
+
+float LightsUnit::lightPower()
+{
+    return m_power->currentValue();
+}
+
+float LightsUnit::spectrumValue()
+{
+    return m_spectrum->currentValue();
 }
 
 

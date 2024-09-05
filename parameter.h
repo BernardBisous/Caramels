@@ -26,6 +26,7 @@ public:
     void save(QDataStream&c);
     int count();
     int maxX();
+    QString csvLine(QString sep);
     float maxY();
     QPointF at(int i);
 
@@ -51,9 +52,6 @@ public:
     QString description() const;
     void setDescription(const QString &newDescription);
 
-    QString group() const;
-    void setGroup(const QString &newGroup);
-
 
 private:
     int m_id;
@@ -61,8 +59,6 @@ private:
     QString m_name;
     QString m_units;
     QString m_description;
-    QString m_group;
-
 
     QList<TimedValue> m_values;
 

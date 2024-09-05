@@ -4,8 +4,6 @@
 HardwareUnit::HardwareUnit(QObject *parent)
     : QObject{parent}
 {
-    m_timer=new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 
 }
 
@@ -14,17 +12,16 @@ void HardwareUnit::begin()
     for(int i=0;i<m_devices.count();i++)
         m_devices[i]->begin();
 
-    m_timer->setInterval(Parameter::timeMultiplicator()*1000);
-    m_timer->start();
+
 }
 
-void HardwareUnit::update()
+void HardwareUnit::update(int index)
 {
     bool atEnd=true;
     for(int i=0;i<m_parameters.count();i++)
     {
         bool ok;
-        float v=m_parameters[i]->currentValue(m_startTime,&ok);
+        float v=m_parameters[i]->valueAtTime(index,&ok);
 
         if(ok)
         {
@@ -35,15 +32,28 @@ void HardwareUnit::update()
 
     if(atEnd)
     {
-        m_timer->stop();
         emit finished();
     }
 }
 
+void HardwareUnit::finish()
+{
+    for(int i=0;i<m_devices.count();i++)
+        m_devices[i]->reset();
+}
+
 void HardwareUnit::attachDevice(Device *d)
 {
-     m_devices.append(d);
+    if(!d)
+        return;
+    Sensor* s=dynamic_cast<Sensor*>(d);
+    if(s)
+        m_sensors.append(s);
+
+    m_devices.append(d);
 }
+
+
 
 void HardwareUnit::attachParameter(Parameter *p)
 {
@@ -92,7 +102,31 @@ Parameter *HardwareUnit::parameterFromId(int id)
         if(m_parameters[i]->id()==id)
             return m_parameters[i];
     }
+
     return nullptr;
+}
+
+void HardwareUnit::exportAll(QString dir)
+{
+    for(int i=0;i<m_devices.count();i++)
+    {
+        m_devices[i]->exportHistoric(dir);
+    }
+}
+
+bool HardwareUnit::canHandleParameter(int id)
+{
+    return(m_idParameters.contains(id));
+
+
+}
+
+void HardwareUnit::updateSensors()
+{
+    for(int i=0;i<m_sensors.count();i++)
+        m_sensors[i]->measure();
+
+    reactToSensorsChanged();
 }
 
 
@@ -108,6 +142,8 @@ QList<Parameter *> HardwareUnit::parameters() const
     return m_parameters;
 }
 
+
+
 QString HardwareUnit::name() const
 {
     return m_name;
@@ -116,6 +152,11 @@ QString HardwareUnit::name() const
 QList<int> HardwareUnit::idParameters() const
 {
     return m_idParameters;
+}
+
+QList<Sensor *> HardwareUnit::sensors()
+{
+    return m_sensors;
 }
 
 QDateTime HardwareUnit::startTime() const
@@ -128,9 +169,6 @@ void HardwareUnit::setStartTime(const QDateTime &newStartTime)
     m_startTime = newStartTime;
 }
 
-void HardwareUnit::timerSlot()
-{
-    update();
-}
+
 
 

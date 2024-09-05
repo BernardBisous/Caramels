@@ -1,6 +1,7 @@
 #ifndef GROWCONFIG_H
 #define GROWCONFIG_H
 
+#include "Interface/events.h"
 #include "qdatetime.h"
 #include <QList>
 #include <QString>
@@ -20,18 +21,17 @@ public:
     int indexOf(Parameter*c);
     void save(QDataStream&c);
     bool load(QDataStream&c);
-    int maxHours();
+    int computeMaxHours();
     float maxY();
 
+    Parameter* loadParameterCSVLine(QString s,QStringList header);
+    Events* loadEventsLine(QString s);
     bool openDefault();
     bool browse();
 
     bool open(QString filename);
 
     static GrowConfig open(bool*ok);
-
-    int getSize() const;
-    void setSize(int newSize);
 
     QStringList parameterNames();
     Parameter* parameterAddr(int i);
@@ -43,11 +43,22 @@ public:
     Parameter* addParameter(QString s="noName",QString units="", int id=0);
     Parameter* fromName(QString );
 
+    void start();
+
+    QString name() const;
+    void setName(const QString &newName);
+
+    int maxHours() const;
+
+    Events *events() const;
+
+    void saveCsv(QString file);
 
 private:
-    int size;//total size in hours
-
     QList<Parameter*> m_parameters;
+    Events* m_events;
+    QString m_name;
+    int m_maXHours;
 };
 
 

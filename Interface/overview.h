@@ -1,6 +1,7 @@
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
 
+#include "Interface/plantationeditor.h"
 #include "Interface/progresswidget.h"
 #include "configoverview.h"
 #include "hardwareoverview.h"
@@ -25,6 +26,8 @@ private:
     TopWidget* m_emptyWidget;
     HardwareOverview* m_hardware;
     ConfigOverview* m_config;
+    PlantationEditor* m_plantation;
+
 
 };
 

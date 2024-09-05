@@ -19,6 +19,8 @@ UnitEditor::UnitEditor(QWidget *parent)
     layout()->addWidget(m_devicePlot=new DevicePlot);
     layout()->addWidget(edit);
 
+
+
     edit->setFixedWidth(250);
     connect(m_devices,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
     connect(m_parameters,SIGNAL(trigger(int,QWidget*)),this,SLOT(paramSlot(int,QWidget*)));
@@ -28,7 +30,7 @@ void UnitEditor::handle(HardwareUnit *h)
 {
     m_client=h;
     m_parameters->fillList(h->parametersName());
-    m_parametersWidget->setHidden(h->parameters().isEmpty());
+    m_parametersWidget->setHidden( h->parameters().isEmpty());
     m_devices->fillList(h );
     editDevice(0);
 }
@@ -39,7 +41,6 @@ void UnitEditor::editDevice(int i)
     if(!c || i>=c->devices().count())
         return;
 
-    qDebug()<<"edit dev"<<i;
 
     m_devices->setChecked(i);
     m_devicePlot->handle(c->devices()[i]);

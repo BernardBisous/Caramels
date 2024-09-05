@@ -83,7 +83,6 @@ void ParameterEditor::deviceSlot()
     auto a=dynamic_cast<DeviceEditor*>(sender());
     if(a && a->client())
     {
-        qDebug()<<"Switch to Edit devce"<<a->client()->name();
         emit editDevice(a->client());
     }
 }

@@ -45,9 +45,10 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_stack->addWidget(m_tentEdit=new TentEditor(this));
     m_stack->addWidget(m_editor);
     m_stack->addWidget(m_webcam=new WebcamWidget);
+    m_webcam->handle(m_tent->cam());
 
 
-    m_tentEdit->handle(m_tent);
+
 
     QFont f=font();
     f.setPointSize(f.pointSize()+15);
@@ -62,7 +63,12 @@ GrowingTent::GrowingTent(QWidget* parent)
     connect(m_selector,SIGNAL(help()),this,SLOT(help()));
 
     connect(m_tentEdit,SIGNAL(editParam(Parameter*)),this,SLOT(editParam(Parameter*)));
-    goToIndex(Hardware);
+
+
+    m_tentEdit->handle(m_tent);
+    m_overview->loadHardware(m_tent);
+
+    goToIndex(General);
 
 
 

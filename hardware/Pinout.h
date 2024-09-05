@@ -1,12 +1,11 @@
 #ifndef PINOUT_H
 #define PINOUT_H
 
-// PWM multiplexed
 
-#define CHEM_LEVEL_PIN 0
+#define NO_PIN -1
 
-#define LIGHTS_POWER_PIN 101
-#define LIGHTS_SPECTRUM_PIN 102
+#define LIGHTS_POWER_PIN 5
+#define LIGHTS_SPECTRUM_PIN 5
 #define MAIN_PUMP_PIN 103
 #define MAIN_VALVE_PIN 104
 #define HEIGH_LIFTER_PWM 105
@@ -23,31 +22,45 @@
 #define CHEM_MIX_3_PIN 111
 #define CHEM_PUMP_3_PIN 112
 
+#define CHEM_PUMP_PH_PLUS_PIN 8
+#define CHEM_MIX_PH_PLUS_PIN 114
+#define CHEM_PUMP_PH_MINUS_PIN 10
+#define CHEM_MIX_PH_MINUS_PIN 116
+
 #define WATER_LEVEL_PIN_1 1
 #define WATER_LEVEL_PIN_2 2
-#define HEIGH_TRIG_PRIN 4
-#define HEIGH_ECHO_PIN 5
+
+// i2C virtual poins
+#define HEIGH_SENSE 200
+
 
 //Analog pins
-#define TEMP_1_PIN 1
-#define TEMP_2_PIN 2
-#define HUMIDTY_PIN 3
-#define TEMP_4_PIN 4
-#define CO2_SENSOR_PIN 5
+#define TEMP_1_PIN 54
+#define TEMP_2_PIN 59
+#define HUMIDTY_PIN 56
+#define TEMP_4_PIN 57
+#define CO2_SENSOR_PIN 58
+#define PH_SENSOR_PIN 55
 
 enum {LIGHTS_DAY=0,
-      LIGHTS_SLEEP,
-      LIGHTS_SPECTRUM,
-      TEMPERATURE_AIR,
-      HUMIDITY_AIR,
-      TEMPERATURE_WATER,
-      LIGHT_HEIGH,
-      CO2_LEVEL,
-      WIND_LEVEL,
-      WIND_ROTATION,
-      PH_LEVEL,
-      CHEMICAL_1,
-      CHEMICAL_2
+      LIGHTS_SLEEP=1,
+      LIGHTS_SPECTRUM=2,
+      TEMPERATURE_AIR=3,
+      HUMIDITY_AIR=4,
+      TEMPERATURE_WATER=5,
+      LIGHT_HEIGH=6,
+      CO2_LEVEL=7,
+      WIND_LEVEL=8,
+      WIND_ROTATION=9,
+      PH_LEVEL=10,
+      CHEMICAL_1=11,
+      CHEMICAL_2,
+      CHEMICAL_3,
+      CHEMICAL_4,
+      CHEMICAL_5,
+      CHEMICAL_6,
+      EVENTS=20
+
 };
 
 #endif // PINOUT_H

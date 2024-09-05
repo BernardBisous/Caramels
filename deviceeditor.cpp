@@ -180,15 +180,14 @@ void DeviceEditor::editSlot()
 void DeviceEditor::sliderEdited(int i)
 {
     Actuator*a=static_cast<Actuator*>(m_client);
-    a->applyPurcent(i);
+    a->userApplyPurcent(i);
 }
 
 void DeviceEditor::valueSlot(float t)
 {
-    m_status->setText("Value: "+QString::number(t));
-
+    m_status->setText(QString::number(t,'f',1)+m_client->units());
     disconnect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
-    m_valueSlider->setValue(t);
+    m_valueSlider->setValue(m_client->currentPurcent());
     connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
 }
 

@@ -3,14 +3,28 @@
 
 #include <QObject>
 
-class PHManager : public QObject
+#include "hardware/analogsensor.h"
+#include "hardware/chemicalinjector.h"
+#include "hardware/hardwareunit.h"
+class PHManager :  public HardwareUnit
 {
     Q_OBJECT
 public:
     explicit PHManager(QObject *parent = nullptr);
+    virtual void reactToParamChanged(Parameter*, float );
+    float ph();
+    virtual void reactToSensorsChanged();
+    virtual void finish();
+    void attachInjector(ChemicalInjector* c);
 
 signals:
 
+private:
+    bool m_activ;
+    float m_command;
+    AnalogSensor* m_sensor;
+    ChemicalInjector* m_phPlus;
+    ChemicalInjector* m_phMinus;
 };
 
 #endif // PHMANAGER_H

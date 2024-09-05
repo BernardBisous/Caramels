@@ -2,6 +2,7 @@
 #define TENTEDITOR_H
 
 #include "Interface/devicelistwidget.h"
+#include "Interface/menubutton.h"
 #include "Interface/scrollarea.h"
 #include "deviceeditor.h"
 #include "deviceplot.h"
@@ -25,9 +26,11 @@ signals:
     void editParam(Parameter*p);
 
 
+
 private slots:
     void listSlot(int i, QWidget *);
     void paramListSlot(Parameter*p);
+    void portSlot(QString s);
 
 
 
@@ -36,6 +39,7 @@ private:
     ScrollArea* m_units;
     int m_currentUnit;
     UnitEditor* m_editor;
+    MenuButton* m_ports;
 
 };
 

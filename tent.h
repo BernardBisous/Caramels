@@ -1,8 +1,16 @@
 #ifndef TENT_H
 #define TENT_H
 
+#include "Interface/windmanager.h"
 #include "growconfig.h"
+#include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
+#include "hardware/lights.h"
+#include "hardware/phmanager.h"
+#include "hardware/temperaturemanager.h"
+#include "hardware/tolleveler.h"
+#include "hardware/waterlevelmanager.h"
+#include "hardware/webcam.h"
 #include "qdatetime.h"
 #include <QObject>
 
@@ -16,6 +24,9 @@ public:
     void initDevices();
     void begin();
 
+    void exportAll(QString dir);
+
+    int currentHourIndex();
     QString configName() const;
     void setConfig(GrowConfig*e);
 
@@ -31,6 +42,8 @@ public:
     void loadSetting();
 
     void restart();
+    void start();
+    void setStartDate(QDateTime t);
     GrowConfig *config() const;
 
     QString name() const;
@@ -42,7 +55,52 @@ public:
     int indexOf(HardwareUnit*u);
     QList<HardwareUnit *> units() const;
 
+    float PH();
+    float temperature(int sensorIndex);
+    float CO2();
+    float humidity();
+    float lightPower();
+    float lightSpectrum();
+
+    QDateTime startedDate() const;
+    QString consoleFile();
+
+    void finish();
+
+    QString serialPort() const;
+    void setSerialPort(const QString &newSerialPort);
+    QStringList availablePorts();
+    bool connected();
+
+    void stopAll();
+
+    TemperatureManager *temperatures() const;
+    PHManager* phManager();
+    CO2Manager* co2Manager();
+    WindManager *wind() const;
+
+    TolLeveler *leveler() const;
+
+
+    LightsUnit *lights() const;
+
+    WaterLevelManager *pumps() const;
+
+    Webcam *cam() const;
+
+public slots:
+    void console(QString s);
+    void hardwareSlot(QByteArray& d);
+
 signals:
+    void newValue(int i);
+    void sensorsAquiered();
+    void done();
+    void dateChanged(QDateTime t);
+
+private slots:
+    void timerSlot();
+
 
 private:
     QList<Device*> m_devices;
@@ -50,9 +108,23 @@ private:
     GrowConfig* m_config;
     QString m_configName;
     QDateTime m_startedDate;
-
     QString m_name;
     int m_id;
+    QString m_serialPort;
+
+    QTimer* m_timer;
+
+    TemperatureManager* m_temperatures;
+    PHManager*m_ph;
+    CO2Manager* m_Co2;
+    WindManager* m_wind;
+    TolLeveler* m_leveler;
+    LightsUnit* m_lights;
+    WaterLevelManager* m_pumps;
+
+    SerialTent* m_serial;
+
+    Webcam* m_cam;
 };
 
 

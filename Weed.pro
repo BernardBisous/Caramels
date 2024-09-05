@@ -1,4 +1,4 @@
-QT       += core gui charts multimedia multimediawidgets
+QT       += core gui charts multimedia multimediawidgets serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,9 +12,11 @@ SOURCES += \
     Interface/actionwidget.cpp \
     Interface/devicelistwidget.cpp \
     Interface/drawerselector.cpp \
+    Interface/events.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
     Interface/overview.cpp \
+    Interface/plantationeditor.cpp \
     Interface/progressbar.cpp \
     Interface/progresswidget.cpp \
     Interface/roundedpicture.cpp \
@@ -25,8 +27,11 @@ SOURCES += \
     Interface/windmanager.cpp \
     configeditor.cpp \
     configoverview.cpp \
+    configprogress.cpp \
+    configtop.cpp \
     deviceeditor.cpp \
     deviceplot.cpp \
+    eventmanager.cpp \
     growconfig.cpp \
     growingtent.cpp \
     hardware/analogsensor.cpp \
@@ -41,9 +46,11 @@ SOURCES += \
     hardware/phmanager.cpp \
     hardware/pump.cpp \
     hardware/rasppi.cpp \
+    hardware/serialtent.cpp \
     hardware/temperaturemanager.cpp \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
+    hardware/webcam.cpp \
     hardwareoverview.cpp \
     main.cpp \
     parameter.cpp \
@@ -55,15 +62,18 @@ SOURCES += \
     tenteditor.cpp \
     tentlistwidget.cpp \
     uniteditor.cpp \
+    unitplot.cpp \
     webcamwidget.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
     Interface/devicelistwidget.h \
     Interface/drawerselector.h \
+    Interface/events.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
     Interface/overview.h \
+    Interface/plantationeditor.h \
     Interface/progressbar.h \
     Interface/progresswidget.h \
     Interface/roundedpicture.h \
@@ -74,8 +84,11 @@ HEADERS += \
     Interface/windmanager.h \
     configeditor.h \
     configoverview.h \
+    configprogress.h \
+    configtop.h \
     deviceeditor.h \
     deviceplot.h \
+    eventmanager.h \
     growconfig.h \
     growingtent.h \
     hardware/Pinout.h \
@@ -91,9 +104,11 @@ HEADERS += \
     hardware/phmanager.h \
     hardware/pump.h \
     hardware/rasppi.h \
+    hardware/serialtent.h \
     hardware/temperaturemanager.h \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
+    hardware/webcam.h \
     hardwareoverview.h \
     parameter.h \
     parametereditor.h \
@@ -104,6 +119,7 @@ HEADERS += \
     tenteditor.h \
     tentlistwidget.h \
     uniteditor.h \
+    unitplot.h \
     webcamwidget.h
 
 FORMS +=
@@ -116,3 +132,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 RESOURCES += \
     Config.qrc \
     icons.qrc
+
+DISTFILES += \
+    arduinoTent/arduinoTent.ino

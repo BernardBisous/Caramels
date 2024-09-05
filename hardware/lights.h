@@ -15,7 +15,7 @@ public:
     virtual float computeResult(QString s);
 };
 
-class LightsSpectrum: public Actuator
+class LightsSpectrum: public SwitchedActuator
 {
     Q_OBJECT
 public:
@@ -29,8 +29,13 @@ public:
     explicit LightsUnit(QObject *parent = nullptr);
     virtual void begin();
     virtual void reactToParamChanged(Parameter*, float );
-    int nextSwitchms();
+    virtual void finish();
+
+
     void updateSpectrum(float);
+
+    float lightPower();
+    float spectrumValue();
 
     Parameter* night(){return parameterFromId(LIGHTS_SLEEP);}
     Parameter* day(){return parameterFromId(LIGHTS_DAY);}
@@ -40,6 +45,9 @@ public slots:
     void switchLights();
 
 private:
+
+    int m_delayNight;
+    int m_delayDay;
 
     QTimer * m_switchTimer;
     Lights* m_power;

@@ -1,4 +1,5 @@
 #include "growconfig.h"
+#include "hardware/Pinout.h"
 #include <QDataStream>
 #include <QFileDialog>
 
@@ -9,10 +10,14 @@
 #define SUFFIX_TXT ".txt"
 #define CSV_SEPARATOR ","
 
-GrowConfig::GrowConfig():m_parameters()
+GrowConfig::GrowConfig():m_parameters(),m_name("Grape Gazz 🥵")
 {
+    m_events=new Events;
+
     if(!openDefault())
         defaultSetup();
+
+    computeMaxHours();
 }
 
 void GrowConfig::save(QDataStream &c)
@@ -42,15 +47,7 @@ GrowConfig GrowConfig::open(bool *ok)
     return config;
 }
 
-int GrowConfig::getSize() const
-{
-    return size;
-}
 
-void GrowConfig::setSize(int newSize)
-{
-    size = newSize;
-}
 
 QStringList GrowConfig::parameterNames()
 {
@@ -96,6 +93,47 @@ Parameter *GrowConfig::fromName(QString s)
     return nullptr;
 }
 
+QString GrowConfig::name() const
+{
+    return m_name;
+}
+
+void GrowConfig::setName(const QString &newName)
+{
+    m_name = newName;
+}
+
+int GrowConfig::maxHours() const
+{
+    return m_maXHours;
+}
+
+Events *GrowConfig::events() const
+{
+    return m_events;
+}
+
+void GrowConfig::saveCsv(QString file)
+{
+    QString sep=",";
+    QString line="\n";
+
+    QFile f(file);
+    f.open(QIODevice::WriteOnly | QIODevice::Truncate);
+
+    QTextStream s(&f);
+    s.setEncoding(QStringConverter::Utf8);
+    QString h;
+    h+=name()+sep;
+
+    s<<h;
+    for(int i=0;i<m_parameters.count();i++)
+    {
+        s<<line+m_parameters[i]->csvLine(sep);
+    }
+    f.close();
+}
+
 
 
 
@@ -117,7 +155,7 @@ bool GrowConfig::load(QDataStream& c) {
     return true;
 }
 
-int GrowConfig::maxHours()
+int GrowConfig::computeMaxHours()
 {
     int out=0;
 
@@ -127,6 +165,7 @@ int GrowConfig::maxHours()
         if(out<m)
             out=m;
     }
+    m_maXHours=out;
     return out;
 }
 
@@ -143,13 +182,82 @@ float GrowConfig::maxY()
     return out;
 }
 
+Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header)
+{
+
+
+
+    QStringList line;
+    line = dataLine.split(CSV_SEPARATOR);
+
+    QString name = line[Name];
+    QString units = line[Units];
+    int id = line[Id].toInt();
+    QString desc=line[Description];
+    QString group=line[Group];
+
+     Parameter* parameter=nullptr;
+
+     bool event=id>=EVENTS;
+    if(event)
+    {
+        m_events->clear();
+    }
+
+
+    else
+    {
+      parameter = fromName(name);
+      if(!parameter)
+           parameter=addParameter(name, units, id);
+
+      else parameter->clear();
+
+      parameter->setDescription(desc);
+    }
+
+
+
+
+    for(int i=Values;i<line.count();i++)
+    {
+        QString s=line[i];
+        int hour=header[i].toInt();
+        if(!s.isEmpty())
+        {
+
+            if(event)
+            {
+                m_events->add(s,hour);
+            }
+            else
+            {
+                bool ok;
+                float value = line[i].toFloat(&ok);
+                if(ok)
+                {
+                    TimedValue v;
+                    v.hourIndex=hour;
+                    v.value=value;
+                    parameter->append(v);
+                }
+            }
+
+        }
+
+    }
+    return parameter;
+}
+
+
+
 
 bool GrowConfig::openDefault() {
 
 
 
-    if(open(CONFIG_PATH))
-        return true;
+  //  if(open(CONFIG_PATH))
+  //      return true;
 
     return loadCsv(COMFIG_CSV_PATH);
 
@@ -173,53 +281,17 @@ bool GrowConfig::loadCsv(QString filename) {
        header = headerLine.split(CSV_SEPARATOR);
 
 
+       if(header.isEmpty())
+           return false;
+
+       setName(header.first());
        // Check if the header has the expected format
 
 
        // Read the data rows
        while (!file.atEnd()) {
            QString dataLine = file.readLine();
-           line = dataLine.split(CSV_SEPARATOR);
-
-           QString name = line[Name];
-           QString units = line[Units];
-           int id = line[Id].toInt();
-           QString desc=line[Description];
-           QString group=line[Group];
-
-           // Create a new Parameter object
-           Parameter* parameter = fromName(name);
-           if(!parameter)
-                parameter=addParameter(name, units, id);
-           else parameter->clear();
-
-           parameter->setDescription(desc);
-
-
-           for(int i=Values;i<line.count();i++)
-           {
-               QString s=line[i];
-               int hour=header[i].toInt();
-               if(!s.isEmpty())
-               {
-                   bool ok;
-                   float value = line[i].toFloat(&ok);
-                   if(ok)
-                   {
-                       TimedValue v;
-                       v.hourIndex=hour;
-                       v.value=value;
-                       parameter->append(v);
-                       //qDebug()<<"loaded value"<<value<<hour<<name;
-                   }
-               }
-
-           }
-
-          // qDebug()<<"loaded param"<<name<<parameter->count()<<parameter->maxX()<<parameter->maxY();
-
-
-
+           loadParameterCSVLine(dataLine,header);
        }
 
        file.close();
@@ -259,6 +331,7 @@ bool GrowConfig::open(QString filename)
         return false;
     }
 
+    m_name=filename;
     QDataStream in(&file);
     bool c= load(in);
     file.close();

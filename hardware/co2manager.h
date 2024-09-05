@@ -12,6 +12,7 @@ class CO2Manager : public HardwareUnit
     Q_OBJECT
 public:
     explicit CO2Manager(QObject *parent = nullptr);
+    float CO2();
 
 signals:
 

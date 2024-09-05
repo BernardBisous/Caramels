@@ -16,7 +16,8 @@ public:
     Parameter* air(){return parameterFromId(TEMPERATURE_AIR);}
     Parameter* water(){return parameterFromId(TEMPERATURE_WATER);}
     Parameter* humidity(){return parameterFromId(HUMIDITY_AIR);}
-
+    float valueatSensor(int index);
+    float humidityValue();
 
 private:
     AnalogSensor* m_airSensor;

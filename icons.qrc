@@ -3,5 +3,7 @@
         <file alias="help">lib/help.png</file>
         <file alias="logo">lib/logo.png</file>
         <file alias="plant">lib/plant.png</file>
+        <file>lib/moon.png</file>
+        <file alias="sun">lib/sun.png</file>
     </qresource>
 </RCC>

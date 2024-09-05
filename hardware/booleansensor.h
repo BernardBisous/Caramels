@@ -9,12 +9,6 @@ class BooleanSensor : public Sensor
     Q_OBJECT
 public:
     explicit BooleanSensor( int pin, QString n, QObject *parent = nullptr);
-    virtual float aquire();
-signals:
-
-private:
-    int m_pin;
-
 };
 
 #endif // BOOLEANSENSOR_H

@@ -3,6 +3,8 @@
 
 #include "Interface/menubutton.h"
 #include "Interface/switchcheckbox.h"
+#include "Interface/toolbutton.h"
+#include "hardware/webcam.h"
 #include "qmediacapturesession.h"
 #include <QWidget>
 #include <QLabel>
@@ -19,33 +21,38 @@ class WebcamWidget : public QWidget
     Q_OBJECT
 public:
     explicit WebcamWidget(QWidget *parent = nullptr) ;
-    QStringList avalaible;
-    QString nextName();
+    void handle(Webcam* w);
+    void printPicture(QString s);
+
     static bool createDataDir();
     void setLiveMode(bool s=true);
+    void resetTimeLapse();
 
 private slots:
-
     void modeSlot();
-    void capture();
     void enableSlot();
-    void capturedSlot(int id, const QString &fileName);
-    void capturingSlot();
+    void capturedSlot(QString fileName);
+    void findCam();
+    void timelapse();
+    void lapsSlot();
 
 private:
     QWidget* m_settings;
     MenuButton* m_selectMenu;
     QLabel* m_picLabel;
-
     QVideoWidget* m_screen;
 
-    QCamera* m_cam;
-    QImageCapture* m_capture;
-    QMediaCaptureSession m_session;
     SwitchCheckBox* m_modeSwitch;
     SwitchCheckBox* m_enableSwitch;
-    QTimer* m_timer;
+
     QString m_lastPixmap;
+    ToolButton* m_finder;
+    SwitchCheckBox* m_timeLaspe;
+
+    QTimer* m_lapseTimer;
+    QStringList m_frame;
+
+    Webcam* m_client;
 
 
 };

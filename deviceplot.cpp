@@ -2,8 +2,8 @@
 #include <QGraphicsLayout>
 
 DevicePlot::DevicePlot(QWidget *parent):
-    QChartView(parent), m_device(nullptr),
-    m_chart(new QChart()), m_series(new QLineSeries()),m_locked(true)
+    QChartView(parent), m_locked(true),
+    m_device(nullptr), m_chart(new QChart()),m_series(new QSplineSeries())
 
 {
 
@@ -12,6 +12,7 @@ DevicePlot::DevicePlot(QWidget *parent):
     // Set up the chart
 
    // m_chart->setTitle("Device Historical Data");
+
 
 
 
@@ -25,7 +26,7 @@ DevicePlot::DevicePlot(QWidget *parent):
     m_xAxis->setFormat("hh:mm:ss");
     m_xAxis->setTitleText("Time");
     m_yAxis = new QValueAxis;
-    m_yAxis->setTitleText("Value [%]");
+
     m_chart->addAxis(m_xAxis, Qt::AlignBottom);
     m_chart->addAxis(m_yAxis, Qt::AlignLeft);
 
@@ -53,6 +54,7 @@ void DevicePlot::handle(Device *c)
         return;
 
 
+     m_yAxis->setTitleText("Value ["+c->units()+"]");
 
     connect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
 
@@ -87,6 +89,8 @@ void DevicePlot::initStyle()
     m_chart->update();
 }
 
+
+
 bool DevicePlot::locked() const
 {
     return m_locked;
@@ -108,11 +112,7 @@ void DevicePlot::updatePlot()
 
     QDateTime min=QDateTime::currentDateTime().addSecs(-10);
 
-    auto l=m_device->historic();
-
-
-
-
+    auto l=m_device->values();
 
    // QDateTime max=QDateTime::currentDateTime();
 
@@ -146,11 +146,8 @@ void DevicePlot::updatePlot()
 
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
 
-
-
-
-     m_yAxis->setMax(maxY+5);
-     m_yAxis->setMin(minY-5);
+    m_yAxis->setMax(maxY+5);
+    m_yAxis->setMin(minY-5);
 
 
     m_chart->addSeries(m_series);
@@ -158,11 +155,5 @@ void DevicePlot::updatePlot()
     m_series->attachAxis(m_yAxis);
 
 
-  //  m_yAxis->applyNiceNumbers();
     m_xAxis->setRange(min,QDateTime::currentDateTime());
-
-
-
-
-
 }

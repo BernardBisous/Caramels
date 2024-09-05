@@ -47,6 +47,27 @@ int Parameter::maxX()
     return m_values.last().hourIndex;
 }
 
+QString Parameter::csvLine(QString sep)
+{
+    QString out;
+    out+=sep+name()+sep+units()+sep+QString::number(id())+sep+description()+sep;
+
+    int x=maxX();
+
+    for(int i=0;i<x+1;i++)
+    {
+        bool b=false;
+        float v=valueAtTime(i,&b);
+        if(b)
+        {
+            out+=QString::number(v);
+        }
+        out+=sep;
+    }
+    return out;
+
+}
+
 float Parameter::maxY()
 {
 
@@ -163,14 +184,3 @@ void Parameter::setDescription(const QString &newDescription)
 {
     m_description = newDescription;
 }
-
-QString Parameter::group() const
-{
-    return m_group;
-}
-
-void Parameter::setGroup(const QString &newGroup)
-{
-    m_group = newGroup;
-}
-

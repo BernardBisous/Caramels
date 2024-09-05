@@ -1,14 +1,17 @@
 #include "webcamwidget.h"
+#include "parameter.h"
 #include "qboxlayout.h"
 
 #include <QMediaCaptureSession>
 #include <QImageCapture>
 
-#define CAPTURE_DELAY 5000
-WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_cam(nullptr),m_session()
+
+
+
+WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
 {
 
-    createDataDir();
+
 
     setLayout(new QHBoxLayout);
     layout()->addWidget(m_screen=new QVideoWidget);
@@ -16,9 +19,11 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_cam(nullptr),m_ses
     m_screen->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     layout()->addWidget(m_settings=new QWidget);
     m_settings->setLayout(new QVBoxLayout);
+    m_settings->layout()->addWidget(m_finder=new ToolButton("Find cam"));
     m_settings->layout()->addWidget(m_selectMenu=new MenuButton);
     m_settings->layout()->addWidget(m_enableSwitch=new SwitchCheckBox("Enable"));
     m_settings->layout()->addWidget(m_modeSwitch=new SwitchCheckBox("Live mode"));
+    m_settings->layout()->addWidget(m_timeLaspe=new SwitchCheckBox("Timelapse"));
 
     m_settings->setFixedWidth(200);
     QWidget* sp=new QWidget;
@@ -27,68 +32,40 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_cam(nullptr),m_ses
 
     connect(m_modeSwitch,SIGNAL(stateChanged(int)),this,SLOT(modeSlot()));
     connect(m_enableSwitch,SIGNAL(stateChanged(int)),this,SLOT(enableSlot()));
+    connect(m_timeLaspe,SIGNAL(stateChanged(int)),this,SLOT(timelapse()));
 
-    const QList<QCameraDevice> cameras = QMediaDevices::videoInputs();
-    for (const QCameraDevice &cameraDevice : cameras)
-        m_selectMenu->nouvAction(cameraDevice.description());
+    connect(m_finder,SIGNAL(clicked()),this,SLOT(findCam()));
 
-
-    m_capture=new QImageCapture;
-
-    if(cameras.count()>=1)
-    {
-        m_cam = new QCamera(cameras.first());
-        m_selectMenu->setActivate(m_cam->cameraDevice().description());
-         m_session.setCamera(m_cam);
-
-    }
-
-
-    m_timer=new QTimer(this);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(capture()));
-    connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
-
+    connect(m_timeLaspe,SIGNAL(clicked()),this,SLOT(timelapse()));
+    m_lapseTimer=new QTimer(this);
+    m_lapseTimer->setInterval(100);
+    connect(m_lapseTimer,SIGNAL(timeout()),this,SLOT(lapsSlot()));
 
 
 
     setLiveMode(false);
+    m_enableSwitch->setChecked(true);
 
 
 }
 
-QString WebcamWidget::nextName()
+void WebcamWidget::handle(Webcam *w)
 {
-
-    QString baseFilename="photo";
-    QString dirPath=QDir::currentPath()+"/pics";
-    QString filename = baseFilename+".jpg";
-    int i = 1;
-
-    while (QFile::exists(dirPath + "/" + filename)) {
-        filename = baseFilename + QString::number(i++)+".jpg";
-    }
-
-    return dirPath + "/"+filename;
+    m_client=w;
+    findCam();
+    connect(w,SIGNAL(saved(QString)),this,SLOT(capturedSlot(QString)));
 }
 
-bool WebcamWidget::createDataDir()
+void WebcamWidget::printPicture(QString s)
 {
-    QString sp("pics");
 
-    QDir r(sp);
 
-    if(!r.exists())
-    {
-        QDir d=QDir::current();
-        d.mkdir(sp);
-        return true;
-    }
-    return false;
+    m_picLabel->setPixmap(QPixmap(s).scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 }
 
 void WebcamWidget::setLiveMode(bool s)
 {
-    if(!m_cam)
+    if(!m_client)
         return;
 
     m_modeSwitch->setChecked(s);
@@ -97,18 +74,20 @@ void WebcamWidget::setLiveMode(bool s)
 
     if(s)
     {
-        m_timer->stop();
-        m_session.setVideoOutput(m_screen);
-        m_cam->start();
+        m_client->session()->setVideoOutput(m_screen);
+        m_client->startLive();
     }
-
 
     else
     {
-        m_session.setImageCapture(m_capture);
-        m_timer->start(CAPTURE_DELAY);
-        capture();
+        m_client->start();
     }
+}
+
+void WebcamWidget::resetTimeLapse()
+{
+
+    m_frame = m_client->picsFiles();
 }
 
 
@@ -120,40 +99,58 @@ void WebcamWidget::modeSlot()
 
 }
 
-void WebcamWidget::capture()
-{
 
-    m_cam->start();
-    QTimer::singleShot(1000,this,SLOT(capturingSlot()));
-}
 
 void WebcamWidget::enableSlot()
 {
-    qDebug()<<"enabling webcam";
-    if(m_enableSwitch->isChecked())
+    if(m_client)
+        m_client->setEnabled(m_enableSwitch->isChecked());
+
+}
+
+void WebcamWidget::capturedSlot(QString fileName)
+{
+    if(!m_lapseTimer->isActive())
+       printPicture(fileName);
+}
+
+
+
+
+
+void WebcamWidget::findCam()
+{
+    m_selectMenu->clear();
+    m_client->findCam();
+    m_selectMenu->addActions(m_client->availables());
+    m_selectMenu->setActivate(m_client->name());
+
+}
+
+void WebcamWidget::timelapse()
+{
+
+    if(!m_timeLaspe->isChecked())
     {
-        qDebug()<<"enabling webcam";
-        m_cam->start();
-        capture();
+        m_lapseTimer->stop();
+        return;
+    }
+    setLiveMode(false);
+   resetTimeLapse();
+    m_lapseTimer->start();
+}
+
+void WebcamWidget::lapsSlot()
+{
+    if(m_frame.isEmpty())
+    {
+
+       resetTimeLapse();
+
     }
 
-
-    else
-        m_cam->stop();
-}
-
-void WebcamWidget::capturedSlot(int , const QString &fileName)
-{
-     qDebug()<<"captrue picmap"<<fileName;
-     m_picLabel->setPixmap(QPixmap(fileName).scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
-}
-
-void WebcamWidget::capturingSlot()
-{
-    QString s=nextName();
-    m_lastPixmap=s;
-    m_capture->captureToFile(s);
-    m_cam->stop();
+    printPicture(m_frame.first());
+    m_frame.removeFirst();
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "hardware/device.h"
 #include "qdatetime.h"
+#include "qsplineseries.h"
 #include <QChartView>
 #include <QLineSeries>
 #include <QDateTimeAxis>
@@ -16,6 +17,7 @@ public:
     void setXrange(int ms);
     void initStyle();
 
+
     bool locked() const;
     void setLocked(bool newLocked);
 
@@ -26,7 +28,7 @@ private:
     bool m_locked;
     Device* m_device;
     QChart* m_chart;
-    QLineSeries* m_series;
+    QSplineSeries* m_series;
 
     QDateTimeAxis *m_xAxis;
     QValueAxis *m_yAxis;

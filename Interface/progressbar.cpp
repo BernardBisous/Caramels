@@ -67,7 +67,7 @@ void ProgressBar::timerSlot()
     setValue(v);
 
 
-    repaint();
+
 
     if(m_count>m_maxCount)
     {
@@ -84,4 +84,5 @@ float ProgressBar::value() const
 void ProgressBar::setValue(double newValue)
 {
     m_value = newValue;
+    repaint();
 }

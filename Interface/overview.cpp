@@ -7,6 +7,10 @@ Overview::Overview(QWidget *parent)
     setLayout(new QHBoxLayout);
     layout()->addWidget(m_hardware=new HardwareOverview);
     layout()->addWidget(m_config=new ConfigOverview);
+    m_config->layout()->setContentsMargins(0,0,0,0);
+
+    m_hardware->setBackgroundRole(QPalette::Window);
+    m_hardware->setFixedWidth(200);
 }
 
 void Overview::loadHardware(Tent *t)
@@ -17,11 +21,15 @@ void Overview::loadHardware(Tent *t)
         return;
 
     m_hardware->handle(t);
-    m_config->handle(t->config());
+    m_config->setTent(t);
+
 }
 
 TopWidget *Overview::emptyWidget()
 {
+    ProgressWidget* p=new ProgressWidget(this);
+    p->setText("La tente est vide","Starter une nouvelle fournée");
+    p->addAction("Start now");
     return nullptr;
 }
 

@@ -5,7 +5,7 @@ TolLeveler::TolLeveler(QObject *parent)
 {
     m_name="Hauteur des lights";
     attachDevice(m_lifter=new TopLifter(HEIGH_LIFTER_DIR,HEIGH_LIFTER_PWM,"Ascenseur de lights ",this));
-    attachDevice(m_sensor=new DistanceSensor(HEIGH_TRIG_PRIN,HEIGH_ECHO_PIN,"Capteur de hauteur",this));
+    attachDevice(m_sensor=new DistanceSensor(HEIGH_SENSE,"Capteur de hauteur",this));
 
 
     connect(m_sensor,SIGNAL(newValue(float)),this,SLOT(heighNewValue(float)));
@@ -44,12 +44,7 @@ TopLifter::TopLifter(int dir, int pwm, QString name, QObject *parent):
 void TopLifter::liftCm(float t)
 {
 
-    float gain=dataValue("Speed[cm/s]").toFloat();
-    int ms=qAbs(t)/gain*1000;
-    float val=100;
-    if(t<0)
-        val=-val;
 
    // qDebug()<<"sent to rotation for"<<ms;
-    applyValue(val,ms);
+
 }

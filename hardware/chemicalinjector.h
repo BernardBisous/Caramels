@@ -2,26 +2,42 @@
 #define CHEMICALINJECTOR_H
 
 #include "hardware/booleansensor.h"
-#include "hardware/hardwareunit.h"
 #include "hardware/pump.h"
+#include "parameter.h"
 #include <QObject>
 
-class ChemicalInjector : public HardwareUnit
+class ChemicalInjector :public QObject
 {
+
     Q_OBJECT
 public:
-    explicit ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int id,QObject *parent = nullptr);
-    ChemicalPump *pump() const;
-    virtual void attachParameter(Parameter* p);
-    void setPump(ChemicalPump *newPump);
+    explicit ChemicalInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObject*p=nullptr);
 
+    void setPump(ChemicalPump *newPump);
+    void injectMl(float v);
+    int msForMl(float v);
+    void setGain( float msPerMl);
+    float gain();
+
+    QDateTime lastInjection() const;
+
+    void setMaxMsInjection(int newMaxMsInjection);
+
+    SwitchedActuator *mixer() const;
+    ChemicalPump *pump() const;
+    BooleanSensor *levelSensor() const;
+
+    int id() const;
 
 signals:
 
 private:
+    int m_maxMsInjection;
+    QDateTime m_lastInjection;
     ChemicalPump* m_pump;
     SwitchedActuator* m_mixer;
     BooleanSensor* m_levelSensor;
+    int m_id;
 
 
 
