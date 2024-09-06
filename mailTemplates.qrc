@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/mails">
+        <file alias="issue">SMTP/mail.html</file>
+    </qresource>
+</RCC>

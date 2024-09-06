@@ -1,4 +1,5 @@
 #include "tent.h"
+#include "Interface/emailnotifier.h"
 #include "Interface/windmanager.h"
 #include "hardware/Pinout.h"
 #include "hardware/co2manager.h"
@@ -226,6 +227,9 @@ void Tent::start()
 {
     if(!m_startedDate.isValid() || !m_config)
         return;
+
+    EmailNotifier*ne=new EmailNotifier;
+    ne->send("Started ","test");
 
     m_cam->start();
     timerSlot();

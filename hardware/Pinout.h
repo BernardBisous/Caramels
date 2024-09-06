@@ -12,9 +12,6 @@
 #define WIND_ROTATION_PIN 6
 #define INTERNAL_FAN_PIN 7
 
-
-
-
 //Digital
 #define CHEM_PUMP_PH_PLUS_PIN 24
 #define CHEM_MIX_PH_PLUS_PIN 25
@@ -32,7 +29,6 @@
 #define CHEM_PUMP_5_PIN 337
 #define CHEM_MIX_6_PIN 38
 #define CHEM_PUMP_6_PIN 39
-
 
 //Relays
 #define LIGHTS_POWER_PIN 40
