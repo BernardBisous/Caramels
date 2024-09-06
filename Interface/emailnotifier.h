@@ -2,6 +2,9 @@
 #define EMAILNOTIFIER_H
 
 #include "SMTP/smtpclient.h"
+#include "SMTP/mimetext.h"
+#include "SMTP/mimehtml.h"
+#include "SMTP/mimeinlinefile.h"
 
 #include <QObject>
 

@@ -1,5 +1,5 @@
-QT       += core gui charts multimedia multimediawidgets serialport
-QT += core5compat
+QT       += core gui charts multimedia multimediawidgets serialport network
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
@@ -26,24 +26,6 @@ SOURCES += \
     Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
     Interface/windmanager.cpp \
-    SMTP/emailaddress.cpp \
-    SMTP/mimeattachment.cpp \
-    SMTP/mimebase64encoder.cpp \
-    SMTP/mimebase64formatter.cpp \
-    SMTP/mimebytearrayattachment.cpp \
-    SMTP/mimecontentencoder.cpp \
-    SMTP/mimecontentformatter.cpp \
-    SMTP/mimefile.cpp \
-    SMTP/mimehtml.cpp \
-    SMTP/mimeinlinefile.cpp \
-    SMTP/mimemessage.cpp \
-    SMTP/mimemultipart.cpp \
-    SMTP/mimepart.cpp \
-    SMTP/mimeqpencoder.cpp \
-    SMTP/mimeqpformatter.cpp \
-    SMTP/mimetext.cpp \
-    SMTP/quotedprintable.cpp \
-    SMTP/smtpclient.cpp \
     configeditor.cpp \
     configoverview.cpp \
     configprogress.cpp \
@@ -102,26 +84,6 @@ HEADERS += \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \
     Interface/windmanager.h \
-    SMTP/SmtpMime \
-    SMTP/emailaddress.h \
-    SMTP/mimeattachment.h \
-    SMTP/mimebase64encoder.h \
-    SMTP/mimebase64formatter.h \
-    SMTP/mimebytearrayattachment.h \
-    SMTP/mimecontentencoder.h \
-    SMTP/mimecontentformatter.h \
-    SMTP/mimefile.h \
-    SMTP/mimehtml.h \
-    SMTP/mimeinlinefile.h \
-    SMTP/mimemessage.h \
-    SMTP/mimemultipart.h \
-    SMTP/mimepart.h \
-    SMTP/mimeqpencoder.h \
-    SMTP/mimeqpformatter.h \
-    SMTP/mimetext.h \
-    SMTP/quotedprintable.h \
-    SMTP/smtpclient.h \
-    SMTP/smtpmime_global.h \
     configeditor.h \
     configoverview.h \
     configprogress.h \
@@ -171,8 +133,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Config.qrc \
-    icons.qrc \
-    mailTemplates.qrc
+    icons.qrc
 
 DISTFILES += \
     arduinoTent/arduinoTent.ino \
