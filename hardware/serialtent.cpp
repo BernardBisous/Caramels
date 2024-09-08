@@ -34,7 +34,6 @@ bool SerialTent::open(const QString &portName)
 
     if (!serialPort.open(QIODevice::ReadWrite))
     {
-        emit connectedChanged(true);
         QTimer::singleShot(1000,this,SLOT(retry()));
         return false;
     }
@@ -55,8 +54,11 @@ void SerialTent::close()
 
 void SerialTent::retry()
 {
+
     if(isConnected())
         return;
+
+
 
     if (!serialPort.open(QIODevice::ReadWrite))
     {
@@ -69,10 +71,19 @@ void SerialTent::retry()
     }
 }
 
-void SerialTent::errorSlot(QSerialPort::SerialPortError)
+void SerialTent::errorSlot(QSerialPort::SerialPortError c)
 {
-    qDebug()<<"Lost serialConnection";
-    emit connectedChanged(false);
+
+    if(c==QSerialPort::PermissionError)
+    {
+        qDebug()<<"Lost serial connection"<<c;
+
+        serialPort.close();
+        QTimer::singleShot(1000,this,SLOT(retry()));
+        emit connectedChanged(false);
+    }
+
+
 }
 
 void SerialTent::sendValues()
