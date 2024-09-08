@@ -90,12 +90,14 @@ public:
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
+    void serialConnectSlot(bool s);
 
 signals:
     void newValue(int i);
     void sensorsAquiered();
     void done();
     void dateChanged(QDateTime t);
+    void connectedHardware(bool s);
 
 private slots:
     void timerSlot();

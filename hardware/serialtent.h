@@ -14,26 +14,21 @@ public:
 
     void sendValues();
     bool isConnected() const;
-
     void write(int pin, float value);
     float read(int pin);
-
-
-
 
 public slots:
     bool open(const QString &portName);
     void close();
     void retry();
+    void errorSlot(QSerialPort::SerialPortError);
 
 signals:
     void newValues(QByteArray &values);
-
-
+    void connectedChanged(bool s);
 
 private:
     QSerialPort serialPort;
-    bool connected;
     QByteArray configBytes;
     QByteArray values;
 

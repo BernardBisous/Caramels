@@ -4,6 +4,7 @@
 #include "Interface/devicelistwidget.h"
 #include "Interface/menubutton.h"
 #include "Interface/scrollarea.h"
+#include "Interface/serialeditor.h"
 #include "deviceeditor.h"
 #include "deviceplot.h"
 #include "parameterlistwidget.h"
@@ -30,7 +31,7 @@ signals:
 private slots:
     void listSlot(int i, QWidget *);
     void paramListSlot(Parameter*p);
-    void portSlot(QString s);
+
 
 
 
@@ -39,7 +40,8 @@ private:
     ScrollArea* m_units;
     int m_currentUnit;
     UnitEditor* m_editor;
-    MenuButton* m_ports;
+    SerialEditor* m_ports;
+
 
 };
 

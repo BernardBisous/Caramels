@@ -1,6 +1,8 @@
 #include "hardwareoverview.h"
+#include "qboxlayout.h"
 #include "qgraphicsitem.h"
 #include "qgraphicsscene.h"
+#include "qlabel.h"
 
 #define AUTOPOLL false
 
@@ -9,7 +11,7 @@ HardwareOverview::HardwareOverview(QWidget *parent)
       QGraphicsView(parent),
       m_scene(new QGraphicsScene()),
       m_tent(nullptr),
-      m_timer(new QTimer(this))
+      m_timer(new QTimer(this)),m_connect(nullptr)
 {
     setScene(m_scene);
 
@@ -65,7 +67,31 @@ void HardwareOverview::handle(Tent *t)
     if(!AUTOPOLL)
         connect(t,SIGNAL(sensorsAquiered()),this,SLOT(update()));
 
+    connect(t,SIGNAL(connectedHardware(bool)),this,SLOT(connectedChanged(bool)));
+
+
+    showConnect(t->connected());
     update();
+}
+
+void HardwareOverview::showConnect(bool s)
+{
+    qDebug()<<"Show connect serial"<<s;
+
+
+    if(s && !m_connect)
+        return;
+
+    if(!s && !m_connect)
+    {
+        m_connect=new TopConnect(m_tent,this);
+        return;
+    }
+
+    if(!s)
+           m_connect->start();
+    else
+           m_connect->stop();
 }
 
 void HardwareOverview::update()
@@ -100,3 +126,28 @@ void HardwareOverview::update()
     }
 
 }
+
+void HardwareOverview::connectedChanged(bool s)
+{
+    showConnect(s);
+}
+
+TopConnect::TopConnect(Tent *t, QWidget *parent):TopWidget(parent)
+{
+    m_central->setLayout(new QVBoxLayout);
+    m_central->layout()->addWidget(new QLabel("Electronique introuvable"));
+    m_central->layout()->addWidget(m_editor=new SerialEditor);
+
+    connect(t,SIGNAL(connectedHardware(bool)),this,SLOT(trigSlot(bool)));
+    m_editor->handle(t);
+    start();
+}
+
+void TopConnect::trigSlot(bool s)
+{
+
+}
+
+
+
+

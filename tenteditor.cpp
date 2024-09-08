@@ -12,7 +12,7 @@ TentEditor::TentEditor(QWidget *parent)
 
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
-    list->layout()->addWidget(m_ports=new MenuButton);
+    list->layout()->addWidget(m_ports=new SerialEditor);
     list->layout()->addWidget(new QLabel("Unités de contole:"));
     //list->layout()->addWidget(new QLineEdit);
     list->layout()->addWidget(m_units=new ScrollArea);
@@ -25,11 +25,10 @@ TentEditor::TentEditor(QWidget *parent)
     layout()->addWidget(m_editor=new UnitEditor);
 
 
-    m_ports->setPrintActive(false);
+
     list->setFixedWidth(200);
 
-    connect(m_ports,SIGNAL(actionTrigg(QString)),this,SLOT(portSlot(QString)));
-    connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
+   connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
     connect(m_editor,SIGNAL(editParameter(Parameter*)),this,SLOT(paramListSlot(Parameter*)));
 }
 
@@ -49,20 +48,8 @@ void TentEditor::handle(Tent *t)
     if(!l.isEmpty())
         edit(0);
 
+    m_ports->handle(t);
 
-
-    m_ports->clear();
-    m_ports->addActions(t->availablePorts());
-
-    if(t->connected())
-    {
-        m_ports->setText("✅ "+t->serialPort());
-    }
-    else
-    {
-        m_ports->setText("Select port");
-
-    }
 }
 
 void TentEditor::edit(int index)
@@ -139,7 +126,4 @@ void TentEditor::paramListSlot(Parameter *p)
 
 }
 
-void TentEditor::portSlot(QString s)
-{
-    m_client->setSerialPort(s);
-}
+

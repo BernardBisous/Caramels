@@ -3,6 +3,7 @@
 
 #include "hardware/Pinout.h"
 #include "hardware/analogsensor.h"
+#include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
 #include "parameter.h"
 #include <QObject>
@@ -13,19 +14,40 @@ class TemperatureManager : public HardwareUnit
 public:
     explicit TemperatureManager(QObject *parent = nullptr);
     virtual void reactToParamChanged(Parameter*, float );
-    Parameter* air(){return parameterFromId(TEMPERATURE_AIR);}
-    Parameter* water(){return parameterFromId(TEMPERATURE_WATER);}
-    Parameter* humidity(){return parameterFromId(HUMIDITY_AIR);}
-    float valueatSensor(int index);
-    float humidityValue();
+    virtual void reactToSensorsChanged();
+
+
+    Parameter* temperatureParameter(){return parameterFromId(TEMPERATURE_AIR);}
+    Parameter* humidityParameter(){return parameterFromId(HUMIDITY_AIR);}
+    Parameter* windParameter(){return parameterFromId(WIND_LEVEL);}
+
+
+    int routineSecs();
+
+    void regulate();
+    float airTemperature();
+    float waterTemperature();
+    float humidity();
+
+    float humidityExcess();
+    float temperatureExcess();
+    void setExtractorPower(int purcent);
+
+    void setCo2(CO2Manager *newCo2);
 
 private:
     AnalogSensor* m_airSensor;
     AnalogSensor* m_waterSensor;
     AnalogSensor* m_humiditySensor;
     SwitchedActuator* m_humidifier;
-    SwitchedActuator* m_power;
-     SwitchedActuator* m_rotation;
+    SwitchedActuator* m_windpower;
+    SwitchedActuator* m_rotation;
+    SwitchedActuator* m_extractor;
+    float m_humidityCommand;
+    float m_temperatureCommand;
+    QDateTime m_lastReg;
+
+    CO2Manager* m_co2;
 
 };
 

@@ -2,6 +2,7 @@
 //#include "hardware/rasppi.h"
 #include "qdatetime.h"
 #include "qdir.h"
+#include "qsettings.h"
 #include <QFile>
 
 #define HISTO_PATH "data/"
@@ -76,8 +77,24 @@ bool Device::existData(QString key)
 void Device::setDataValue(QString key, QString val, bool notif)
 {
     m_metaData.insert(key,val);
+
     if(notif)
+    {
+
+        QSettings settings("YourOrganization", name());
+        settings.setValue(key,val);
         reactToDataEdited(key,val);
+    }
+}
+
+void Device::loadSettings()
+{
+    QSettings settings("YourOrganization", name());
+    for(QHash<QString, QString>::const_iterator i = m_metaData.begin(); i !=m_metaData.end(); ++i)
+    {
+        if(settings.contains(i.key()))
+            setDataValue(i.key(),settings.value(i.key()).toString());
+    }
 }
 
 void Device::setResult(QString key)

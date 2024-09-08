@@ -31,6 +31,7 @@ Tent::Tent(QObject *parent)
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 
     connect(m_serial,SIGNAL(newValues(QByteArray&)),this,SLOT(hardwareSlot(QByteArray&)));
+    connect(m_serial,SIGNAL(connectedChanged(bool)),this,SLOT(serialConnectSlot(bool)));
 
 
     loadSetting();
@@ -38,7 +39,6 @@ Tent::Tent(QObject *parent)
 
 void Tent::initDevices()
 {
-
     Device::createDataDir();
     addUnit(m_pumps=new WaterLevelManager(this));
     addUnit(m_lights=new LightsUnit(this));
@@ -47,18 +47,11 @@ void Tent::initDevices()
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
 
-
-   // addUnit(new ChemicalInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,NO_PIN,0,this));
-   // addUnit(new ChemicalInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,1,this));
-   // addUnit(new ChemicalInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,2,this));
-
-
+    m_temperatures->setCo2(m_Co2);
 }
 
 void Tent::begin()
 {
-    //RasPi::begin();
-
 
     m_serial->open(serialPort());
 
@@ -176,6 +169,7 @@ void Tent::addDevice(QList<Device *> l)
 void Tent::addDevice(Device *d)
 {
     d->setSerial(m_serial);
+    d->loadSettings();
 
     if(!m_devices.contains(d))
         m_devices.append(d);
@@ -183,7 +177,7 @@ void Tent::addDevice(Device *d)
 
 void Tent::saveSettings()
 {
-    QSettings settings("YourOrganization", "YourApplication"); // Replace with your organization and application names
+    QSettings settings("YourOrganization", "TentSettings"); // Replace with your organization and application names
     settings.setValue("StartDate", m_startedDate);
     settings.setValue("SerialPort", m_serialPort);
 
@@ -191,7 +185,7 @@ void Tent::saveSettings()
 
 void Tent::loadSetting()
 {
-    QSettings settings("YourOrganization", "YourApplication");
+    QSettings settings("YourOrganization", "TentSettings");
     QDateTime d = settings.value("StartDate").toDateTime();
     m_serialPort= settings.value("SerialPort").toString();
 
@@ -291,7 +285,11 @@ float Tent::PH()
 
 float Tent::temperature(int sensorIndex)
 {
-    return m_temperatures->valueatSensor(sensorIndex);
+    switch(sensorIndex)
+    {
+    case 0: return m_temperatures->airTemperature();
+    default: return m_temperatures->waterTemperature();
+    }
 }
 
 float Tent::CO2()
@@ -301,7 +299,7 @@ float Tent::CO2()
 
 float Tent::humidity()
 {
-    return m_temperatures->humidityValue();
+    return m_temperatures->humidity();
 }
 
 float Tent::lightPower()
@@ -353,6 +351,8 @@ void Tent::console(QString s)
 
 void Tent::hardwareSlot(QByteArray &d)
 {
+
+
     for(int i=0;i<m_units.count();i++)
     {
         m_units[i]->updateSensors();
@@ -360,8 +360,14 @@ void Tent::hardwareSlot(QByteArray &d)
     emit sensorsAquiered();
 }
 
+void Tent::serialConnectSlot(bool s)
+{
+    emit connectedHardware(s);
+}
+
 void Tent::timerSlot()
 {
+
     int h=currentHourIndex();
 
     if(h<0)
@@ -371,8 +377,11 @@ void Tent::timerSlot()
         return;
     }
 
-    for(int i=0;i<m_units.count();i++)
-        m_units[i]->update(h);
+    if(m_serial->isConnected())
+    {
+        for(int i=0;i<m_units.count();i++)
+            m_units[i]->update(h);
+    }
 
     emit newValue(h);
 }

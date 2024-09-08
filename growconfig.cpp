@@ -180,7 +180,7 @@ bool GrowConfig::load(QDataStream& c) {
     }
 
     m_events->load(c);
-    qDebug()<<"loaded config"<<m_parameters.count()<<m_events->count();
+ //   qDebug()<<"loaded config"<<m_parameters.count()<<m_events->count();
     return true;
 }
 
@@ -305,11 +305,10 @@ bool GrowConfig::openDefault() {
 
     if(open(CONFIG_PATH))
     {
-        qDebug()<<"Loaded Config"<<name();
+
         return true;
     }
 
-    qDebug()<<"Loaded new csv Config";
     return loadCsv(COMFIG_CSV_PATH);
 
 

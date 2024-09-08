@@ -36,6 +36,7 @@
 #define MAIN_VALVE_PIN 42
 #define HUMIDIFIER_PIN 43
 #define WIND_POWER_PIN 44
+#define EXTRACTOR_PIN 45
 
 //Input pins
 #define WATER_LEVEL_PIN_1 47

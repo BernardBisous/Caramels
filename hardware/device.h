@@ -38,6 +38,7 @@ public:
     bool existData(QString key);
     void setDataValue(QString key, QString val, bool fromEditing=false);
 
+    void loadSettings();
     void setResult(QString key);
     QStringList resultKeys();
     QStringList dataKeys();

@@ -12,12 +12,14 @@ class PHManager :  public HardwareUnit
 public:
     explicit PHManager(QObject *parent = nullptr);
     virtual void reactToParamChanged(Parameter*, float );
-    float ph();
     virtual void reactToSensorsChanged();
     virtual void finish();
     void attachInjector(ChemicalInjector* c);
+    float ph();
 
 signals:
+
+
 
 private:
     bool m_activ;

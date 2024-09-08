@@ -22,6 +22,7 @@ SOURCES += \
     Interface/progresswidget.cpp \
     Interface/roundedpicture.cpp \
     Interface/scrollarea.cpp \
+    Interface/serialeditor.cpp \
     Interface/slider.cpp \
     Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
@@ -80,6 +81,7 @@ HEADERS += \
     Interface/progresswidget.h \
     Interface/roundedpicture.h \
     Interface/scrollarea.h \
+    Interface/serialeditor.h \
     Interface/slider.h \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \

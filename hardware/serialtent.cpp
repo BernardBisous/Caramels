@@ -1,18 +1,13 @@
 #include "serialtent.h"
-#include "qdatetime.h"
 #include <QTimer>
 
 
 SerialTent::SerialTent(QObject *parent) :
     QObject(parent),
-    serialPort(this),connected(false)
+    serialPort(this)
 {
-
-
-
-
     connect(&serialPort, &QSerialPort::readyRead, this, &SerialTent::readSerial);
-
+    connect(&serialPort,SIGNAL(errorOccurred(QSerialPort::SerialPortError)),this,SLOT(errorSlot(QSerialPort::SerialPortError)));
 }
 
 SerialTent::~SerialTent()
@@ -22,7 +17,7 @@ SerialTent::~SerialTent()
 
 bool SerialTent::open(const QString &portName)
 {
-    if (connected) {
+    if (isConnected()) {
         return true;
     }
 
@@ -39,21 +34,22 @@ bool SerialTent::open(const QString &portName)
 
     if (!serialPort.open(QIODevice::ReadWrite))
     {
+        emit connectedChanged(true);
         QTimer::singleShot(1000,this,SLOT(retry()));
         return false;
     }
 
 
     m_input.clear();
-    connected = true;
+
+    emit connectedChanged(true);
     return true;
 }
 
 void SerialTent::close()
 {
-    if (connected) {
+    if (isConnected()) {
         serialPort.close();
-        connected = false;
     }
 }
 
@@ -66,18 +62,27 @@ void SerialTent::retry()
     {
         QTimer::singleShot(1000,this,SLOT(retry()));
     }
+    else
+    {
+
+        emit connectedChanged(true);
+    }
+}
+
+void SerialTent::errorSlot(QSerialPort::SerialPortError)
+{
+    qDebug()<<"Lost serialConnection";
+    emit connectedChanged(false);
 }
 
 void SerialTent::sendValues()
 {
-    if (!connected) {
-        return;
-    }
+
 }
 
 bool SerialTent::isConnected() const
 {
-    return connected;
+    return serialPort.isOpen();
 }
 
 void SerialTent::write(int pin, float value)
@@ -106,24 +111,15 @@ float SerialTent::read(int pin)
     return v;
 }
 
-
-
-
 void SerialTent::readSerial()
 {
-    if (!connected) {
+    if (!serialPort.isOpen()) {
+        emit connectedChanged(false);
         return;
     }
-
     QByteArray data = serialPort.readAll();
     if (data.contains("\n")) {
-
-
         values = data.trimmed();
-
-
-
-
         for(int i=0;i<data.size();i++)
         {
             if(i%2)
@@ -134,9 +130,7 @@ void SerialTent::readSerial()
                 //qDebug()<<"read values"<<key<<val;
             }
         }
-
         emit newValues(data);
     }
-
 }
 

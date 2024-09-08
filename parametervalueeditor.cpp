@@ -91,7 +91,6 @@ ParameterValueEditor::Mode ParameterValueEditor::mode() const
 
 void ParameterValueEditor::setMode(Mode newMode)
 {
-    qDebug()<<"settingMode"<<newMode;
     m_mode = newMode;
     refreshMode();
 }
