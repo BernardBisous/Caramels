@@ -3,7 +3,7 @@
 #include <QDataStream>
 #include <QFileDialog>
 
-#define CONFIG_PATH "config.weed"
+#define CONFIG_PATH "config2.weed"
 #define COMFIG_CSV_PATH "://config"
 #define SUFIX_BINARY ".weed"
 #define SUFIX_CSV ".csv"
@@ -20,13 +20,37 @@ GrowConfig::GrowConfig():m_parameters(),m_name("Grape Gazz 🥵")
     computeMaxHours();
 }
 
+bool GrowConfig::save()
+{
+    return save(CONFIG_PATH);
+}
+
+bool GrowConfig::save(QString s)
+{
+    QFile file(s);
+    if (!file.open(QIODevice::WriteOnly|QIODevice::Truncate)) {
+
+        return false;
+    }
+    QDataStream out(&file);
+    save(out);
+    return true;
+}
+
 void GrowConfig::save(QDataStream &c)
 {
-    c << m_parameters.size();
-        // Serialize each parameter
-        for (int i=0;i<m_parameters.count();i++) {
-            m_parameters[i]->save(c);
-        }
+
+
+    c <<name();
+    int t=m_parameters.size();
+    c << t;
+    // Serialize each parameter
+
+    for (int i=0;i<m_parameters.count();i++) {
+        m_parameters[i]->save(c);
+    }
+
+    m_events->save(c);
 }
 
 int GrowConfig::countParameters()
@@ -142,16 +166,21 @@ bool GrowConfig::load(QDataStream& c) {
     if(c.atEnd())
         return false;
 
+    clear();
+
+
+    c>>m_name;
     int numParameters;
     c >> numParameters;
 
-    m_parameters.clear();
     for (int i = 0; i < numParameters; ++i) {
         Parameter* parameter=new Parameter;
         parameter->load(c);
         m_parameters.append(parameter);
     }
 
+    m_events->load(c);
+    qDebug()<<"loaded config"<<m_parameters.count()<<m_events->count();
     return true;
 }
 
@@ -182,8 +211,20 @@ float GrowConfig::maxY()
     return out;
 }
 
+void GrowConfig::clear()
+{
+    for(int i=0;i<m_parameters.count();i++)
+        delete m_parameters[i];
+
+    m_parameters.clear();
+
+    m_events->clear();
+}
+
 Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header)
 {
+
+
 
 
 
@@ -223,6 +264,7 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
     {
         QString s=line[i];
         int hour=header[i].toInt();
+
         if(!s.isEmpty())
         {
 
@@ -233,19 +275,24 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
             else
             {
                 bool ok;
+
                 float value = line[i].toFloat(&ok);
+
                 if(ok)
                 {
+
                     TimedValue v;
                     v.hourIndex=hour;
                     v.value=value;
                     parameter->append(v);
+
                 }
             }
 
         }
 
     }
+
     return parameter;
 }
 
@@ -256,9 +303,13 @@ bool GrowConfig::openDefault() {
 
 
 
-  //  if(open(CONFIG_PATH))
-  //      return true;
+    if(open(CONFIG_PATH))
+    {
+        qDebug()<<"Loaded Config"<<name();
+        return true;
+    }
 
+    qDebug()<<"Loaded new csv Config";
     return loadCsv(COMFIG_CSV_PATH);
 
 
@@ -267,6 +318,7 @@ bool GrowConfig::openDefault() {
 }
 bool GrowConfig::loadCsv(QString filename) {
 
+    clear();
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Failed to open CSV file:" << filename;
@@ -294,6 +346,7 @@ bool GrowConfig::loadCsv(QString filename) {
            loadParameterCSVLine(dataLine,header);
        }
 
+       qDebug()<<"loaded csv"<<m_parameters.count();
        file.close();
        return true;
 }
@@ -326,7 +379,7 @@ bool GrowConfig::open(QString filename)
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         // Gérer l'erreur si le fichier ne peut pas être ouvert
-       // qDebug()<<"cannot open config file "<<filename;
+       qDebug()<<"cannot open config file "<<filename;
 
         return false;
     }

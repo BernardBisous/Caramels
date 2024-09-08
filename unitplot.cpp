@@ -156,9 +156,9 @@ void UnitPlot::updateParameter(QLineSeries *l, Parameter *p,QDateTime start)
     for(int i=0 ; i<n ;i++)
     {
         auto v=p->at(i);
-        QDateTime te=start.addSecs(v.x());
+        QDateTime te=start.addSecs(v.hourIndex*Parameter::timeMultiplicator());
 
-        l->append(te.toMSecsSinceEpoch(),v.y());
+        l->append(te.toMSecsSinceEpoch(),v.value);
     }
 
 

@@ -13,8 +13,15 @@ ParameterEditor::ParameterEditor(QWidget *parent)
     m_editWidget->layout()->addWidget(m_name=new NameLabel);
     m_editWidget->layout()->addWidget(m_desc=new QLabel);
 
-     m_editWidget->layout()->addWidget(m_deviceStatus=new QLabel("\nHardware associé:"));
-    m_editWidget->layout()->addWidget(m_deviceArea=new ScrollArea);
+
+    m_editWidget->layout()->addWidget( m_editor=new ParameterValueEditor);
+   connect(m_editor,SIGNAL(changed()),this,SLOT(editSlot()));
+   m_editor->setSeries(m_plot->series());
+
+    QWidget* s=new QWidget;
+    s->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+    m_editWidget->layout()->addWidget(s);
+
 
     layout()->addWidget(m_editWidget);
 
@@ -35,28 +42,11 @@ void ParameterEditor::handle(Parameter *p)
     if(!p)
         return;
 
+    m_editor->setClient(p);
     refresh();
 
 
 
-    m_deviceArea->clear();
-    /*
-    auto l=p->devices();
-
-    m_deviceStatus->setHidden(l.isEmpty());
-    for(int i=0;i<l.count();i++)
-    {
-        DeviceEditor* de=new DeviceEditor;
-        de->setHoverable(true);
-        de->setMode(ActionWidget::appearingBorder);
-        de->setAbstracted(true);
-        m_deviceArea->addWidget(de);
-        de->handle(l[i]);
-
-        connect(de,SIGNAL(clicked()),this,SLOT(deviceSlot()));
-    }
-    */
-    m_deviceArea->addSpacer();
 
 }
 
@@ -77,6 +67,12 @@ void ParameterEditor::refresh()
 
 }
 
+void ParameterEditor::edit(int i)
+{
+    m_plot->refresh(m_client);
+    m_plot->select(i);
+}
+
 void ParameterEditor::deviceSlot()
 {
 
@@ -95,13 +91,52 @@ void ParameterEditor::nameChangedSlot(QString s)
 void ParameterEditor::pointClickedSlot(QPointF p)
 {
 
-    TimedValue v;
-    v.hourIndex=p.x();
-    v.value=p.y();
 
-    int i=m_client->append(v);
 
-    m_plot->refresh(m_client);
-    m_plot->select(i);
+    edit(p.x());
+
+
 
 }
+/*
+void ParameterEditor::wheelEvent(QWheelEvent *event)
+{
+    // Get the mouse wheel delta (positive for scrolling up, negative for scrolling down)
+    m_editor->move(event->angleDelta().y() / 8);
+    update();
+}
+
+void ParameterEditor::keyPressEvent(QKeyEvent *event)
+{
+    qDebug()<<"pressed key"<<event->key();
+    switch(event->key())
+    {
+    case Qt::Key_Up     :  m_editor->move(1); break;
+    case Qt::Key_Down:  m_editor->move(-1); break;
+    case Qt::Key_Left:  m_editor->selectOffset(-1); break;
+    case Qt::Key_Right:  m_editor->selectOffset(1); break;
+    }
+
+
+    update();
+}
+*/
+void ParameterEditor::editSlot()
+{
+
+    m_plot->refresh(m_client);
+    emit edited();
+
+}
+
+int ParameterEditor::currentIndex() const
+{
+    return m_currentIndex;
+}
+
+void ParameterEditor::setCurrentIndex(int newCurrentIndex)
+{
+    m_currentIndex = newCurrentIndex;
+    edit(newCurrentIndex);
+}
+

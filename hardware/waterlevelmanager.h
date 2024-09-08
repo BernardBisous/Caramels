@@ -22,7 +22,7 @@ public:
 
 private slots:
     void injectorSlot(int i);
-    void pumpSlot();
+
     void injectorConsole(QString s){console(s);}
 
 

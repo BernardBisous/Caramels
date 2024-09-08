@@ -42,6 +42,11 @@ void HardwareUnit::finish()
         m_devices[i]->reset();
 }
 
+bool HardwareUnit::activeConfig()
+{
+    return m_startTime.isValid();
+}
+
 void HardwareUnit::attachDevice(Device *d)
 {
     if(!d)

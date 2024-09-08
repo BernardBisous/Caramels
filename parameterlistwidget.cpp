@@ -12,10 +12,7 @@ ParameterListWidget::ParameterListWidget(QWidget *parent)
 
     layout()->addWidget(new QLabel("Monitored parameters:"));
     layout()->addWidget(m_list=new ScrollArea);
-    layout()->addWidget(m_add=new ToolButton("Load Csv"));
 
-
-    connect(m_add,SIGNAL(clicked()),this,SLOT(addSlot()));
     connect(m_list, SIGNAL(trigger(int,QWidget*)),this,SLOT(trigSlot(int,QWidget*)));
 }
 

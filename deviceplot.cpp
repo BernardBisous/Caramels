@@ -110,32 +110,26 @@ void DevicePlot::updatePlot()
         return;
 
 
-    QDateTime min=QDateTime::currentDateTime().addSecs(-10);
+    QDateTime min;
 
     auto l=m_device->values();
 
-   // QDateTime max=QDateTime::currentDateTime();
-
-    float maxY=100;
-    float minY=0;
+    float max=0;
+    QDateTime minDate;
+    if(!l.isEmpty())
+        minDate=l.first().time;
+    else
+        minDate=QDateTime::currentDateTime().addSecs(-10);
 
     for(int i=0;i<l.count();i++)
     {
         if(!locked() || l[i].time>min)
         {
-
-
-            if(l[i].value>maxY)
-                maxY=l[i].value;
-
-            if(!i || l[i].value<minY)
-                minY=l[i].value;
-
+            if(!i || max<l[i].value)
+                max=l[i].value;
 
             m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
         }
-
-
     }
 
 
@@ -146,14 +140,11 @@ void DevicePlot::updatePlot()
 
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
 
-    m_yAxis->setMax(maxY+5);
-    m_yAxis->setMin(minY-5);
-
-
     m_chart->addSeries(m_series);
+
+    m_xAxis->setRange(min,QDateTime::currentDateTime().addSecs(1));
+    m_yAxis->setMax(max*1.1);
+    m_yAxis->setMin(0);
     m_series->attachAxis(m_xAxis);
     m_series->attachAxis(m_yAxis);
-
-
-    m_xAxis->setRange(min,QDateTime::currentDateTime());
 }

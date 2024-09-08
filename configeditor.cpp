@@ -14,13 +14,14 @@ m_list->setMinimumWidth(150);
     connect(m_list,SIGNAL(addOne()),this,SLOT(addSlot()));
     connect(m_list,SIGNAL(selected(int)),this,SLOT(editParameter(int)));
     connect(m_editor,SIGNAL(editDevice(Device*)),this,SLOT(editDevicePropagate(Device*)));
+    connect(m_editor,SIGNAL(edited()),this,SLOT(saveConfig()));
 }
 
 void ConfigEditor::handle(GrowConfig *t)
 {
-
     m_client=t;
     m_list->handle(t);
+
 
     editParameter(0);
 }
@@ -43,6 +44,8 @@ void ConfigEditor::editParameter(int i)
     m_editor->handle(a);
     m_list->setSelected(i);
     m_editor->setXRange(m_client->maxHours());
+  //  m_editor->setCurrentIndex(m_currentIndex);
+
 }
 
 void ConfigEditor::editParameter(Parameter *p)
@@ -50,6 +53,21 @@ void ConfigEditor::editParameter(Parameter *p)
     m_editor->handle(p);
     m_list->setSelected(m_client->indexOf(p));
 
+}
+
+void ConfigEditor::setCurrentIndex(int newCurrentIndex)
+{
+    m_currentIndex = newCurrentIndex;
+    m_editor->setCurrentIndex(newCurrentIndex);
+}
+
+void ConfigEditor::saveConfig()
+{
+    if(!m_client)
+        return;
+
+    m_client->save();
+    qDebug()<<"Config saved";
 }
 
 void ConfigEditor::addSlot()

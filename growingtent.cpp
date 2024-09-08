@@ -40,6 +40,7 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     m_editor=new ConfigEditor(this);
     m_editor->handle(m_currentConfig);
+   // connect(m_tent,SIGNAL(newValue(int)),m_editor,SLOT(setCurrentIndex(int)));
 
     m_stack->addWidget(m_overview=new Overview);
     m_stack->addWidget(m_tentEdit=new TentEditor(this));

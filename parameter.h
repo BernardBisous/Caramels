@@ -28,7 +28,18 @@ public:
     int maxX();
     QString csvLine(QString sep);
     float maxY();
-    QPointF at(int i);
+    float minY();
+    void rangeY(float*max,float*min);
+
+
+    void movePoints(QList<int>indexes,float value, bool offset);
+    void removePoint(QList<int>indexes);
+    void addPoint(int indexHour, float value);
+   void addPoint(TimedValue t);
+   void addDefaultPoint(int index);
+
+    TimedValue at(int i);
+
 
     float currentValue(QDateTime startTime,bool*e);
     float valueAtTime(int h,bool*e);
@@ -63,6 +74,7 @@ private:
     QList<TimedValue> m_values;
 
 };
+
 
 
 #endif // PARAMETER_H

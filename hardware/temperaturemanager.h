@@ -24,6 +24,8 @@ private:
     AnalogSensor* m_waterSensor;
     AnalogSensor* m_humiditySensor;
     SwitchedActuator* m_humidifier;
+    SwitchedActuator* m_power;
+     SwitchedActuator* m_rotation;
 
 };
 

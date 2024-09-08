@@ -28,7 +28,9 @@ void Parameter::load(QDataStream &in)
 void Parameter::save(QDataStream &out)
 {
     out << m_id << m_name << m_units;
-    out << m_values.size();
+    int s= m_values.size();
+    out <<s;
+
     for (const TimedValue& value : m_values) {
         out << value.hourIndex << value.value;
     }
@@ -83,9 +85,116 @@ float Parameter::maxY()
     return out;
 }
 
-QPointF Parameter::at(int i)
+float Parameter::minY()
 {
-    return QPointF(m_values[i].hourIndex,m_values[i].value);
+    float out=0;
+
+    for(int i=0;i<m_values.count();i++)
+    {
+        if(!i|| m_values[i].value<=out)
+        {
+           out=m_values[i].value;
+        }
+    }
+    return out;
+}
+
+void Parameter::rangeY(float *max, float *min)
+{
+    *min=0;
+    *max=0;
+    for(int i=0;i<m_values.count();i++)
+    {
+        if(!i|| m_values[i].value<=*min)
+        {
+           *min=m_values[i].value;
+        }
+        if( m_values[i].value>=*max)
+        {
+           *max=m_values[i].value;
+        }
+    }
+
+}
+
+void Parameter::movePoints(QList<int> indexes, float value, bool offset)
+{
+    if(indexes.isEmpty())
+    {
+        for(int i=0;i<m_values.count();i++)
+        {
+            if(offset)
+                m_values[i].value+=value;
+            else
+                m_values[i].value*=value;
+        }
+    }
+
+
+    for(int i=0;i<indexes.count();i++)
+    {
+        if(offset)
+            m_values[indexes[i]].value+=value;
+        else
+            m_values[indexes[i]].value*=value;
+    }
+
+
+}
+
+void Parameter::removePoint(QList<int> indexes)
+{
+    for(int i=0;i<indexes.count();i++)
+       m_values.removeAt(indexes[i]-i);
+}
+
+void Parameter::addPoint(int indexHour, float value)
+{
+    TimedValue v{indexHour,value};
+    addPoint(v);
+}
+
+void Parameter::addPoint(TimedValue v)
+{
+
+    for(int i=0;i<m_values.count();i++)
+    {
+        if(m_values[i].hourIndex>=v.hourIndex)
+            m_values.insert(i,v);
+    }
+}
+
+void Parameter::addDefaultPoint(int index)
+{
+
+    if(m_values.isEmpty())
+    {
+        addPoint(0,0);
+        return;
+    }
+
+    TimedValue v;
+    if(index<0 || index>=count())
+    {
+        v=m_values.last();
+        addPoint(v);
+        return;
+    }
+
+    v=m_values[index];
+    addPoint(v);
+
+
+
+
+}
+
+TimedValue Parameter::at(int i)
+{
+    if(i<0 || i>=count())
+        return TimedValue{0,0};
+
+    return m_values[i];
 }
 
 float Parameter::currentValue(QDateTime startTime,bool*e)

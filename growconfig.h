@@ -23,6 +23,7 @@ public:
     bool load(QDataStream&c);
     int computeMaxHours();
     float maxY();
+    void clear();
 
     Parameter* loadParameterCSVLine(QString s,QStringList header);
     Events* loadEventsLine(QString s);

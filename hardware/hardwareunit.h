@@ -16,6 +16,8 @@ public:
     virtual void reactToSensorsChanged(){}
     virtual void finish();
 
+    bool activeConfig();
+
     void attachDevice(Device* d);
     virtual void attachParameter(Parameter* p);
     Device* devFromName(QString s);

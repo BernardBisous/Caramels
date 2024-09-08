@@ -5,6 +5,7 @@
 #include "deviceeditor.h"
 #include "growconfig.h"
 #include "parameterplot.h"
+#include "parametervalueeditor.h"
 #include <QWidget>
 
 typedef enum editMode{Place, Select}EditMode;
@@ -16,27 +17,36 @@ public:
     void handle(Parameter*p);
     void setXRange(int t);
     void refresh();
+    void edit(int i);
+
+    int currentIndex() const;
+    void setCurrentIndex(int newCurrentIndex);
 
 signals:
     void editDevice(Device* d);
+    void edited();
 
 private slots:
     void deviceSlot();
     void nameChangedSlot(QString);
     void pointClickedSlot(QPointF);
 
+
+    void editSlot();
+
 private:
     NameLabel* m_name;
     QLabel* m_desc;
-    QLabel* m_deviceStatus;
+
 
     QWidget* m_editWidget;
 
-    ScrollArea* m_deviceArea;
 
-
+    ParameterValueEditor* m_editor;
     Parameter*m_client;
     ParameterPlot* m_plot;
+
+    int m_currentIndex;
 
 };
 

@@ -3,7 +3,16 @@
         <file alias="help">lib/help.png</file>
         <file alias="logo">lib/logo.png</file>
         <file alias="plant">lib/plant.png</file>
-        <file>lib/moon.png</file>
+        <file alias="moon">lib/moon.png</file>
         <file alias="sun">lib/sun.png</file>
+        <file alias="gain">lib/gain.png</file>
+        <file alias="offset">lib/offset.png</file>
+        <file alias="delete">lib/delete.png</file>
+        <file alias="undo">lib/Undo.png</file>
+        <file alias="plus">lib/plus.png</file>
+        <file alias="down">lib/down.png</file>
+        <file alias="left">lib/left.png</file>
+        <file alias="right">lib/right.png</file>
+        <file alias="up">lib/Top.png</file>
     </qresource>
 </RCC>

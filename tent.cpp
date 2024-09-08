@@ -1,7 +1,5 @@
 #include "tent.h"
-#include "Interface/emailnotifier.h"
-#include "Interface/windmanager.h"
-#include "hardware/Pinout.h"
+
 #include "hardware/co2manager.h"
 #include "hardware/lights.h"
 #include "hardware/temperaturemanager.h"
@@ -46,7 +44,6 @@ void Tent::initDevices()
     addUnit(m_lights=new LightsUnit(this));
     addUnit(m_leveler=new TolLeveler(this));
     addUnit(m_temperatures=new TemperatureManager(this));
-    addUnit(m_wind=new WindManager(this));
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
 
@@ -228,9 +225,6 @@ void Tent::start()
     if(!m_startedDate.isValid() || !m_config)
         return;
 
-    EmailNotifier*ne=new EmailNotifier;
-    ne->send("Started ","test");
-
     m_cam->start();
     timerSlot();
     m_timer->start();
@@ -405,10 +399,6 @@ TolLeveler *Tent::leveler() const
     return m_leveler;
 }
 
-WindManager *Tent::wind() const
-{
-    return m_wind;
-}
 
 TemperatureManager *Tent::temperatures() const
 {

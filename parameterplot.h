@@ -14,8 +14,6 @@
 
 
 
-
-
 class ParameterPlot : public QWidget
 {
     Q_OBJECT
@@ -26,6 +24,12 @@ public:
     void setXrange(int t);
     void initStyle();
     void select(int);
+    void selectDefault();
+    int currentIndex();
+
+    void setCurrentIndex(int newCurrentIndex);
+
+    QLineSeries *series() const;
 
 signals:
     void clicked(QPointF p);
@@ -34,12 +38,17 @@ private:
 
 
 
+    int m_currentIndex;
+
     QChartView *m_view;
     QLineSeries *m_series;
     QValueAxis *m_xAxis;
     QValueAxis *m_yAxis;
     QChart *m_chart;
     Parameter *m_parameter;
+
+
+
 };
 
 

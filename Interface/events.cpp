@@ -13,6 +13,39 @@ void Events::clear()
     m_list.clear();
 }
 
+void Events::save(QDataStream &c)
+{
+
+    int n=m_list.count();
+    c<<n;
+    for(int i=0;i<m_list.count();i++)
+    {
+
+        c<<m_list[i].name;
+        c<<m_list[i].hourIndex;
+    }
+}
+
+bool Events::load(QDataStream &c)
+{
+
+
+    m_list.clear();
+    int n;
+    c>>n;
+    for(int i=0;i<n;i++)
+    {
+        QString name;
+        c>>name;
+        int index;
+        c>>index;
+        add(name,index);
+
+
+    }
+    return true;
+}
+
 void Events::add(QString name, int h)
 {
     Event e;

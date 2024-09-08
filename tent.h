@@ -1,7 +1,6 @@
 #ifndef TENT_H
 #define TENT_H
 
-#include "Interface/windmanager.h"
 #include "growconfig.h"
 #include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
@@ -78,7 +77,6 @@ public:
     TemperatureManager *temperatures() const;
     PHManager* phManager();
     CO2Manager* co2Manager();
-    WindManager *wind() const;
 
     TolLeveler *leveler() const;
 
@@ -118,7 +116,7 @@ private:
     TemperatureManager* m_temperatures;
     PHManager*m_ph;
     CO2Manager* m_Co2;
-    WindManager* m_wind;
+
     TolLeveler* m_leveler;
     LightsUnit* m_lights;
     WaterLevelManager* m_pumps;

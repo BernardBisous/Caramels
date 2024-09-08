@@ -25,7 +25,6 @@ SOURCES += \
     Interface/slider.cpp \
     Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
-    Interface/windmanager.cpp \
     configeditor.cpp \
     configoverview.cpp \
     configprogress.cpp \
@@ -58,6 +57,7 @@ SOURCES += \
     parametereditor.cpp \
     parameterlistwidget.cpp \
     parameterplot.cpp \
+    parametervalueeditor.cpp \
     plantation.cpp \
     tent.cpp \
     tenteditor.cpp \
@@ -83,7 +83,6 @@ HEADERS += \
     Interface/slider.h \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \
-    Interface/windmanager.h \
     configeditor.h \
     configoverview.h \
     configprogress.h \
@@ -116,6 +115,7 @@ HEADERS += \
     parametereditor.h \
     parameterlistwidget.h \
     parameterplot.h \
+    parametervalueeditor.h \
     plantation.h \
     tent.h \
     tenteditor.h \

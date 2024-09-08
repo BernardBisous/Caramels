@@ -1,8 +1,9 @@
 #include "parameterplot.h"
+#include "qpaintengine.h"
 #include <QScatterSeries>
 #include <QDate>
 
-ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent)
+ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),m_currentIndex(0)
 {
     m_view = new QChartView(this);
     m_view->setRenderHint(QPainter::Antialiasing);
@@ -38,39 +39,47 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent)
     m_view->installEventFilter(this);
     setMinimumSize(500,500);
 
-    m_xAxis->setRange(0,1000);
-    m_yAxis->setRange(0,100);// change this !!
+   // m_series->setBestFitLineVisible(true);
+   // m_series->setMarkerSize(20);
+    m_series->setSelectedColor(Qt::white);
+
+ //   m_series->setSelectedLightMarker(QPixmap(":/icons/delete").scaled(20,20).toImage());
+
+
+
+
+
+    initStyle();
 }
 
 void ParameterPlot::refresh(Parameter *parameter)
 {
-
-
-
+    if(!parameter)
+        return;
 
 
     auto sel=m_series->selectedPoints();
 
-    m_parameter = parameter;
+    if(m_chart->series().contains(m_series))
+        m_view->chart()->removeSeries(m_series);
 
-    m_view->chart()->removeSeries(m_series);
+    m_parameter = parameter;
 
     m_series->clear();
 
-    // Add new data points
+
     for (const TimedValue &value : parameter->values()) {
 
         m_series->append(value.hourIndex, value.value);
     }
 
 
+    float max,min;
+    m_parameter->rangeY(&max,&min);
 
-
-
-     m_yAxis->setRange(0,m_parameter->maxY());
-
-
-
+    float err=qAbs(max-min);
+    err=err*0.1;
+    m_yAxis->setRange(-err,max+err);
 
     m_chart->setTitle(parameter->name());
     m_yAxis->setTitleText(parameter->units());
@@ -78,20 +87,21 @@ void ParameterPlot::refresh(Parameter *parameter)
     if(!sel.isEmpty())
     {
         m_series->selectPoints(sel);
+
+
     }
 
-
     m_view->chart()->addSeries(m_series);
+    m_series->attachAxis(m_xAxis);
+    m_series->attachAxis(m_yAxis);
 
-
-    initStyle();
-
-
+    m_xAxis->setRange(-5,m_parameter->maxX());
+    m_yAxis->setRange(-err,max+err);
 }
 
 void ParameterPlot::setXrange(int t)
 {
-    m_xAxis->setRange(0,t);
+   // m_xAxis->setRange(0,t);
 }
 
 void ParameterPlot::initStyle()
@@ -116,6 +126,7 @@ void ParameterPlot::initStyle()
 
     m_chart->setTitleBrush(textColor);
     m_chart->legend()->hide();
+    m_chart->update();
 }
 
 
@@ -123,8 +134,33 @@ void ParameterPlot::initStyle()
 
 void ParameterPlot::select(int a)
 {
+    m_currentIndex=a;
     m_series->deselectAllPoints();
     m_series->selectPoint(a);
+}
+
+void ParameterPlot::selectDefault()
+{
+
+}
+
+int ParameterPlot::currentIndex()
+{
+    return m_currentIndex;
+}
+
+
+
+void ParameterPlot::setCurrentIndex(int newCurrentIndex)
+{
+    m_currentIndex = newCurrentIndex;
+    m_series->deselectAllPoints();
+    m_series->selectPoint(newCurrentIndex);
+}
+
+QLineSeries *ParameterPlot::series() const
+{
+    return m_series;
 }
 
 
@@ -132,6 +168,7 @@ void ParameterPlot::select(int a)
 
 bool ParameterPlot::eventFilter(QObject *obj, QEvent *event)
 {
+    /*
     if (obj==m_view && event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton)
@@ -164,5 +201,6 @@ bool ParameterPlot::eventFilter(QObject *obj, QEvent *event)
             return true; // Event handled
         }
     }
+    */
     return false; // Event not handled
 }

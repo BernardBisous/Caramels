@@ -1,11 +1,6 @@
 #ifndef EMAILNOTIFIER_H
 #define EMAILNOTIFIER_H
 
-#include "SMTP/smtpclient.h"
-#include "SMTP/mimetext.h"
-#include "SMTP/mimehtml.h"
-#include "SMTP/mimeinlinefile.h"
-
 #include <QObject>
 
 class EmailNotifier : public QObject
@@ -14,23 +9,9 @@ class EmailNotifier : public QObject
 public:
     typedef enum topic{Issue,News,Task}Topic;
 
+    static void send(QString text,Topic c=Issue);
     explicit EmailNotifier(QObject *parent = nullptr);
-    void send(QString subject, QString body,Topic c=Issue);
-    int connectToServer();
-    QStringList emailAddressesStr();
-    QList<EmailAddress> recipients();
-    void console(QString s);
 
-    QString htmlContent(Topic c);
-
-
-private slots:
-    void sentSlot();
-signals:
-    void finished(QString error);
-
-private:
-    SmtpClient* m_server;
 
 
 };

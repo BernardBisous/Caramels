@@ -74,7 +74,6 @@ void LightsUnit::reactToParamChanged(Parameter *p, float f)
     }
     else if(p==day())
     {
-
         m_delayDay=f*100;
         if(!m_switchTimer->isActive())
             switchLights();

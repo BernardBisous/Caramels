@@ -16,7 +16,7 @@ WaterLevelManager::WaterLevelManager(QObject *parent)
     attachInjector(new ChemicalInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,CHEMICAL_2,this));
     attachInjector(new ChemicalInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,CHEMICAL_3,this));
 
-    connect(m_pump,SIGNAL(impulseDone()),this,SLOT(pumpSlot()));
+
 
     m_idParameters<<CHEMICAL_1<<CHEMICAL_2<<CHEMICAL_3;
 }
@@ -37,10 +37,14 @@ void WaterLevelManager::attachInjector(ChemicalInjector *c)
 
 void WaterLevelManager::reactToSensorsChanged()
 {
+
+    if(!activeConfig() || injecting())
+        return;
+
     bool h=m_levelUp->currentValue();
     bool l=m_levelDown->currentValue();
 
-    if(!l || !h)// change this to &&  ????
+    if(!l && !h)
     {
         fillTank();
     }
@@ -65,6 +69,7 @@ void WaterLevelManager::fillTank()
     }
     console("Remplissage (injection)");
     m_injectingState="Dosage";
+
     emit injectingStateChanged(m_injectingState);
     emit injecting(true);
 
@@ -87,15 +92,12 @@ void WaterLevelManager::injectorSlot(int index)
         console("Mixage terminé");
         m_injectingState="Remplissage";
         emit injectingStateChanged(m_injectingState);
-        m_pump->userApplyPurcent(100);
+        m_entryValve->userApplyPurcent(100);
     }
 
 }
 
-void WaterLevelManager::pumpSlot()
-{
 
-}
 
 QString WaterLevelManager::injectingState() const
 {
