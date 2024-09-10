@@ -13,10 +13,16 @@ PHManager::PHManager(QObject *parent)
 
     m_sensor->setUnits("");
     m_sensor->setRange(0,14);
-    m_phPlus->setGain(100);
-    m_phMinus->setGain(100);
+    m_phPlus->setGain(1); //1s/(PHunit*ml)
+    m_phMinus->setGain(1);
+
 
     m_idParameters<<PH_LEVEL;
+
+    m_phPlus->setName("PH+");
+    m_phMinus->setName("PH-");
+
+
 }
 
 void PHManager::reactToParamChanged(Parameter *p, float f)
@@ -29,28 +35,19 @@ void PHManager::reactToParamChanged(Parameter *p, float f)
     }
 }
 
+void PHManager::reactToSensorsChanged()
+{
+    if(m_sensor->shouldRegulate())
+    {
+        regulate();
+    }
+}
+
 float PHManager::ph()
 {
     return m_sensor->currentValue();
 }
 
-void PHManager::reactToSensorsChanged()
-{
-    if(!m_activ)
-    {
-        return;
-    }
-    float err=ph()-m_command;
-    if(err>0)
-    {
-        m_phMinus->injectMl(err);
-    }
-    else
-    {
-
-        m_phPlus->injectMl(-err);
-    }
-}
 
 void PHManager::finish()
 {
@@ -68,4 +65,23 @@ void PHManager::attachInjector(ChemicalInjector *c)
     if(c->id()>0)
         m_idParameters<<c->id();
 
+}
+
+void PHManager::regulate()
+{
+    if(!m_activ)
+    {
+        return;
+    }
+
+    float err=ph()-m_command;
+    qDebug()<<"reg PH"<<err<<m_command;
+    if(err>0)
+    {
+        m_phMinus->injectMl(err);
+    }
+    else
+    {
+        m_phPlus->injectMl(-err);
+    }
 }

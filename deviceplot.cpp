@@ -3,7 +3,7 @@
 
 DevicePlot::DevicePlot(QWidget *parent):
     QChartView(parent), m_locked(true),
-    m_device(nullptr), m_chart(new QChart()),m_series(new QSplineSeries())
+    m_device(nullptr), m_chart(new QChart()),m_series(new QLineSeries())
 
 {
 
@@ -38,6 +38,8 @@ DevicePlot::DevicePlot(QWidget *parent):
 
     initStyle();
  //   updatePlot();
+
+    setRenderHint(QPainter::Antialiasing);
 
 
 
@@ -109,42 +111,65 @@ void DevicePlot::updatePlot()
     if(!m_device)
         return;
 
-
-    QDateTime min;
-
     auto l=m_device->values();
+    auto lh=m_device->historic();
+
+    QDateTime sh;
+    if(!l.isEmpty())
+        sh=l.first().time;
 
     float max=0;
     QDateTime minDate;
-    if(!l.isEmpty())
+    if(!lh.isEmpty())
+        minDate=lh.first().time;
+    else if(!l.isEmpty())
         minDate=l.first().time;
     else
         minDate=QDateTime::currentDateTime().addSecs(-10);
 
+    for(int i=0;i<lh.count();i++)
+    {
+        if(sh.isValid() && lh[i].time<sh)
+        {
+            if(!locked() || lh[i].time>minDate)
+            {
+                if(!i || max<lh[i].value)
+                    max=lh[i].value;
+
+                m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i].value);
+            }
+        }
+    }
+
     for(int i=0;i<l.count();i++)
     {
-        if(!locked() || l[i].time>min)
+        if(!locked() || l[i].time>minDate)
         {
-            if(!i || max<l[i].value)
+            if((!i&&lh.isEmpty()) || max<l[i].value)
                 max=l[i].value;
+
 
             m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
         }
     }
 
 
+
+
+
     if(m_series->count()<=1)
     {
-        m_series->append(min.toMSecsSinceEpoch(),m_device->currentValue());
+       m_series->append(minDate.toMSecsSinceEpoch(),m_device->currentValue());
     }
 
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
 
     m_chart->addSeries(m_series);
 
-    m_xAxis->setRange(min,QDateTime::currentDateTime().addSecs(1));
+    m_xAxis->setRange(minDate,QDateTime::currentDateTime().addSecs(1));
     m_yAxis->setMax(max*1.1);
     m_yAxis->setMin(0);
+
     m_series->attachAxis(m_xAxis);
     m_series->attachAxis(m_yAxis);
 }

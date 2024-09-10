@@ -20,12 +20,14 @@ public:
     UnitPlot* plot(HardwareUnit*u);
 
 signals:
+    void edit(HardwareUnit* t);
 
 private slots:
     void restart();
     void updateDate();
     void valueSlot(int i);
     void actionTop(QString,ActionWidget*);
+    void plotTrigg();
 
 private:
     QLabel* m_name;

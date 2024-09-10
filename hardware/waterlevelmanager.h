@@ -7,13 +7,29 @@
 #include "hardware/pump.h"
 #include "hardwareunit.h"
 
+class TankInjector: public ChemicalInjector
+{
+    Q_OBJECT
+ public:
+    explicit TankInjector(int mixPin, int pumpPin, int LevelPin, int ID, QObject *parent = nullptr);
+
+    void setCurrentValue(float v);
+    void fillTank();
+
+private:
+    float m_current;
+};
+
 class WaterLevelManager : public HardwareUnit
 {
     Q_OBJECT
 public:
     explicit WaterLevelManager(QObject *parent = nullptr);
-    void attachInjector(ChemicalInjector* c);
+    void attachInjector(TankInjector *c);
     virtual void reactToSensorsChanged();
+    virtual void reactToParamChanged(Parameter*, float );
+
+    virtual void attachParameter(Parameter* p);
     void fillTank();
 
 
@@ -29,7 +45,7 @@ private slots:
 
 
 signals:
-    void injecting(bool t);
+
     void injectingStateChanged(QString s);
 
 private:
@@ -37,7 +53,7 @@ private:
     BooleanSensor* m_levelDown;
     BooleanSensor* m_levelUp;
     SwitchedActuator* m_entryValve;
-    QList<ChemicalInjector*> m_injectors;
+    QList<TankInjector*> m_injectors;
     QString m_injectingState;
 
 

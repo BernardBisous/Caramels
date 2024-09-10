@@ -6,13 +6,10 @@
 #include <QFile>
 
 #define HISTO_PATH "data/"
-#define PR_SAMPLING_RATE "Freq.[s]"
-
-#define AUTO_POLL_SENSOR false
 #define MAX_VALUES 200
 #define MAX_DELAY_RECORD 2
 Device::Device(QString name,QObject *parent)
-    : QObject{parent},m_recording(false),
+    : QObject{parent},m_recording(true),
       m_name(name),m_serial(nullptr),m_recordDelay(-1),m_lastRecord()
 {
     setRange(0,100);
@@ -64,7 +61,7 @@ void Device::computeResults()
     }
 }
 
-QString Device::dataValue(QString key)
+QString Device::dataValue(QString key) const
 {
     return m_metaData.value(key);
 }
@@ -200,6 +197,11 @@ void Device::setOffset(float t)
     m_offset=t;
 }
 
+float Device::mapToPurcent(float val)
+{
+    return (val-m_offset/gain());
+}
+
 float Device::maxRange()
 {
     return m_gain*100+m_offset;
@@ -242,8 +244,6 @@ void Device::storeValue(float t)
 
         return;
 
-    if(name()=="Capteur de PH")
-        qDebug()<<"store value"<<t<<ts<<m_lastRecord;
 
     m_lastRecord=QDateTime::currentDateTime();
 
@@ -410,7 +410,6 @@ void Actuator::reset()
 void Actuator::stop()
 {
     m_impulseTimer->stop();
-
     userApplyPurcent(0);
 }
 
@@ -423,11 +422,14 @@ void Actuator::impulse(float val,int ms, float valEnd)
 
 void Actuator::impulseHigh(int ms)
 {
+
+
     impulse(maxRange(),ms,minRange());
 }
 
 void Actuator::impulseSlot()
 {
+
 
     m_impulseTimer->stop();
     applyValue(m_nextVal);
@@ -436,11 +438,10 @@ void Actuator::impulseSlot()
 }
 
 Sensor::Sensor(int pin,QString name, QObject *parent)
-    :Device(name,parent),m_pollTimer(nullptr),m_pin(pin),m_continousStreaming(false)
+    :Device(name,parent),m_pin(pin)
 {
 
-    if(AUTO_POLL_SENSOR)
-        setDataValue("Freq.[s]","1");
+
 
     setRecordDelay(MAX_DELAY_RECORD);
 }
@@ -453,55 +454,22 @@ float Sensor::aquire()
 
 void Sensor::reactToDataEdited(QString key, QString )
 {
-    if(key==PR_SAMPLING_RATE)
-    {
 
-        updateSamplingRate();
-    }
 }
 
 void Sensor::begin()
 {
     Device::begin();
 
-    if(AUTO_POLL_SENSOR)
-       startPolling(true);
+
 }
 
-void Sensor::updateSamplingRate()
-{
-    float s=dataValue(PR_SAMPLING_RATE).toFloat()*1000;
 
-    if(m_pollTimer)
-        m_pollTimer->setInterval(s);
-}
-
-void Sensor::startPolling(bool s)
-{
-
-    if(s)
-    {
-        if(!m_pollTimer)
-        {
-            m_pollTimer=new QTimer(this);
-            connect(m_pollTimer,SIGNAL(timeout()),this,SLOT(measure()));
-        }
-        updateSamplingRate();
-        m_pollTimer->start();
-    }
-    else if(m_pollTimer)
-        m_pollTimer->stop();
-}
 
 void Sensor::measure()
 {
     float a=aquire();
-
-    if(m_continousStreaming || a!=currentValue())
-    {
-        appendValue(a);
-    }
-
+    appendValue(a);
 }
 
 

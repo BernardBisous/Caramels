@@ -5,7 +5,7 @@
 #include "qlabel.h"
 
 ParameterListWidget::ParameterListWidget(QWidget *parent)
-    : QWidget{parent}
+    : QWidget{parent},m_current(-1)
 {
     setLayout(new QVBoxLayout);
 
@@ -31,24 +31,26 @@ void ParameterListWidget::handle(GrowConfig *c)
 
 void ParameterListWidget::handleHadware(HardwareUnit *h)
 {
-    int n=currentSelected();
-
     if(!h)
         return;
 
-     m_list->fillList(h->parametersName());
-     if(n>=0)
-         setSelected(n);
+    setParams(h->parameters());
 }
 
 void ParameterListWidget::setSelected(int index)
 {
+
+    m_current=index;
     QList<ActionWidget *> l=items();
     for(int i=0;i<l.count();i++)
     {
-        l[i]->setChecked(i==index);
+        l[i]->setChecked(i==m_current && m_current>=0);
     }
 
+    if(index<0 || index>=m_params.count())
+        emit selected(index,nullptr);
+    else
+        emit selected(index,m_params[index]);
 }
 
 
@@ -78,12 +80,57 @@ QList<ActionWidget *> ParameterListWidget::items()
     return out;
 }
 
-void ParameterListWidget::trigSlot(int i, QWidget *w)
+void ParameterListWidget::trigSlot(int i, QWidget*)
 {
-    setSelected(i);
-    (void)w;
 
-    emit selected(i);
+    qDebug()<<"selected()"<<i<<m_current;
+
+    if(i<0 || i>m_params.count() || i==m_current)
+    {
+       setSelected(-1);
+    }
+
+    else
+        setSelected(i);
+
+
+
+}
+
+int ParameterListWidget::current() const
+{
+    return m_current;
+}
+
+void ParameterListWidget::setCurrent(int newCurrent)
+{
+    m_current = newCurrent;
+}
+
+QList<Parameter *> ParameterListWidget::params() const
+{
+    return m_params;
+}
+
+void ParameterListWidget::setParams(const QList<Parameter *> &newParams)
+{
+    int n=currentSelected();
+
+    m_params = newParams;
+
+    m_list->fillList(paramNames());
+    if(n>=0)
+        setSelected(n);
+}
+
+QStringList ParameterListWidget::paramNames()
+{
+    QStringList out;
+
+    for(int i=0;i<m_params.count();i++)
+        out<<m_params[i]->name();
+
+    return out;
 }
 
 

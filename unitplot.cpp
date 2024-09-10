@@ -6,7 +6,7 @@ UnitPlot::UnitPlot(QWidget *parent): QWidget(parent),m_client(nullptr)
 
     m_timer=new QTimer(this);
     m_timer->setInterval(1000);
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(updatePlot()));
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(updateSensors()));
 
     m_view = new QChartView(this);
     m_view->setRenderHint(QPainter::Antialiasing);
@@ -18,6 +18,8 @@ UnitPlot::UnitPlot(QWidget *parent): QWidget(parent),m_client(nullptr)
     m_xAxis->setTitleText("Time");
     m_yAxis = new QValueAxis;
     m_xAxis->setTitleVisible(true);
+
+    m_yAxis->setRange(0,100);
 
     // Set axis properties
 
@@ -48,59 +50,94 @@ void UnitPlot::removeMargins()
     m_view->setContentsMargins(0,0,0,0);
 }
 
-void UnitPlot::handle(HardwareUnit *u, QDateTime t)
+void UnitPlot::handle(HardwareUnit *u)
 {
-    for(int i=0;i<m_series.count();i++)
-        delete m_series[i];
-    m_series.clear();
-
-    m_startDate=t;
+    initStyle();
+    m_startDate=u->startTime();
     m_client=u;
 
     m_chart->setTitle(u->name());
+
+
+
+    for(int i=0;i<m_devicesSeries.count();i++)
+        delete m_devicesSeries[i];
+    m_devicesSeries.clear();
 
     QPen pen(palette().highlight().color());
     pen.setStyle(Qt::DotLine);
     for(int i=0;i<u->devices().count();i++)
     {
         QLineSeries * s=new QLineSeries;
-        m_series.append(s);
+        m_devicesSeries.append(s);
         s->setPen(pen);
 
         m_chart->addSeries(s);
         s->attachAxis(m_xAxis);
+        s->attachAxis(m_yAxis);
     }
 
+
+    for(int i=0;i<m_parametersSeries.count();i++)
+        delete m_parametersSeries[i];
+    m_parametersSeries.clear();
 
     pen.setStyle(Qt::SolidLine);
     for(int i=0;i<u->parameters().count();i++)
     {
         QLineSeries* s=new QLineSeries;
-        m_series.append(s);
+        m_parametersSeries.append(s);
         s->setPointsVisible();
         m_chart->addSeries(s);
         s->attachAxis(m_xAxis);
+        s->attachAxis(m_yAxis);
     }
 
-
-
-    initStyle();
-
     updatePlot();
-    m_timer->start();
+
+    if(!m_devicesSeries.isEmpty())
+        m_timer->start();
+}
+
+void UnitPlot::updateParameters()
+{
+    m_startDate=m_client->startTime();
+
+    for(int j=0;j<m_client->parameters().count();j++)
+    {
+        updateParameter(m_parametersSeries[j],m_client->parameters()[j],m_startDate);
+    }
+    updateScale();
+}
+
+void UnitPlot::updateScale()
+{
+    m_yAxis->setMax(110);
+    m_yAxis->setMin(-10);
+    QDateTime endConfig=m_client->endConfig();
+    if(m_startDate.isValid())
+    {
+         m_xAxis->setRange(m_startDate,endConfig);
+    }
+    else m_xAxis->setMax(endConfig);
+
 }
 
 void UnitPlot::updatePlot()
 {
+    updateSensors();
+    updateParameters();
+}
+
+void UnitPlot::updateSensors()
+{
     int i=0;
 
-
-    int maxX=0;
-     initStyle();
+    initStyle();
 
     for(i=0;i<m_client->devices().count();i++)
     {
-        updateSensor(m_series[i],m_client->devices()[i]);
+        updateSensor(m_devicesSeries[i],m_client->devices()[i]);
     }
 
     if(m_client->parameters().isEmpty())
@@ -109,43 +146,131 @@ void UnitPlot::updatePlot()
     }
 
 
-    for(int j=0;j<m_client->parameters().count();j++)
-    {
+    updateScale();
+}
 
-        int m=m_client->parameters()[j]->maxX();
-        if(m>maxX)
-            maxX=m;
+Device *UnitPlot::targeting() const
+{
+    return m_targeting;
+}
 
-        updateParameter(m_series[i+j],m_client->parameters()[j],m_startDate);
-    }
+void UnitPlot::setTargeting(Device *newTargeting)
+{
+    m_targeting = newTargeting;
+}
 
 
-    m_xAxis->setRange(m_startDate,m_startDate.addSecs(maxX*Parameter::timeMultiplicator()));
+
+HardwareUnit *UnitPlot::client() const
+{
+    return m_client;
 }
 
 void UnitPlot::setStartDate(const QDateTime &newStartDate)
 {
     m_startDate = newStartDate;
-    updatePlot();
+
 }
 
-void UnitPlot::updateSensor(QLineSeries *l, Device *s)
+QLineSeries *UnitPlot::paramSerie(Parameter *p)
 {
-    m_chart->removeSeries(l);
-    l->clear();
+
+    int index=m_client->parameters().indexOf(p);
+    if(index>=0)
+    {
+        return m_parametersSeries[index];
+    }
+    return nullptr;
+}
+
+
+
+
+
+QDateTime UnitPlot::endConfig()
+{
+    if(!m_client)
+        return QDateTime::currentDateTime();
+    return m_client->endConfig();
+}
+
+void UnitPlot::updateSensor(QLineSeries *series, Device *s)
+{
+    m_chart->removeSeries(series);
+    series->clear();
     int size=200;
     QList<RealTimeValue> in=s->values();
     int n=in.count();
     int i=n-size-1;
+
     if(i<0)
         i=0;
-    for(;i<n;i++)
+
+
+    auto l=s->values();
+    auto lh=s->historic();
+
+    QDateTime sh;
+    if(!l.isEmpty())
+        sh=l.first().time;
+
+    float max=0;
+    QDateTime minDate;
+    if(!lh.isEmpty())
+        minDate=lh.first().time;
+    else if(!l.isEmpty())
+        minDate=l.first().time;
+    else
+        minDate=QDateTime::currentDateTime().addSecs(-10);
+
+    for(int i=0;i<lh.count();i++)
     {
-        l->append(in[i].time.toMSecsSinceEpoch(),in[i].value);
+        if(sh.isValid() && lh[i].time<sh)
+        {
+            if( lh[i].time>minDate)
+            {
+                if(!i || max<lh[i].value)
+                    max=lh[i].value;
+
+                series->append(lh[i].time.toMSecsSinceEpoch(),s->mapToPurcent(lh[i].value));
+            }
+        }
     }
 
-    m_chart->addSeries(l);
-    l->attachAxis(m_xAxis);
+    for(int i=0;i<l.count();i++)
+    {
+        if(l[i].time>minDate)
+        {
+            if((!i&&lh.isEmpty()) || max<l[i].value)
+                max=l[i].value;
+
+
+            series->append(l[i].time.toMSecsSinceEpoch(),s->mapToPurcent(l[i].value));
+        }
+    }
+
+
+
+
+
+    if(series->count()<=1)
+    {
+       series->append(minDate.toMSecsSinceEpoch(),s->currentValue());
+    }
+
+    series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),s->currentValue());
+
+    m_chart->addSeries(series);
+
+    QDateTime tf=endConfig();
+
+    if(minDate<m_startDate || !m_startDate.isValid())
+        m_xAxis->setRange(minDate,tf.addSecs(1));
+    else
+         m_xAxis->setRange(m_startDate,tf.addSecs(1));
+
+    series->attachAxis(m_xAxis);
+    series->attachAxis(m_yAxis);
 }
 
 void UnitPlot::updateParameter(QLineSeries *l, Parameter *p,QDateTime start)
@@ -164,6 +289,7 @@ void UnitPlot::updateParameter(QLineSeries *l, Parameter *p,QDateTime start)
 
     m_chart->addSeries(l);
     l->attachAxis(m_xAxis);
+    l->attachAxis(m_yAxis);
 }
 
 void UnitPlot::initStyle()
@@ -197,4 +323,9 @@ void UnitPlot::initStyle()
     update();
 
 
+}
+
+float UnitPlot::maxY()
+{
+    return 100;
 }

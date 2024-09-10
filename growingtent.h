@@ -27,7 +27,7 @@ public slots:
 signals:
 
 private:
-    ConfigEditor* m_editor;
+
     TentEditor* m_tentEdit;
     GrowConfig* m_currentConfig;
     Tent* m_tent;

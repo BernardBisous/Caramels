@@ -1,60 +1,62 @@
 #include "chemicalinjector.h"
 
-#define DELAY_MIX 1000
 
+#define MIN_INJECTION_MS 100
 ChemicalInjector::ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int ID, QObject*parent )
-    : QObject(parent),m_maxMsInjection(2000),m_id(ID),m_injecting(false)
+    : QObject(parent),m_mixer(nullptr),
+      m_levelSensor(nullptr),m_state(ready),m_id(ID)
 {
 
-    m_pump=new ChemicalPump(pumpPin,"Pompe engrais ",this);
-    m_mixer=new SwitchedActuator(mixPin,true,"Brasseur engrais ",this);
-
-    connect(m_mixer,SIGNAL(impulseDone()),this,SLOT(mixerSlot()));
+    m_pump=new Pump(pumpPin,"Pompe engrais ",this);
     connect(m_pump,SIGNAL(impulseDone()),this,SLOT(pumpSlot()));
+
+    if(mixPin>0)
+    {
+        m_mixer=new SwitchedActuator(mixPin,true,"Brasseur engrais ",this);
+        connect(m_mixer,SIGNAL(impulseDone()),this,SLOT(mixerSlot()));
+
+    }
+
+
+
 
     if(LevelPin>0)
         m_levelSensor=new BooleanSensor(LevelPin,"Niveau engrais ",this);
     else
         m_levelSensor=nullptr;
-
-
 }
 
 
-ChemicalPump *ChemicalInjector::pump() const
+Pump *ChemicalInjector::pump() const
 {
     return m_pump;
 }
 
 
 
-void ChemicalInjector::setPump(ChemicalPump *newPump)
+void ChemicalInjector::setPump(Pump *newPump)
 {
     m_pump = newPump;
 }
 
 void ChemicalInjector::injectMl(float v)
 {
-    if(!m_lastInjection.isValid()
-            || (m_lastInjection.msecsTo(QDateTime::currentDateTime())>m_maxMsInjection && m_maxMsInjection>0))
+
+
+    m_injectingValue=v;
+
+    if(m_state==injecting)
     {
-
-        //m_pump->console("Injecting "+name()+" "+QString::number(v));
-
-        m_injectingValue=v;
-        m_lastInjection=QDateTime::currentDateTime();
-        m_mixer->impulseHigh(DELAY_MIX);
-        emit injection(DELAY_MIX + msForMl(v));
-        emit console(QString::number(m_id)+" Inject "+QString::number(v)+"ml, "+QString::number(msForMl(v)));
-
-
+        mixerSlot();
+        return;
     }
+
+    m_mixer->impulseHigh(m_mixer->gain()*1000);
+
+    setState(mixing);
+
 }
 
-int ChemicalInjector::msForMl(float v)
-{
-    return m_pump->gain()*v;
-}
 
 void ChemicalInjector::setGain(float msPerMl)
 {
@@ -66,15 +68,18 @@ float ChemicalInjector::gain()
     return m_pump->gain();
 }
 
-QDateTime ChemicalInjector::lastInjection() const
+void ChemicalInjector::setName(QString s)
 {
-    return m_lastInjection;
+    m_pump->setName("Pompe "+ s);
+
+    if(m_mixer)
+        m_mixer->setName("Vibreur "+s);
+
+    if(m_levelSensor)
+        m_levelSensor->setName("Niveau "+s);
 }
 
-void ChemicalInjector::setMaxMsInjection(int newMaxMsInjection)
-{
-    m_maxMsInjection = newMaxMsInjection;
-}
+
 
 SwitchedActuator *ChemicalInjector::mixer() const
 {
@@ -95,19 +100,29 @@ int ChemicalInjector::id() const
 
 void ChemicalInjector::mixerSlot()
 {
-
-
-    m_pump->impulseHigh(msForMl(m_injectingValue));
+    setState(injecting);
+    m_pump->inject(m_injectingValue);
 }
 
 void ChemicalInjector::pumpSlot()
 {
-    emit injection(0);
+
+    setState(ready);
+
 }
 
-bool ChemicalInjector::injecting() const
+ChemicalInjector::State ChemicalInjector::state() const
 {
-    return m_injecting;
+    return m_state;
 }
+
+void ChemicalInjector::setState(State newState)
+{
+
+    emit stateChanged(newState);
+    m_state = newState;
+}
+
+
 
 

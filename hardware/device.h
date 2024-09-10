@@ -34,7 +34,7 @@ public:
     int possibleParameterId();
     bool acceptsParam(int id);
 
-    QString dataValue(QString key);
+    QString dataValue(QString key) const;
     bool existData(QString key);
     void setDataValue(QString key, QString val, bool fromEditing=false);
 
@@ -57,13 +57,14 @@ public:
     void setOffset(float t);
 
 
+    float mapToPurcent(float val);
     float maxRange();
     float minRange();
 
     static bool createDataDir();
 
     float currentPurcent();
-    float currentValue() const;
+    virtual float currentValue() const;
 
     SerialTent *serial() const;
     void setSerial(SerialTent *newSerial);
@@ -76,6 +77,8 @@ public:
     float gain() const;
     void exportHistoric(QString file);
     void clearHistoric();
+    QList<RealTimeValue> historic();
+    QList<RealTimeValue> historic(int size);
 
     void setRecordDelay(int newRecordDelay);
 
@@ -88,8 +91,7 @@ signals:
     void newValue(float t);
 
 protected :
-    QList<RealTimeValue> historic();
-    QList<RealTimeValue> historic(int size);
+
     void appendValue(float v);
     QList<RealTimeValue> m_values;
 
@@ -120,21 +122,15 @@ public:
     virtual float aquire();
     virtual void reactToDataEdited(QString key,QString val);
     virtual void begin();
-    void updateSamplingRate();
-    void startPolling(bool s);
+
+
 
 public slots:
     virtual void measure();
 
 protected :
 
-    QTimer* m_pollTimer;
-    bool m_continousStreaming;
-
-
     int m_pin;
-
-
 };
 
 

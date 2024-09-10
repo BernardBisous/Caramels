@@ -18,9 +18,11 @@ public:
 
 public slots:
     void createSlot();
+    void editSlot(HardwareUnit* t){emit editOne(t);}
+
 
 signals:
-
+    void editOne(HardwareUnit* t);
 private:
     Tent* m_tent;
     TopWidget* m_emptyWidget;

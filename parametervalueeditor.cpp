@@ -15,7 +15,12 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     QWidget* modeWidget=new QWidget;
     modeWidget->setLayout(new QHBoxLayout);
     modeWidget->layout()->setContentsMargins(0,0,0,20);
-    modeWidget->layout()->addWidget(m_value=new QLabel);
+
+    QWidget* vn=new QWidget;
+    vn->setLayout(new QVBoxLayout);
+    vn->layout()->addWidget(m_name=new QLabel);
+    vn->layout()->addWidget(m_value=new QLabel);
+    modeWidget->layout()->addWidget(vn);
     modeWidget->layout()->addWidget(addMode(":/icons/offset","Offset"));
     modeWidget->layout()->addWidget(addMode(":/icons/gain","Gain"));
 
@@ -25,29 +30,23 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
 
     layout()->addWidget(modeWidget);
 
-    addMode(":/icons/Gain","Offset");
-
-
 
      QWidget*b=new QWidget;
-     QGridLayout* gr=new QGridLayout;
+     QHBoxLayout* gr=new QHBoxLayout;
      gr->setContentsMargins(0,0,0,0);
-     gr->addWidget(m_up=new ToolButton("Up",":/icons/up"),0,1);
-     gr->addWidget(m_left=new ToolButton("Left",":/icons/left"),1,0);
-     gr->addWidget(m_right=new ToolButton("Right",":/icons/right"),1,2);
-     gr->addWidget(m_down=new ToolButton("Down",":/icons/down"),2,1);
-
+     gr->addWidget(m_up=new ToolButton("Up",":/icons/up"));
+     gr->addWidget(m_left=new ToolButton("Left",":/icons/left"));
+     gr->addWidget(m_right=new ToolButton("Right",":/icons/right"));
+     gr->addWidget(m_down=new ToolButton("Down",":/icons/down"));
      b->setLayout(gr);
 
      layout()->addWidget(b);
 
 
-
-
-     m_up->setRound(70);
-     m_down->setRound(70);
-     m_left->setRound(70);
-     m_right->setRound(70);
+     m_up->setRound(60);
+     m_down->setRound(60);
+     m_left->setRound(60);
+     m_right->setRound(60);
 
     connect(m_up,SIGNAL(clicked()),this,SLOT(up()));
     connect(m_down,SIGNAL(clicked()),this,SLOT(down()));
@@ -64,6 +63,7 @@ Parameter *ParameterValueEditor::client() const
 
 void ParameterValueEditor::setClient(Parameter *newClient)
 {
+
     m_client = newClient;
     refreshValue();
 }
@@ -164,12 +164,22 @@ void ParameterValueEditor::right()
 
 void ParameterValueEditor::setSeries(QLineSeries *newSeries)
 {
+
     m_series = newSeries;
+
+    if(!newSeries)
+        return;
+
     connect(m_series,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
 }
 
 void ParameterValueEditor::refreshValue()
 {
+    if(!m_client)
+        return;
+
+    m_name->setText(m_client->name());
+
     QString s;
     int n=lastSelected();
     if(n<0)

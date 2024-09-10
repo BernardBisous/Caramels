@@ -15,6 +15,7 @@ public:
     virtual void reactToSensorsChanged();
     virtual void finish();
     void attachInjector(ChemicalInjector* c);
+    void regulate();
     float ph();
 
 signals:
@@ -27,6 +28,7 @@ private:
     AnalogSensor* m_sensor;
     ChemicalInjector* m_phPlus;
     ChemicalInjector* m_phMinus;
+
 };
 
 #endif // PHMANAGER_H

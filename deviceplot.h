@@ -3,7 +3,6 @@
 
 #include "hardware/device.h"
 #include "qdatetime.h"
-#include "qsplineseries.h"
 #include <QChartView>
 #include <QLineSeries>
 #include <QDateTimeAxis>
@@ -28,15 +27,11 @@ private:
     bool m_locked;
     Device* m_device;
     QChart* m_chart;
-    QSplineSeries* m_series;
-
+    QLineSeries* m_series;
+    QLineSeries* m_historic;
     QDateTimeAxis *m_xAxis;
     QValueAxis *m_yAxis;
-
-
     void updatePlot() ;
-
-
 };
 
 #endif // DEVICEPLOT_H

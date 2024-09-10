@@ -12,16 +12,14 @@ WaterLevelManager::WaterLevelManager(QObject *parent)
     attachDevice(m_levelUp=new BooleanSensor(WATER_LEVEL_PIN_1,"Cuve pleine"));
     attachDevice(m_levelDown=new BooleanSensor(WATER_LEVEL_PIN_2,"Cuve vide"));
 
-    attachInjector(new ChemicalInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,NO_PIN,CHEMICAL_1,this));
-    attachInjector(new ChemicalInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,CHEMICAL_2,this));
-    attachInjector(new ChemicalInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,CHEMICAL_3,this));
-
-
+    attachInjector(new TankInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,NO_PIN,CHEMICAL_1,this));
+    attachInjector(new TankInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,CHEMICAL_2,this));
+    attachInjector(new TankInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,CHEMICAL_3,this));
 
     m_idParameters<<CHEMICAL_1<<CHEMICAL_2<<CHEMICAL_3;
 }
 
-void WaterLevelManager::attachInjector(ChemicalInjector *c)
+void WaterLevelManager::attachInjector(TankInjector *c)
 {
     attachDevice(c->pump());
     attachDevice(c->mixer());
@@ -54,24 +52,47 @@ void WaterLevelManager::reactToSensorsChanged()
         console("Remplissage terminé");
         m_injectingState="";
         emit injectingStateChanged(m_injectingState);
-        emit injecting(false);
+    }
+}
+
+void WaterLevelManager::reactToParamChanged(Parameter *p, float v)
+{
+    for(int i=0;i<m_injectors.count();i++)
+        if(m_injectors[i]->id()==p->id())
+        {
+            m_injectors[i]->setCurrentValue(v);
+        }
+}
+
+void WaterLevelManager::attachParameter(Parameter *p)
+{
+    HardwareUnit::attachParameter(p);
+
+    if(!p)
+        return;
+
+    for(int i=0;i<m_injectors.count();i++)
+    {
+        if(m_injectors[i]->id()==p->id())
+        {
+            m_injectors[i]->setName(p->name());
+            return;
+        }
     }
 }
 
 void WaterLevelManager::fillTank()
 {
+
     for(int i=0;i<m_injectors.count();i++)
     {
-        Parameter*p=parameterFromId(CHEMICAL_1+i);
-        bool b;
-        if(p)
-            m_injectors[i]->injectMl(p->currentValue(m_startTime,&b));
+       m_injectors[i]->fillTank();
     }
     console("Remplissage (injection)");
     m_injectingState="Dosage";
 
     emit injectingStateChanged(m_injectingState);
-    emit injecting(true);
+
 
 
 }
@@ -83,7 +104,7 @@ void WaterLevelManager::injectorSlot(int index)
     bool b=true;
     for(int i=0;i<m_injectors.count();i++)
     {
-       if(m_injectors[i]->injecting())
+       if(m_injectors[i]->state()!=ChemicalInjector::ready)
            b=false;
     }
 
@@ -108,3 +129,24 @@ bool WaterLevelManager::injecting()
 {
     return !m_injectingState.isEmpty();
 }
+
+TankInjector::TankInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObject*parent):
+    ChemicalInjector(mixPin,pumpPin,LevelPin,ID,parent), m_current(0)
+{
+    setGain(120);
+}
+
+
+
+void TankInjector::setCurrentValue(float v)
+{
+    m_current=v;
+
+}
+
+void TankInjector::fillTank()
+{
+
+    injectMl(m_current);
+}
+

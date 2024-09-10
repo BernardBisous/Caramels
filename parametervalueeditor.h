@@ -63,6 +63,7 @@ private:
 
     QList<int>m_indexes;
     QLabel* m_value;
+    QLabel*m_name;
 
 
 

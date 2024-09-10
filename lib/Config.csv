@@ -7,7 +7,7 @@ Temperature,Humidité ,%,4,Humidité relative ,30,30,30,30,30,35,35,35,35,35,35,
 Heigh,Hauteur des plants,m,6,Hauteur des lights par rapport à la canopée,50,60,70,80,90,100,110,120,130,140,150,50,60,70,80,90,100,110,120,130,140,150,50,60,70,80,90,100,110,120,130,140,150
 CO2,Concentration de CO2,ppm,7,CO2 dans l'air,3,4,4,4,5,5,5,5,5,5,5,3,4,4,4,5,5,5,5,5,5,5,3,4,4,4,5,5,5,5,5,5,5
 Wind,Force du vent,%,9,Quantité de mouvement du vent,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60
-PH,PH,ph,10,Acidité de l'eau,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7
+PH,PH,ph,10,Acidité de l'eau,5,5,5,5,5,5,5,5,6,6,6,6,6,6,7,7,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6
 Dosage,Mélasse,L/m3,11,Concentration de produit 1,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7
 Dosage,Boost,L/m3,12,Concentration de produit 2,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6
 Events,Taillages,,20,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure

@@ -21,8 +21,15 @@ public:
 
 
 
+    QList<Parameter *> params() const;
+    void setParams(const QList<Parameter *> &newParams);
+    QStringList paramNames();
+
+    int current() const;
+    void setCurrent(int newCurrent);
+
 signals:
-    void selected(int i);
+    void selected(int i,Parameter*p);
     void addOne();
 
 private slots:
@@ -31,7 +38,9 @@ private slots:
 
 
 private:
+    int m_current;
     ActionWidget* m_add;
+    QList<Parameter*>m_params;
     ScrollArea* m_list;
 
 

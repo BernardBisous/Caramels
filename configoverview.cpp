@@ -46,7 +46,6 @@ ConfigOverview::ConfigOverview(QWidget *parent)
 
 void ConfigOverview::setTent(Tent *t)
 {
-
     m_client=t;
 
     if(!t)
@@ -60,6 +59,7 @@ void ConfigOverview::setTent(Tent *t)
         m_event->handle(t->config()->events());
 
 
+    /*
 
     m_plotLayout->addWidget(plot(t->temperatures()),0,1);
     m_plotLayout->addWidget(plot(t->co2Manager()),0,2);
@@ -67,6 +67,7 @@ void ConfigOverview::setTent(Tent *t)
     m_plotLayout->addWidget(plot(t->pumps()),1,1);
     m_plotLayout->addWidget(plot(t->phManager()),1,2);
 
+    */
     updateDate();
     refresh();
 }
@@ -90,8 +91,8 @@ UnitPlot *ConfigOverview::plot(HardwareUnit *u)
     UnitPlot*p=new UnitPlot;
     m_plots.append(p);
     p->removeMargins();
-    p->handle(u,m_client->startedDate());
-
+    p->handle(u);
+    connect(p,SIGNAL(clicked()),this,SLOT(plotTrigg()));
     return p;
 }
 
@@ -159,4 +160,12 @@ void ConfigOverview::actionTop(QString s, ActionWidget *)
 
            m_client->exportAll(directory);
     }
+}
+
+void ConfigOverview::plotTrigg()
+{
+
+    UnitPlot* t=dynamic_cast<UnitPlot*>(sender());
+    if(t)
+        emit edit(t->client());
 }

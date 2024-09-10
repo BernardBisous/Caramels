@@ -38,13 +38,9 @@ GrowingTent::GrowingTent(QWidget* parent)
     c->layout()->addWidget(bar);
     c->layout()->addWidget(m_stack=new QStackedWidget);
 
-    m_editor=new ConfigEditor(this);
-    m_editor->handle(m_currentConfig);
-   // connect(m_tent,SIGNAL(newValue(int)),m_editor,SLOT(setCurrentIndex(int)));
 
     m_stack->addWidget(m_overview=new Overview);
     m_stack->addWidget(m_tentEdit=new TentEditor(this));
-    m_stack->addWidget(m_editor);
     m_stack->addWidget(m_webcam=new WebcamWidget);
     m_webcam->handle(m_tent->cam());
 
@@ -55,7 +51,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     f.setPointSize(f.pointSize()+15);
     m_nameLab->setFont(f);
 
-    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Configurations"<<"Camera"); // dirty
+    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Camera"); // dirty
 
     setCentralWidget(c);
 
@@ -63,8 +59,8 @@ GrowingTent::GrowingTent(QWidget* parent)
     connect(m_selector,SIGNAL(triggered(int)),this,SLOT(goToIndex(int)));
     connect(m_selector,SIGNAL(help()),this,SLOT(help()));
 
-    connect(m_tentEdit,SIGNAL(editParam(Parameter*)),this,SLOT(editParam(Parameter*)));
 
+    connect(m_overview,SIGNAL(editOne(HardwareUnit*)),this,SLOT(editUnit(HardwareUnit*)));
 
     m_tentEdit->handle(m_tent);
     m_overview->loadHardware(m_tent);
@@ -147,6 +143,11 @@ void GrowingTent::editUnit(HardwareUnit *s)
 
 void GrowingTent::editParam(Parameter *p)
 {
-    goToIndex(Configs);
-    m_editor->editParameter(p);
+
+    auto l=m_tent->unitsForParameter(p);
+    if(l.isEmpty())
+        return;
+    goToIndex(Hardware);
+    m_tentEdit->edit(l.first());
+
 }

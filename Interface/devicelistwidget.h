@@ -16,11 +16,20 @@ public:
     void setChecked(int i);
 
 
+    int current() const;
+    void setCurrent(int newCurrent);
+
+signals:
+    void checked(int index);
+
 private slots:
     void listSlot(int, QWidget*);
 
 signals:
     void edit(int i);
+
+private:
+    int m_current;
 
 
 };

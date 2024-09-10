@@ -11,6 +11,8 @@ Overview::Overview(QWidget *parent)
 
     m_hardware->setBackgroundRole(QPalette::Window);
     m_hardware->setFixedWidth(200);
+
+    connect(m_config,SIGNAL(edit(HardwareUnit*)),this,SLOT(editSlot(HardwareUnit*)));
 }
 
 void Overview::loadHardware(Tent *t)

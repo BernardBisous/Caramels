@@ -53,7 +53,7 @@ public:
 
     int indexOf(HardwareUnit*u);
     QList<HardwareUnit *> units() const;
-
+    QList<HardwareUnit *> unitsForParameter(Parameter*p);
     float PH();
     float temperature(int sensorIndex);
     float CO2();

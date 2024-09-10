@@ -1,35 +1,28 @@
 #include "tenteditor.h"
-#include "qlineedit.h"
-#include "Interface/toolbutton.h"
 
 TentEditor::TentEditor(QWidget *parent)
     : QWidget{parent},m_client(nullptr),m_currentUnit(-1)
 {
 
     setLayout(new QHBoxLayout);
-
-
-
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
     list->layout()->addWidget(m_ports=new SerialEditor);
     list->layout()->addWidget(new QLabel("Unités de contole:"));
-    //list->layout()->addWidget(new QLineEdit);
     list->layout()->addWidget(m_units=new ScrollArea);
-
+    list->layout()->addWidget(m_parameters=new ParameterListWidget);
     list->layout()->setContentsMargins(0,0,0,0);
     list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
-
+    m_units->setContentsMargins(0,0,0,0);
+    m_parameters->layout()->setContentsMargins(0,0,0,0);
+    list->setMaximumWidth(200);
 
     layout()->addWidget(list);
     layout()->addWidget(m_editor=new UnitEditor);
 
 
-
-    list->setFixedWidth(200);
-
-   connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
-    connect(m_editor,SIGNAL(editParameter(Parameter*)),this,SLOT(paramListSlot(Parameter*)));
+    connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
+    connect(m_parameters,SIGNAL(selected(int,Parameter*)),this,SLOT(paramListSlot(int,Parameter*)));
 }
 
 void TentEditor::handle(Tent *t)
@@ -61,6 +54,8 @@ void TentEditor::edit(int index)
     HardwareUnit*c=m_client->units()[index];
     m_currentUnit=index;
     m_editor->handle(c);
+    m_parameters->setHidden(c->parameters().isEmpty());
+    m_parameters->handleHadware(c);
 
     auto l=m_units->widgets();
     for(int i=0;i<l.count();i++)
@@ -71,29 +66,6 @@ void TentEditor::edit(int index)
             wa->setChecked(i==index);
         }
     }
-
-    /*
-
-    while(m_parameters->layout()->count())
-    {
-        auto i=m_parameters->layout()->takeAt(0);
-        if(i->widget())
-            delete i->widget();
-        delete i;
-    }
-    auto lp=c->parameters();
-    for(int i=0;i<lp.count();i++)
-    {
-        ToolButton*a=new ToolButton(lp[i]->name());
-        connect(a,SIGNAL(clicked()),this,SLOT(paramListSlot()));
-        m_parameters->layout()->addWidget(a);
-    }
-
-    editDevice(0);
-    */
-
-
-
 }
 
 void TentEditor::edit(HardwareUnit *s)
@@ -118,12 +90,11 @@ void TentEditor::listSlot(int i, QWidget *)
 
 }
 
-void TentEditor::paramListSlot(Parameter *p)
+void TentEditor::paramListSlot(int , Parameter *p)
 {
 
-    qDebug()<<"editww"<<p->name();
-    emit editParam(p);
+
+    m_editor->editParameter(p);
 
 }
-
 

@@ -21,10 +21,9 @@ public:
     Parameter* humidityParameter(){return parameterFromId(HUMIDITY_AIR);}
     Parameter* windParameter(){return parameterFromId(WIND_LEVEL);}
 
+    void regulateHumidity();
+    void regulateWind();
 
-    int routineSecs();
-
-    void regulate();
     float airTemperature();
     float waterTemperature();
     float humidity();
@@ -45,7 +44,7 @@ private:
     SwitchedActuator* m_extractor;
     float m_humidityCommand;
     float m_temperatureCommand;
-    QDateTime m_lastReg;
+
 
     CO2Manager* m_co2;
 

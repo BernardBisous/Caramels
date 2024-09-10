@@ -27,6 +27,7 @@ void HardwareUnit::update(int index)
         {
             atEnd=false;
             reactToParamChanged(m_parameters[i],v);
+
         }
     }
 
@@ -128,10 +129,15 @@ bool HardwareUnit::canHandleParameter(int id)
 
 void HardwareUnit::updateSensors()
 {
-    for(int i=0;i<m_sensors.count();i++)
-        m_sensors[i]->measure();
 
+
+    for(int i=0;i<m_sensors.count();i++)
+    {
+        m_sensors[i]->measure();   
+    }
     reactToSensorsChanged();
+
+
 }
 
 
@@ -174,6 +180,20 @@ void HardwareUnit::setStartTime(const QDateTime &newStartTime)
     m_startTime = newStartTime;
 }
 
+QDateTime HardwareUnit::endConfig()
+{
+    if(!m_startTime.isDaylightTime())
+        return QDateTime::currentDateTime();
 
+    int max;
+    for( int i=0;i<m_parameters.count();i++)
 
+    {
+        int n=m_parameters[i]->maxX();
+        if(!i || n>max)
+            max=n;
+    }
+
+    return m_startTime.addSecs(max*Parameter::timeMultiplicator());
+}
 

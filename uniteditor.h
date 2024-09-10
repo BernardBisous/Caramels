@@ -3,8 +3,10 @@
 
 #include "Interface/devicelistwidget.h"
 #include "deviceplot.h"
+#include "parametereditor.h"
 #include "parameterlistwidget.h"
 #include "parameterplot.h"
+#include "unitplot.h"
 #include <QWidget>
 
 class UnitEditor : public QWidget
@@ -14,20 +16,20 @@ public:
     explicit UnitEditor(QWidget *parent = nullptr);
     void handle(HardwareUnit* h);
 
-signals:
-    void editParameter(Parameter* p);
-    public slots:
+public slots:
     void editDevice(int i);
+    void editParameter(Parameter*p);
 
 private slots:
-    void paramSlot(int i,QWidget*);
+
+
+
 
 private:
     HardwareUnit* m_client;
     DeviceListWidget*m_devices;
-    DevicePlot*m_devicePlot;
-    ScrollArea*m_parameters;
-    QWidget* m_parametersWidget;
+    UnitPlot*m_plot;
+    ParameterValueEditor* m_paramEditor;
 };
 
 #endif // UNITEDITOR_H

@@ -5,6 +5,7 @@
 #include "parameter.h"
 #include <QObject>
 
+
 class HardwareUnit : public QObject
 {
     Q_OBJECT
@@ -15,6 +16,7 @@ public:
     virtual void reactToParamChanged(Parameter*, float ){}
     virtual void reactToSensorsChanged(){}
     virtual void finish();
+
 
     bool activeConfig();
 
@@ -46,6 +48,10 @@ public:
 
     void console(QString s){emit consoleRequest(s);}
 
+    QDateTime endConfig();
+
+
+
 signals:
 
     void finished();
@@ -60,6 +66,10 @@ protected:
 
     QList<Parameter*> m_parameters;
     QDateTime m_startTime;
+
 };
+
+
+
 
 #endif // HARDWAREUNIT_H

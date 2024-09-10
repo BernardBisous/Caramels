@@ -1,12 +1,8 @@
 #ifndef TENTEDITOR_H
 #define TENTEDITOR_H
 
-#include "Interface/devicelistwidget.h"
-#include "Interface/menubutton.h"
 #include "Interface/scrollarea.h"
 #include "Interface/serialeditor.h"
-#include "deviceeditor.h"
-#include "deviceplot.h"
 #include "parameterlistwidget.h"
 #include "tent.h"
 #include "uniteditor.h"
@@ -22,18 +18,9 @@ public:
     void edit(HardwareUnit* s);
     HardwareUnit* currentUnit();
 
-
-signals:
-    void editParam(Parameter*p);
-
-
-
 private slots:
     void listSlot(int i, QWidget *);
-    void paramListSlot(Parameter*p);
-
-
-
+    void paramListSlot(int i,Parameter* p);
 
 private:
     Tent*m_client;
@@ -41,6 +28,7 @@ private:
     int m_currentUnit;
     UnitEditor* m_editor;
     SerialEditor* m_ports;
+    ParameterListWidget*m_parameters;
 
 
 };

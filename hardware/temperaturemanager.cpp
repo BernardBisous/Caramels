@@ -25,25 +25,30 @@ TemperatureManager::TemperatureManager(QObject *parent)
     m_waterSensor->setRange(10,60);
     m_airSensor->setRange(10,60);
 
+    m_humidifier->setGain(100);
+
 }
 
 void TemperatureManager::reactToParamChanged(Parameter *p, float f)
 {
     if(p==temperatureParameter())
+    {
         m_temperatureCommand=f;
-
+        regulateWind();
+    }
 
     else if(p==humidityParameter())
     {
         m_humidityCommand=f;
-        regulate();
+        regulateHumidity();
+
     }
+
 
     else if(p==windParameter())
     {
         m_windpower->applyValue(f);
         m_rotation->applyValue(f);
-
     }
 }
 
@@ -52,46 +57,37 @@ void TemperatureManager::reactToSensorsChanged()
     if(!activeConfig())
         return;
 
-    int secs=-1;
+   if(m_humiditySensor->shouldRegulate())
+       regulateHumidity();
 
-    if(m_lastReg.isValid())
-        secs=m_lastReg.secsTo(QDateTime::currentDateTime());
-
-    if(secs>0 && secs<routineSecs())
-        regulate();
-
+   if(m_airSensor->shouldRegulate())
+       regulateWind();
 
 
 }
 
-
-int TemperatureManager::routineSecs()
+void TemperatureManager::regulateHumidity()
 {
-    return m_humidifier->dataValue(FREQ_KEY).toInt();
-}
-
-void TemperatureManager::regulate()
-{
-
-    float err=humidityExcess();
-    if(err<0)
-    {
-        m_humidifier->impulseHigh(err*m_humidifier->gain());
-    }
-
     float hExcess=humidityExcess();
+     if(hExcess<0)
+     {
+         m_humidifier->impulseHigh(-hExcess*m_humidifier->gain());
+     }
+}
+
+void TemperatureManager::regulateWind()
+{
     float co2Excess=0;
     if(m_co2)
         co2Excess=m_co2->excess();
 
+    float hExcess=humidityExcess();
     bool extract=(hExcess>0 || co2Excess>0);
 
     if(extract)
         m_extractor->userApplyPurcent(100);
     else
         m_extractor->userApplyPurcent(0);
-
-    m_lastReg=QDateTime::currentDateTime();
 }
 
 

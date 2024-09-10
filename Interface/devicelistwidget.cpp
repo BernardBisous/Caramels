@@ -2,7 +2,7 @@
 #include "deviceeditor.h"
 
 DeviceListWidget::DeviceListWidget(QWidget *parent)
-    : ScrollArea{false,parent}
+    : ScrollArea{false,parent},m_current(-1)
 {
     connect(this,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
 }
@@ -28,13 +28,15 @@ void DeviceListWidget::fillList(HardwareUnit *u)
 void DeviceListWidget::setChecked(int index)
 {
 
+    m_current=index;
     auto l=widgets();
     for(int i=0;i<l.count();i++)
     {
         DeviceEditor* wa=dynamic_cast<DeviceEditor*>(l[i]);
         if(wa)
         {
-            if(i==index)
+
+            if(i==index && index>0)
                 wa->setMode(ActionWidget::normal);
 
             else
@@ -43,10 +45,26 @@ void DeviceListWidget::setChecked(int index)
             wa->setAbstracted(i!=index);
         }
     }
+
+    emit checked(index);
 }
+
+
 
 void DeviceListWidget::listSlot(int i, QWidget *)
 {
-    qDebug()<<"loas"<<i;
-    emit edit(i);
+    if(m_current==i)
+        edit(-1);
+
+    else emit edit(i);
+}
+
+int DeviceListWidget::current() const
+{
+    return m_current;
+}
+
+void DeviceListWidget::setCurrent(int newCurrent)
+{
+    m_current = newCurrent;
 }

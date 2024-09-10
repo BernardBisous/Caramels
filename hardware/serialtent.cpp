@@ -76,7 +76,7 @@ void SerialTent::errorSlot(QSerialPort::SerialPortError c)
 
     if(c==QSerialPort::PermissionError)
     {
-        qDebug()<<"Lost serial connection"<<c;
+        //qDebug()<<"Lost serial connection"<<c;
 
         serialPort.close();
         QTimer::singleShot(1000,this,SLOT(retry()));

@@ -12,7 +12,7 @@ ConfigEditor::ConfigEditor(QWidget *parent)
     m_list->setMaximumWidth(250);
 m_list->setMinimumWidth(150);
     connect(m_list,SIGNAL(addOne()),this,SLOT(addSlot()));
-    connect(m_list,SIGNAL(selected(int)),this,SLOT(editParameter(int)));
+    connect(m_list,SIGNAL(selected(int,Parameter*)),this,SLOT(editParameter(int)));
     connect(m_editor,SIGNAL(editDevice(Device*)),this,SLOT(editDevicePropagate(Device*)));
     connect(m_editor,SIGNAL(edited()),this,SLOT(saveConfig()));
 }

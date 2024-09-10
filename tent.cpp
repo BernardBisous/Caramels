@@ -250,6 +250,7 @@ GrowConfig *Tent::config() const
 QString Tent::name() const
 {
     return m_name;
+
 }
 
 void Tent::setName(const QString &newName)
@@ -276,6 +277,16 @@ int Tent::indexOf(HardwareUnit *u)
 QList<HardwareUnit *> Tent::units() const
 {
     return m_units;
+}
+
+QList<HardwareUnit *> Tent::unitsForParameter(Parameter *p)
+{
+    QList<HardwareUnit *> out;
+    for(int i=0;i<m_units.count();i++)
+        if(m_units[i]->parameters().contains(p))
+            out<<m_units[i];
+
+    return out;
 }
 
 float Tent::PH()
