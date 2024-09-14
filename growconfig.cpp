@@ -345,7 +345,6 @@ bool GrowConfig::loadCsv(QString filename) {
            loadParameterCSVLine(dataLine,header);
        }
 
-       qDebug()<<"loaded csv"<<m_parameters.count();
        file.close();
        return true;
 }
@@ -377,8 +376,6 @@ bool GrowConfig::open(QString filename)
 
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
-        // Gérer l'erreur si le fichier ne peut pas être ouvert
-       qDebug()<<"cannot open config file "<<filename;
 
         return false;
     }

@@ -3,7 +3,7 @@
 #include "qtimer.h"
 
 ProgressBar::ProgressBar(QWidget *parent)
-    : QWidget{parent},m_timer(nullptr)
+    : QWidget{parent},m_brush(),m_timer(nullptr)
 {
     setFixedHeight(10);
     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -41,8 +41,11 @@ void ProgressBar::paintEvent(QPaintEvent *)
 
       painter.drawRoundedRect(rect,rect.height()/2,rect.height()/2);
 
-      painter.setBrush(palette().highlight());
 
+      if(m_brush==QBrush())
+        painter.setBrush(palette().highlight());
+      else
+        painter.setBrush(m_brush);
 
 
        QRect rb=rect.marginsRemoved(QMargins(2,2,2,2));
@@ -85,4 +88,9 @@ void ProgressBar::setValue(double newValue)
 {
     m_value = newValue;
     repaint();
+}
+
+void ProgressBar::setBrush(QBrush b)
+{
+    m_brush=b;
 }

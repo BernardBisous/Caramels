@@ -25,8 +25,10 @@ TemperatureManager::TemperatureManager(QObject *parent)
     m_waterSensor->setRange(10,60);
     m_airSensor->setRange(10,60);
 
-    m_humidifier->setGain(100);
 
+
+    attachCouples(TEMPERATURE_AIR,m_airSensor);
+    attachCouples(HUMIDITY_AIR,m_humiditySensor);
 }
 
 void TemperatureManager::reactToParamChanged(Parameter *p, float f)

@@ -26,6 +26,9 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     m_progress->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_progress->layout()->setContentsMargins(0,0,0,0);
 
+    QWidget*rw=new QWidget;
+    rw->setLayout(new QHBoxLayout);
+
 
     QWidget* plots=new QWidget;
     plots->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -33,7 +36,13 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     plots->setLayout(m_plotLayout);
     m_plotLayout->addWidget(m_event=new EventManager,0,0);
 
-    center->layout()->addWidget(plots);
+
+     rw->layout()->addWidget(plots);
+    // rw->layout()->addWidget(m_results=new ResultsWidget);
+    // rw->layout()->addWidget(m_injection=new InjectionWidget);
+
+    center->layout()->addWidget(rw);
+
     m_plotLayout->setContentsMargins(0,0,0,0);
     m_plotLayout->setSpacing(0);
 
@@ -59,6 +68,7 @@ void ConfigOverview::setTent(Tent *t)
         m_event->handle(t->config()->events());
 
 
+
     /*
 
     m_plotLayout->addWidget(plot(t->temperatures()),0,1);
@@ -66,8 +76,12 @@ void ConfigOverview::setTent(Tent *t)
     m_plotLayout->addWidget(plot(t->lights()),1,0);
     m_plotLayout->addWidget(plot(t->pumps()),1,1);
     m_plotLayout->addWidget(plot(t->phManager()),1,2);
-
     */
+
+   // m_injection->handle(t);
+   // m_results->handle(t);
+
+
     updateDate();
     refresh();
 }
@@ -83,6 +97,7 @@ void ConfigOverview::refresh()
 
     m_name->setText(b->name());
     m_progress->refresh(b,m_client->startedDate());
+  //  m_injection->updatePlot();
 
 }
 
@@ -95,6 +110,9 @@ UnitPlot *ConfigOverview::plot(HardwareUnit *u)
     connect(p,SIGNAL(clicked()),this,SLOT(plotTrigg()));
     return p;
 }
+
+
+
 
 void ConfigOverview::restart()
 {

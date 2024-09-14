@@ -35,9 +35,10 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
      QHBoxLayout* gr=new QHBoxLayout;
      gr->setContentsMargins(0,0,0,0);
      gr->addWidget(m_up=new ToolButton("Up",":/icons/up"));
+     gr->addWidget(m_down=new ToolButton("Down",":/icons/down"));
      gr->addWidget(m_left=new ToolButton("Left",":/icons/left"));
      gr->addWidget(m_right=new ToolButton("Right",":/icons/right"));
-     gr->addWidget(m_down=new ToolButton("Down",":/icons/down"));
+
      b->setLayout(gr);
 
      layout()->addWidget(b);

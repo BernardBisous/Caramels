@@ -87,7 +87,6 @@ void TentEditor::listSlot(int i, QWidget *)
 {
 
     edit(i);
-
 }
 
 void TentEditor::paramListSlot(int , Parameter *p)

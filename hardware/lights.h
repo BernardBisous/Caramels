@@ -30,6 +30,7 @@ public:
     virtual void begin();
     virtual void reactToParamChanged(Parameter*, float );
     virtual void finish();
+    bool isDayLight();
 
 
     void updateSpectrum(float);

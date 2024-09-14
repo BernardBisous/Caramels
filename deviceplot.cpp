@@ -1,48 +1,44 @@
 #include "deviceplot.h"
-#include <QGraphicsLayout>
 
 DevicePlot::DevicePlot(QWidget *parent):
-    QChartView(parent), m_locked(true),
-    m_device(nullptr), m_chart(new QChart()),m_series(new QLineSeries())
+    QChartView(parent),
+    m_device(nullptr), m_chart(new QChart()),m_series(new QLineSeries()),m_xRangeSecs(10)
 
 {
-
-
     setContentsMargins(0,0,0,0);
-    // Set up the chart
-
-   // m_chart->setTitle("Device Historical Data");
-
-
-
 
     m_chart->legend()->setVisible(false);
     setChart(m_chart);
     m_chart->layout()->setContentsMargins(0,0,0,0);
 
-
-    // Create the axes
     m_xAxis = new QDateTimeAxis;
     m_xAxis->setFormat("hh:mm:ss");
     m_xAxis->setTitleText("Time");
     m_yAxis = new QValueAxis;
 
     m_chart->addAxis(m_xAxis, Qt::AlignBottom);
-    m_chart->addAxis(m_yAxis, Qt::AlignLeft);
-
-    // Add the series to the chart
+    m_chart->addAxis(m_yAxis, Qt::AlignRight);
 
 
+    m_chart->addSeries(m_series);
+
+    setMinimumSize(100,100);
 
 
+    m_yAxis->setTitleVisible(false);
+    m_xAxis->setTitleVisible(false);
 
     initStyle();
- //   updatePlot();
-
     setRenderHint(QPainter::Antialiasing);
 
-
-
+    m_slider=new Slider(this);
+    m_slider->setOrientation(Qt::Horizontal);
+    QRect re;
+    re.setHeight(20);
+    re.setWidth(100);
+    re.translate(20,20);
+    m_slider->setGeometry(re);
+    connect(m_slider,SIGNAL(valueChanged(int)),this,SLOT(sliderChanged(int)));
 }
 
 void DevicePlot::handle(Device *c)
@@ -61,7 +57,9 @@ void DevicePlot::handle(Device *c)
     connect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
 
     initStyle();
+     m_yAxis->setVisible(m_device->continousStreaming());
     updatePlot();
+    m_slider->setValue(50);
 
 
 }
@@ -91,67 +89,74 @@ void DevicePlot::initStyle()
     m_chart->update();
 }
 
-
-
-bool DevicePlot::locked() const
+void DevicePlot::setRefreshEnabled(bool s)
 {
-    return m_locked;
+    if(!m_device)
+        return;
+    if(!s)
+        disconnect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
+
+    else
+        connect(m_device, &Device::newValue, this, &DevicePlot::updatePlot);
+
 }
 
-void DevicePlot::setLocked(bool newLocked)
-{
-    m_locked = newLocked;
-}
+
+
+
 
 void DevicePlot::updatePlot()
 {
-    chart()->removeSeries(m_series);
+    if(m_chart->series().contains(m_series))
+        m_chart->removeSeries(m_series);
+
     m_series->clear();
 
     if(!m_device)
         return;
 
-    auto l=m_device->values();
+
     auto lh=m_device->historic();
 
-    QDateTime sh;
-    if(!l.isEmpty())
-        sh=l.first().time;
 
-    float max=0;
     QDateTime minDate;
     if(!lh.isEmpty())
         minDate=lh.first().time;
-    else if(!l.isEmpty())
-        minDate=l.first().time;
     else
         minDate=QDateTime::currentDateTime().addSecs(-10);
 
+
     for(int i=0;i<lh.count();i++)
     {
-        if(sh.isValid() && lh[i].time<sh)
-        {
-            if(!locked() || lh[i].time>minDate)
-            {
-                if(!i || max<lh[i].value)
-                    max=lh[i].value;
 
-                m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i].value);
-            }
-        }
+        if(!i)
+            m_minDate=lh[i].time;
+
+
+        if(i && (!m_device->continousStreaming()))
+            m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i-1].value);
+
+        m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i].value);
     }
 
-    for(int i=0;i<l.count();i++)
+
+    if(m_device->maxValues()>3)
     {
-        if(!locked() || l[i].time>minDate)
-        {
-            if((!i&&lh.isEmpty()) || max<l[i].value)
-                max=l[i].value;
+         auto l=m_device->values();
+         for(int i=0;i<l.count();i++)
+         {
 
+             if(i && (!m_device->continousStreaming()))
+                 m_series->append(l[i].time.toMSecsSinceEpoch(),l[i-1].value);
 
-            m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
-        }
+             m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
+
+         }
     }
+
+
+
+
 
 
 
@@ -162,14 +167,59 @@ void DevicePlot::updatePlot()
        m_series->append(minDate.toMSecsSinceEpoch(),m_device->currentValue());
     }
 
+
+
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
 
     m_chart->addSeries(m_series);
 
-    m_xAxis->setRange(minDate,QDateTime::currentDateTime().addSecs(1));
-    m_yAxis->setMax(max*1.1);
-    m_yAxis->setMin(0);
+    m_series->selectPoint(m_series->count()-1);
+
+
+    m_yAxis->setRange(m_device->minRange()*1.1,m_device->maxRange()*1.1);
+
+    m_chart->setTitle(m_device->name()+" : "+m_device->userValue());
 
     m_series->attachAxis(m_xAxis);
     m_series->attachAxis(m_yAxis);
+
+    updateScale();
+}
+
+void DevicePlot::sliderChanged(int val)
+{
+
+    QDateTime now=QDateTime::currentDateTime();
+    int max=m_minDate.secsTo(now);
+
+    float r=100-val;
+    r=r/100;
+
+    float range=max*r;
+
+    if(range<100)
+        range=100;
+
+    setXRangeSecs(range);
+}
+
+Device *DevicePlot::device() const
+{
+    return m_device;
+}
+
+void DevicePlot::setXRangeSecs(int seconds)
+{
+    m_xRangeSecs = seconds;
+    updateScale();
+}
+
+void DevicePlot::updateScale()
+{
+    QDateTime now=QDateTime::currentDateTime();
+
+    if(m_xRangeSecs>0)
+        m_xAxis->setRange(now.addSecs(-m_xRangeSecs),now);
+    else
+        m_xAxis->setRange(m_minDate,now);
 }

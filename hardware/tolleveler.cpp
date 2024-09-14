@@ -10,6 +10,8 @@ TolLeveler::TolLeveler(QObject *parent)
 
     connect(m_sensor,SIGNAL(newValue(float)),this,SLOT(heighNewValue(float)));
     m_idParameters<<LIGHT_HEIGH;
+
+    attachCouples(LIGHT_HEIGH,m_sensor);
 }
 
 void TolLeveler::begin()

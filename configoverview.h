@@ -6,6 +6,7 @@
 #include "configtop.h"
 #include "eventmanager.h"
 #include "qlabel.h"
+
 #include "tent.h"
 #include "unitplot.h"
 #include <QWidget>
@@ -36,9 +37,11 @@ private:
     ToolButton* m_restartButton;
     ConfigProgress* m_progress;
     QList<UnitPlot*> m_plots;
+    //ResultsWidget* m_results;
     QGridLayout* m_plotLayout;
     EventManager* m_event;
     ConfigTop* m_topStart;
+   // InjectionWidget* m_injection;
 
 };
 

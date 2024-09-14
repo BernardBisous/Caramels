@@ -19,26 +19,46 @@ class ParameterPlot : public QWidget
     Q_OBJECT
 public:
     ParameterPlot(QWidget*parent=nullptr);
-    bool eventFilter(QObject *obj, QEvent *event) override;
-    void refresh(Parameter*p);
+//    bool eventFilter(QObject *obj, QEvent *event) override;
+    void setParameter(Parameter*p);
+
     void setXrange(int t);
     void initStyle();
     void select(int);
     void selectDefault();
-    int currentIndex();
-
-    void setCurrentIndex(int newCurrentIndex);
 
     QLineSeries *series() const;
 
+
+    Parameter *parameter() const;
+
+    QDateTime startDate() const;
+    void setStartDate(QDateTime newStartDate);
+
+    int currentTimeIndex();
+    int closerIndexPoint(int hourIndex);
+
+    void mousePressEvent(QMouseEvent *event) override
+        {
+            if (event->button() == Qt::LeftButton) {
+                // Emit the clicked signal
+                emit clicked();
+            }
+            QWidget::mousePressEvent(event);
+        }
+
+
+
+
+
+public slots:
+    void refresh();
+
 signals:
-    void clicked(QPointF p);
+    void clicked();
 
 private:
 
-
-
-    int m_currentIndex;
 
     QChartView *m_view;
     QLineSeries *m_series;
@@ -47,6 +67,7 @@ private:
     QChart *m_chart;
     Parameter *m_parameter;
 
+    QDateTime m_startDate;
 
 
 };

@@ -1,11 +1,9 @@
 #ifndef PARAMETER_H
 #define PARAMETER_H
 
-
-#include "Interface/scrollarea.h"
-#include "hardware/device.h"
-
-typedef enum parameterType{LightPower,LightSpectre}ParameterType;
+#include <QString>
+#include <QList>
+#include<QDateTime>
 
 class TimedValue
 {
@@ -22,6 +20,13 @@ public:
 
     static float timeMultiplicator();
     QList<TimedValue> values() const;
+    TimedValue at(int i);
+    float currentValue(QDateTime startTime,bool*e);
+    float valueAtTime(int h,bool*e);
+    int closerIndex(int h);
+    void clear();
+    int append(TimedValue t);
+
     void load(QDataStream&c);
     void save(QDataStream&c);
     int count();
@@ -31,34 +36,22 @@ public:
     float minY();
     void rangeY(float*max,float*min);
 
-
     void movePoints(QList<int>indexes,float value, bool offset);
     void removePoint(QList<int>indexes);
     void addPoint(int indexHour, float value);
-   void addPoint(TimedValue t);
-   void addDefaultPoint(int index);
-
-    TimedValue at(int i);
+    void addPoint(TimedValue t);
+    void addDefaultPoint(int index);
 
 
-    float currentValue(QDateTime startTime,bool*e);
-    float valueAtTime(int h,bool*e);
-
-    void clear();
-
-    int append(TimedValue t);
-
+    QString userValueAt(int i);
     void setName(const QString &newName);
-
-    void setUnits(const QString &newUnits);
-
-    void setId(int newId);
-
     QString name() const;
 
-    int id() const;
-
+    void setUnits(const QString &newUnits);
     QString units() const;
+
+    int id() const;
+    void setId(int newId);
 
     QString description() const;
     void setDescription(const QString &newDescription);
@@ -66,13 +59,10 @@ public:
 
 private:
     int m_id;
-    ParameterType m_type;
     QString m_name;
     QString m_units;
     QString m_description;
-
     QList<TimedValue> m_values;
-
 };
 
 

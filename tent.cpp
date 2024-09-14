@@ -13,9 +13,13 @@
 #include <QFile>
 
 #define LOGS_FILE "Logs"
+#define RESULTS_FILE "Results"
 Tent::Tent(QObject *parent)
-    : QObject{parent},m_config(nullptr)
+    : QObject{parent},m_config(nullptr),
+      m_temperatures(nullptr),m_ph(nullptr),
+      m_Co2(nullptr),m_leveler(nullptr),m_lights(nullptr),m_pumps(nullptr),m_chemichals(nullptr)
 {
+
 
 
     m_name="Tente Visionaire";
@@ -31,7 +35,10 @@ Tent::Tent(QObject *parent)
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 
     connect(m_serial,SIGNAL(newValues(QByteArray&)),this,SLOT(hardwareSlot(QByteArray&)));
+
     connect(m_serial,SIGNAL(connectedChanged(bool)),this,SLOT(serialConnectSlot(bool)));
+
+
 
 
     loadSetting();
@@ -41,13 +48,16 @@ void Tent::initDevices()
 {
     Device::createDataDir();
     addUnit(m_pumps=new WaterLevelManager(this));
-    addUnit(m_lights=new LightsUnit(this));
-    addUnit(m_leveler=new TolLeveler(this));
-    addUnit(m_temperatures=new TemperatureManager(this));
+    addUnit(m_chemichals=new ChemicalManager(this));
+  //  addUnit(m_lights=new LightsUnit(this));
+  //  addUnit(m_leveler=new TolLeveler(this));
+  //  addUnit(m_temperatures=new TemperatureManager(this));
     addUnit(m_Co2=new CO2Manager(this));
-    addUnit(m_ph=new PHManager(this));
+  //  addUnit(m_ph=new PHManager(this));
 
-    m_temperatures->setCo2(m_Co2);
+  //  m_temperatures->setCo2(m_Co2);
+    connect(m_pumps,SIGNAL(fillingTank(bool)),this,SLOT(tankFilledSlot(bool)));
+
 }
 
 void Tent::begin()
@@ -60,13 +70,13 @@ void Tent::begin()
         m_units[i]->begin();
     }
 
-
     if(m_startedDate.isValid() && m_config)
     {
         m_timer->start();
     }
 
 
+    timerSlot();
 }
 
 
@@ -90,11 +100,12 @@ void Tent::exportAll(QString dir)
     m_cam->exportAll(dc.absolutePath());
 
 
-
     QFile::copy(LOGS_FILE,dir+"/ReadMe.txt");
 
     if(m_config)
         m_config->saveCsv(dir+"/ConfigDone.csv");
+
+
 
     QDesktopServices::openUrl(root.absolutePath());
 }
@@ -106,6 +117,7 @@ int Tent::currentHourIndex()
 
     if(!m_config || h>m_config->maxHours())
         return -1;
+
     return h;
 }
 
@@ -200,18 +212,8 @@ void Tent::loadSetting()
 
 void Tent::restart()
 {  
-
-
-    QFile::remove(consoleFile());
-    m_cam->clearAll();
-    for(int i=0;i<m_devices.count();i++)
-    {
-        m_devices[i]->clearHistoric();
-
-    }
-
+    clearAllData();
     setStartDate(QDateTime::currentDateTime());
-
 }
 
 void Tent::start()
@@ -219,15 +221,16 @@ void Tent::start()
     if(!m_startedDate.isValid() || !m_config)
         return;
 
+    console("start config "+m_config->name());
+
     m_cam->start();
     timerSlot();
     m_timer->start();
     for(int i=0;i<m_devices.count();i++)
     {
         m_devices[i]->startRecording(true);
-
     }
-    console("start config "+m_config->name());
+
 }
 
 void Tent::setStartDate(QDateTime t)
@@ -240,6 +243,17 @@ void Tent::setStartDate(QDateTime t)
     saveSettings();
     start();
     emit dateChanged(t);
+}
+
+void Tent::clearAllData()
+{
+    QFile::remove(consoleFile());
+    m_cam->clearAll();
+    //clearResults();
+    for(int i=0;i<m_devices.count();i++)
+    {
+        m_devices[i]->clearHistoric();
+    }
 }
 
 GrowConfig *Tent::config() const
@@ -291,11 +305,16 @@ QList<HardwareUnit *> Tent::unitsForParameter(Parameter *p)
 
 float Tent::PH()
 {
+    if(m_ph)
     return m_ph->ph();
+
+    return -1;
 }
 
 float Tent::temperature(int sensorIndex)
 {
+    if(!m_temperatures)
+        return -1;
     switch(sensorIndex)
     {
     case 0: return m_temperatures->airTemperature();
@@ -305,28 +324,37 @@ float Tent::temperature(int sensorIndex)
 
 float Tent::CO2()
 {
+    if(!m_Co2)
+        return -1;
     return m_Co2->CO2();
 }
 
 float Tent::humidity()
 {
+    if(m_temperatures)
     return m_temperatures->humidity();
+
+    return -1;
 }
 
 float Tent::lightPower()
 {
-    return m_lights->lightPower();
+    if(m_lights)
+        return m_lights->lightPower();
+
+    return -1;
+
 }
 
 float Tent::lightSpectrum()
 {
-    return m_lights->spectrumValue();
+     if(m_lights)
+        return m_lights->spectrumValue();
+
+     return -1;
 }
 
-QString Tent::injectingState()
-{
-    return m_pumps->injectingState();
-}
+
 
 QDateTime Tent::startedDate() const
 {
@@ -338,31 +366,44 @@ QString Tent::consoleFile()
     return LOGS_FILE;
 }
 
+QString Tent::allConsole()
+{
+
+    QFile file(consoleFile());
+    if (!file.open(QIODevice::ReadOnly)) {
+        return "";
+    }
+    QTextStream out(&file);
+    QString s= out.readAll();
+
+    file.close();
+    return s;
+}
+
 void Tent::finish()
 {
     m_timer->stop();
     setStartDate(QDateTime());
     stopAll();
+    console("Finished config");
 }
 
 void Tent::console(QString s)
 {
-
-    qDebug()<<"Conlsole:"<<s;
-
     QFile file(consoleFile());
-    if (!file.open(QIODevice::Append)) {
+    if (!file.open(QIODevice::Append | QIODevice::WriteOnly)) {
         return;
     }
     QTextStream out(&file);
-    out << QDateTime::currentDateTime().toString()+" : "+s+"\n";
+    out << QDateTime::currentDateTime().toString("dd.MM hh:mm")+" :\n"+s+"\n";
     file.close();
     return;
+
+    emit consoleRequest(s);
 }
 
 void Tent::hardwareSlot(QByteArray &d)
 {
-
 
     for(int i=0;i<m_units.count();i++)
     {
@@ -388,14 +429,189 @@ void Tent::timerSlot()
         return;
     }
 
-    if(m_serial->isConnected())
-    {
-        for(int i=0;i<m_units.count();i++)
-            m_units[i]->update(h);
-    }
+    for(int i=0;i<m_units.count();i++)
+        m_units[i]->update(h);
 
+
+    if(!m_lights || m_lights->isDayLight())
+        m_cam->capture();
+
+
+   // storeResults();
     emit newValue(h);
 }
+
+void Tent::tankFilledSlot(bool s)
+{
+    if(s && m_chemichals)
+        m_chemichals->fillTank();
+
+    //storeResults();
+}
+
+ChemicalManager *Tent::chemichals() const
+{
+    return m_chemichals;
+}
+
+QList<ChemicalInjector *> Tent::injectors()
+{
+    QList<ChemicalInjector *> out;
+
+    if(m_ph)
+        out<<m_ph->injectors();
+
+    if(m_chemichals)
+        out<<m_chemichals->injectors();
+
+    return out;
+}
+/*
+void Tent::storeResults()
+{
+    Result t=currentResult();
+    storeResult(t);
+
+}
+
+void Tent::storeResult(Result r)
+{
+    QFile file(RESULTS_FILE);
+    if (!file.open(QIODevice::Append | QIODevice::WriteOnly)) {
+         qDebug()<<"cannot store resutls"<<RESULTS_FILE;
+        return;
+    }
+
+    QDataStream out(&file);
+    auto l=r.values;
+    for(int i=0;i<l.count();i++)
+    {
+        out<<l[i];
+    }
+
+
+    file.close();
+    return;
+}
+
+Result Tent::currentResult()
+{
+    Result out;
+    out.t=QDateTime::currentDateTime();
+    out.values=QList<float>();
+
+    auto l=resultKeys();
+    for(int i=0;i<l.count();i++)
+    {
+        out.values.append(computeResult(l[i]));
+    }
+
+    return out;
+
+}
+
+QList<Result> Tent::results()
+{
+    QList<Result> output;
+    QFile file(RESULTS_FILE);
+    if (!file.open(QIODevice::ReadOnly)) {
+        return output;
+    }
+
+
+    QDataStream out(&file);
+
+    while(!out.atEnd())
+    {
+        Result r;
+
+
+        out>>r.t;
+
+        int n=resultKeys().count();
+        for(int i=0;i<n;i++)
+        {
+            float vt;
+            out>>vt;
+            r.values.append(vt);
+        }
+        output<<r;
+
+    }
+    file.close();
+
+    return output;
+}
+
+QStringList Tent::resultKeys()
+{
+    QStringList out;
+
+    out<<"Electricity";
+    out<<"Water";
+
+    return out;
+}
+
+float Tent::computeResult(QString key)
+{
+    if(key=="Water")
+    {
+        return m_pumps->totalInjected();
+    }
+
+    return -1;
+}
+
+float Tent::resultAt(QString key)
+{
+    int i=resultKeys().indexOf(key);
+
+    if(i<0)
+        return -1;
+
+    return currentResult().values[i];
+}
+
+QList<RealTimeValue> Tent::resultsFor(QString key)
+{
+
+    QList<RealTimeValue> out;
+    auto l=results();
+    for(int i=0;i<l.count();i++)
+    {
+
+
+        int id=resultKeys().indexOf(key);
+        if(id>=0)
+        {
+            RealTimeValue v;
+            v.time=l[i].t;
+            v.value=l[i].values[id];
+            out<<v;
+        }
+    }
+    return out;
+}
+
+void Tent::clearResults()
+{
+    QFile::remove(RESULTS_FILE);
+}
+
+void Tent::saveResultsCsv()
+{
+
+}
+*/
+QList<RealTimeValue> Tent::injection(int id)
+{
+    if(id==0)
+        return m_pumps->injectedHitstoric();
+
+    return m_chemichals->injection(id);
+}
+
 
 Webcam *Tent::cam() const
 {

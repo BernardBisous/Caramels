@@ -1,6 +1,7 @@
 #ifndef TENT_H
 #define TENT_H
 
+#include "chemicalmanager.h"
 #include "growconfig.h"
 #include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
@@ -12,7 +13,12 @@
 #include "hardware/webcam.h"
 #include "qdatetime.h"
 #include <QObject>
-
+class Result
+{
+public:
+    QDateTime t;
+    QList<float> values;
+};
 
 
 class Tent : public QObject
@@ -22,15 +28,13 @@ public:
     explicit Tent(QObject *parent = nullptr);
     void initDevices();
     void begin();
+    void stopAll();
+    void restart();
+    void start();
+    void finish();
+    void setStartDate(QDateTime t);
 
-    void exportAll(QString dir);
-
-    int currentHourIndex();
-    QString configName() const;
-    void setConfig(GrowConfig*e);
-
-
-    HardwareUnit* unitForId(int id);
+    void clearAllData();
     void mapDevices();
 
     void addUnit(HardwareUnit* u);
@@ -39,53 +43,64 @@ public:
 
     void saveSettings();
     void loadSetting();
+    void exportAll(QString dir);
 
-    void restart();
-    void start();
-    void setStartDate(QDateTime t);
-    GrowConfig *config() const;
-
-    QString name() const;
-    void setName(const QString &newName);
-
-    QList<Device *> devices() const;
-    int indexOfDevice(Device*);
-
+    int currentHourIndex();
+    QString configName() const;
+    void setConfig(GrowConfig*e);
     int indexOf(HardwareUnit*u);
     QList<HardwareUnit *> units() const;
     QList<HardwareUnit *> unitsForParameter(Parameter*p);
+    QList<Device *> devices() const;
+    int indexOfDevice(Device*);
+    QString name() const;
+    void setName(const QString &newName);
+    GrowConfig *config() const;
+    HardwareUnit* unitForId(int id);
+
     float PH();
     float temperature(int sensorIndex);
     float CO2();
     float humidity();
     float lightPower();
     float lightSpectrum();
-    QString injectingState();
 
     QDateTime startedDate() const;
     QString consoleFile();
-
-    void finish();
+    QString allConsole();
 
     QString serialPort() const;
     void setSerialPort(const QString &newSerialPort);
     QStringList availablePorts();
     bool connected();
 
-    void stopAll();
-
     TemperatureManager *temperatures() const;
     PHManager* phManager();
     CO2Manager* co2Manager();
-
     TolLeveler *leveler() const;
-
-
     LightsUnit *lights() const;
-
     WaterLevelManager *pumps() const;
-
     Webcam *cam() const;
+    ChemicalManager *chemichals() const;
+    QList<ChemicalInjector*> injectors();
+
+
+    /*
+    void storeResults();
+    void storeResult(Result r);
+    Result currentResult();
+    QList<Result>results();
+    QStringList resultKeys();
+    float computeResult(QString key);
+    float resultAt(QString key);
+    QList<RealTimeValue> resultsFor(QString key);
+    void clearResults();
+
+
+    void saveResultsCsv();
+    */
+
+    QList<RealTimeValue> injection(int id=0);
 
 public slots:
     void console(QString s);
@@ -98,9 +113,11 @@ signals:
     void done();
     void dateChanged(QDateTime t);
     void connectedHardware(bool s);
+    void consoleRequest(QString s);
 
 private slots:
     void timerSlot();
+    void tankFilledSlot(bool s);
 
 
 private:
@@ -118,11 +135,10 @@ private:
     TemperatureManager* m_temperatures;
     PHManager*m_ph;
     CO2Manager* m_Co2;
-
     TolLeveler* m_leveler;
     LightsUnit* m_lights;
     WaterLevelManager* m_pumps;
-
+    ChemicalManager* m_chemichals;
     SerialTent* m_serial;
 
     Webcam* m_cam;

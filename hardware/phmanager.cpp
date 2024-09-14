@@ -22,7 +22,7 @@ PHManager::PHManager(QObject *parent)
     m_phPlus->setName("PH+");
     m_phMinus->setName("PH-");
 
-
+    attachCouples(PH_LEVEL,m_sensor);
 }
 
 void PHManager::reactToParamChanged(Parameter *p, float f)
@@ -48,6 +48,14 @@ float PHManager::ph()
     return m_sensor->currentValue();
 }
 
+QList<ChemicalInjector *> PHManager::injectors()
+{
+    QList<ChemicalInjector *>  out;
+    out<<m_phPlus;
+    out<<m_phMinus;
+    return out;
+}
+
 
 void PHManager::finish()
 {
@@ -62,6 +70,7 @@ void PHManager::attachInjector(ChemicalInjector *c)
     attachDevice(c->mixer());
     attachDevice(c->levelSensor());
 
+    c->enable(true);
     if(c->id()>0)
         m_idParameters<<c->id();
 
@@ -75,7 +84,7 @@ void PHManager::regulate()
     }
 
     float err=ph()-m_command;
-    qDebug()<<"reg PH"<<err<<m_command;
+   // qDebug()<<"reg PH"<<err<<m_command;
     if(err>0)
     {
         m_phMinus->injectMl(err);

@@ -1,12 +1,23 @@
 #ifndef HARDWAREOVERVIEW_H
 #define HARDWAREOVERVIEW_H
 
-#include "Interface/menubutton.h"
 #include "Interface/progresswidget.h"
 #include "Interface/serialeditor.h"
 #include "qgraphicsview.h"
 #include "tent.h"
 #include <QWidget>
+
+class ChemicalInjectorWidget: public QWidget
+{
+    Q_OBJECT
+public:
+    explicit ChemicalInjectorWidget(ChemicalInjector *i, QWidget* parent);
+    void refresh();
+private:
+    ChemicalInjector* m_client;
+    ProgressBar* m_bar;
+    QLabel* m_name;
+};
 
 class TopConnect : public TopWidget
 {
@@ -14,16 +25,11 @@ class TopConnect : public TopWidget
 public:
     explicit  TopConnect(Tent* t,QWidget *parent = nullptr);
 
-public slots:
-    void trigSlot(bool s);
-
-
 private:
-
     SerialEditor* m_editor;
 };
 
-class HardwareOverview : public QGraphicsView
+class HardwareOverview : public QWidget
 {
     Q_OBJECT
 public:
@@ -31,6 +37,7 @@ public:
     QGraphicsTextItem * printTextParameters(const QString &text, QPointF position);
     void handle(Tent* t);
     void showConnect(bool s);
+    void addInjector(ChemicalInjector* t);
 
 public slots:
     void update();
@@ -48,9 +55,13 @@ private:
     QGraphicsTextItem * m_airTemp;
     QGraphicsPixmapItem* m_sun;
     QGraphicsTextItem * m_spectrum;
-    QGraphicsTextItem * m_pumps;
-
+    QGraphicsRectItem * m_pumps;
+    QGraphicsPixmapItem * m_tank;
     TopConnect* m_connect;
+
+    QGraphicsView* m_view;
+
+    QList<ChemicalInjectorWidget*> m_injectors;
 
 };
 

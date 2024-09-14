@@ -13,10 +13,7 @@ Webcam::Webcam(QObject *parent)
     : QObject{parent},m_session(),m_lastPixmap(),m_cam(nullptr)
 {
     m_capture=new QImageCapture;
-    m_timer=new QTimer(this);
-    m_timer->setInterval(CAPTURE_DELAY*Parameter::timeMultiplicator());
-    connect(m_timer,SIGNAL(timeout()),this,SLOT(capture()));
-    connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
+     connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
 
     createDataDir();
     findCam();
@@ -145,15 +142,15 @@ void Webcam::capturingSlot()
 void Webcam::start()
 {
     m_session.setImageCapture(m_capture);
-    m_timer->start(CAPTURE_DELAY);
+
     capture();
-    m_timer->start();
+
 
 }
 
 void Webcam::stop()
 {
-    m_timer->stop();
+  // m_cam->stop();
 }
 
 QString Webcam::name()

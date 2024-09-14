@@ -52,7 +52,6 @@ void MenuButton::paintEvent(QPaintEvent *e)
     painter.setBrush(b1);
 
 
-    QColor c=b1.color();
 
 
     QPen p;
@@ -189,12 +188,12 @@ void MenuButton::setPrintActive(bool printActive)
     m_printActive = printActive;
 }
 
-void MenuButton::enterEvent(QEnterEvent *event)
+void MenuButton::enterEvent(QEnterEvent *)
 {
     m_hover=true;
 }
 
-void MenuButton::leaveEvent(QEvent *event)
+void MenuButton::leaveEvent(QEvent *)
 {
     m_hover=false;
 }

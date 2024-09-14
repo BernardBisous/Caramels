@@ -4,6 +4,7 @@
 #include "Interface/plantationeditor.h"
 #include "Interface/progresswidget.h"
 #include "configoverview.h"
+#include "consolewidget.h"
 #include "hardwareoverview.h"
 #include "tent.h"
 #include <QWidget>
@@ -14,7 +15,6 @@ class Overview : public QWidget
 public:
     explicit Overview(QWidget *parent = nullptr);
     void loadHardware(Tent* t);
-    TopWidget* emptyWidget();
 
 public slots:
     void createSlot();
@@ -29,6 +29,7 @@ private:
     HardwareOverview* m_hardware;
     ConfigOverview* m_config;
     PlantationEditor* m_plantation;
+    ConsoleWidget* m_console;
 
 
 };

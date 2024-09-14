@@ -74,7 +74,7 @@ void LightsUnit::reactToParamChanged(Parameter *p, float f)
     }
     else if(p==day())
     {
-        m_delayDay=f*100;
+        m_delayDay=f*1000*3600;
         if(!m_switchTimer->isActive())
             switchLights();
     }
@@ -89,6 +89,11 @@ void LightsUnit::finish()
     m_switchTimer->stop();
     m_power->applyPurcent(0);
     HardwareUnit::finish();
+}
+
+bool LightsUnit::isDayLight()
+{
+    return m_power->currentValue();
 }
 
 void LightsUnit::updateSpectrum(float t)

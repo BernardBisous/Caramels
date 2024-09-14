@@ -26,10 +26,12 @@ SOURCES += \
     Interface/slider.cpp \
     Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
+    chemicalmanager.cpp \
     configeditor.cpp \
     configoverview.cpp \
     configprogress.cpp \
     configtop.cpp \
+    consolewidget.cpp \
     deviceeditor.cpp \
     deviceplot.cpp \
     eventmanager.cpp \
@@ -40,19 +42,18 @@ SOURCES += \
     hardware/chemicalinjector.cpp \
     hardware/co2manager.cpp \
     hardware/device.cpp \
-    hardware/distancepoller.cpp \
     hardware/distancesensor.cpp \
     hardware/hardwareunit.cpp \
     hardware/lights.cpp \
     hardware/phmanager.cpp \
     hardware/pump.cpp \
-    hardware/rasppi.cpp \
     hardware/serialtent.cpp \
     hardware/temperaturemanager.cpp \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
     hardware/webcam.cpp \
     hardwareoverview.cpp \
+    integralplot.cpp \
     main.cpp \
     parameter.cpp \
     parametereditor.cpp \
@@ -60,10 +61,14 @@ SOURCES += \
     parameterplot.cpp \
     parametervalueeditor.cpp \
     plantation.cpp \
+    regulatorwidget.cpp \
+    resultplot.cpp \
     tent.cpp \
     tenteditor.cpp \
     tentlistwidget.cpp \
     uniteditor.cpp \
+    unitoverview.cpp \
+    unitoverviews.cpp \
     unitplot.cpp \
     webcamwidget.cpp
 
@@ -85,10 +90,12 @@ HEADERS += \
     Interface/slider.h \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \
+    chemicalmanager.h \
     configeditor.h \
     configoverview.h \
     configprogress.h \
     configtop.h \
+    consolewidget.h \
     deviceeditor.h \
     deviceplot.h \
     eventmanager.h \
@@ -100,29 +107,32 @@ HEADERS += \
     hardware/chemicalinjector.h \
     hardware/co2manager.h \
     hardware/device.h \
-    hardware/distancepoller.h \
     hardware/distancesensor.h \
     hardware/hardwareunit.h \
     hardware/lights.h \
     hardware/phmanager.h \
     hardware/pump.h \
-    hardware/rasppi.h \
     hardware/serialtent.h \
     hardware/temperaturemanager.h \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
     hardware/webcam.h \
     hardwareoverview.h \
+    integralplot.h \
     parameter.h \
     parametereditor.h \
     parameterlistwidget.h \
     parameterplot.h \
     parametervalueeditor.h \
     plantation.h \
+    regulatorwidget.h \
+    resultplot.h \
     tent.h \
     tenteditor.h \
     tentlistwidget.h \
     uniteditor.h \
+    unitoverview.h \
+    unitoverviews.h \
     unitplot.h \
     webcamwidget.h
 

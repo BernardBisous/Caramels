@@ -1,6 +1,7 @@
 #ifndef HARDWAREUNIT_H
 #define HARDWAREUNIT_H
 
+#include "hardware/analogsensor.h"
 #include "hardware/device.h"
 #include "parameter.h"
 #include <QObject>
@@ -16,12 +17,23 @@ public:
     virtual void reactToParamChanged(Parameter*, float ){}
     virtual void reactToSensorsChanged(){}
     virtual void finish();
+    virtual void attachParameter(Parameter* p);
+    virtual QList<Actuator*> interestingIntegrals(){return actuators(true);}
+    virtual QList<Device*> interestingDevices(){return coupledDevices();}
 
+    virtual QStringList trigKeys(){return QStringList();}
+    virtual void trigKey(QString s);
+
+    virtual AnalogSensor*regulatingSensor();
+
+
+    void attachCouples(int paramId,Device*e);
+    Device* attachedDevice(Parameter*p);
 
     bool activeConfig();
 
     void attachDevice(Device* d);
-    virtual void attachParameter(Parameter* p);
+
     Device* devFromName(QString s);
     Parameter* paramFromName(QString s);
     QStringList parametersName();
@@ -40,25 +52,39 @@ public:
 
     QList<int> idParameters() const;
     QList<Sensor*> sensors();
-
+    QList<Actuator*> actuators(bool integratedOnly=false);
 
     QDateTime startTime() const;
     void setStartTime(const QDateTime &newStartTime);
 
 
+
+
     void console(QString s){emit consoleRequest(s);}
 
     QDateTime endConfig();
+    void computeEndTime();
+
+    QList<Device*> coupledDevices();
 
 
+
+
+
+    QString description() const;
+    void setDescription(const QString &newDescription);
 
 signals:
 
     void finished();
     void consoleRequest(QString);
+    void startChanged(QDateTime start);
 
 
 protected:
+
+    QHash<int,Device*> m_couples;
+
     QList<int> m_idParameters;
     QString m_name;
     QList<Device*> m_devices;
@@ -66,6 +92,9 @@ protected:
 
     QList<Parameter*> m_parameters;
     QDateTime m_startTime;
+    QDateTime m_endTime;
+
+    QString m_description;
 
 };
 

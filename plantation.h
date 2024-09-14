@@ -4,6 +4,7 @@
 #include "growconfig.h"
 #include "qdatetime.h"
 #include <QObject>
+#include <QTimer>
 
 class Commentary {
     QString body;

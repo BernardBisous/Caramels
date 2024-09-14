@@ -2,8 +2,9 @@
 #include "qpaintengine.h"
 #include <QScatterSeries>
 #include <QDate>
-
-ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),m_currentIndex(0)
+#include <QGraphicsLayout>
+ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
+    m_startDate(),m_parameter(nullptr)
 {
     m_view = new QChartView(this);
     m_view->setRenderHint(QPainter::Antialiasing);
@@ -35,26 +36,25 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),m_currentIndex(0)
     m_view->setChart(m_chart);
     setLayout(new QVBoxLayout(this));
     layout()->addWidget(m_view);
-
+    m_chart->layout()->setContentsMargins(0,0,0,0);
+    layout()->setContentsMargins(0,0,0,0);
+    m_view->setContentsMargins(0,0,0,0);
     m_view->installEventFilter(this);
-    setMinimumSize(500,500);
 
-   // m_series->setBestFitLineVisible(true);
-   // m_series->setMarkerSize(20);
+
     m_series->setSelectedColor(Qt::white);
 
- //   m_series->setSelectedLightMarker(QPixmap(":/icons/delete").scaled(20,20).toImage());
-
-
+    m_yAxis->setTitleVisible(false);
+    m_xAxis->setVisible(false);
 
 
 
     initStyle();
 }
 
-void ParameterPlot::refresh(Parameter *parameter)
+void ParameterPlot::refresh()
 {
-    if(!parameter)
+    if(!m_parameter)
         return;
 
 
@@ -63,12 +63,12 @@ void ParameterPlot::refresh(Parameter *parameter)
     if(m_chart->series().contains(m_series))
         m_view->chart()->removeSeries(m_series);
 
-    m_parameter = parameter;
+
 
     m_series->clear();
 
 
-    for (const TimedValue &value : parameter->values()) {
+    for (const TimedValue &value : m_parameter->values()) {
 
         m_series->append(value.hourIndex, value.value);
     }
@@ -79,24 +79,53 @@ void ParameterPlot::refresh(Parameter *parameter)
 
     float err=qAbs(max-min);
     err=err*0.1;
-    m_yAxis->setRange(-err,max+err);
 
-    m_chart->setTitle(parameter->name());
-    m_yAxis->setTitleText(parameter->units());
+    m_chart->setTitle(m_parameter->name() +" ["+m_parameter->units()+"]");
+    m_yAxis->setTitleText(m_parameter->units());
 
     if(!sel.isEmpty())
     {
         m_series->selectPoints(sel);
-
-
     }
+
 
     m_view->chart()->addSeries(m_series);
     m_series->attachAxis(m_xAxis);
     m_series->attachAxis(m_yAxis);
 
-    m_xAxis->setRange(-5,m_parameter->maxX());
-    m_yAxis->setRange(-err,max+err);
+    m_xAxis->setRange(-5,m_parameter->maxX()+5);
+    m_yAxis->setRange(min-err,max+err);
+
+
+}
+
+QDateTime ParameterPlot::startDate() const
+{
+    return m_startDate;
+}
+
+void ParameterPlot::setStartDate(QDateTime newStartDate)
+{
+    m_startDate = newStartDate;
+    selectDefault();
+}
+
+int ParameterPlot::currentTimeIndex()
+{
+    if(m_startDate.isValid())
+        return m_startDate.secsTo(QDateTime::currentDateTime())/Parameter::timeMultiplicator();
+
+    return -1;
+}
+
+int ParameterPlot::closerIndexPoint(int hourIndex)
+{
+    return m_parameter->closerIndex(hourIndex);
+}
+
+Parameter *ParameterPlot::parameter() const
+{
+    return m_parameter;
 }
 
 void ParameterPlot::setXrange(int t)
@@ -134,28 +163,22 @@ void ParameterPlot::initStyle()
 
 void ParameterPlot::select(int a)
 {
-    m_currentIndex=a;
     m_series->deselectAllPoints();
     m_series->selectPoint(a);
+
+    if(m_parameter)
+    {
+        QString value=m_parameter->userValueAt(a);
+        m_chart->setTitle(m_parameter->name() +" "+value);
+    }
 }
 
 void ParameterPlot::selectDefault()
 {
+    if(!m_parameter)
+        return;
 
-}
-
-int ParameterPlot::currentIndex()
-{
-    return m_currentIndex;
-}
-
-
-
-void ParameterPlot::setCurrentIndex(int newCurrentIndex)
-{
-    m_currentIndex = newCurrentIndex;
-    m_series->deselectAllPoints();
-    m_series->selectPoint(newCurrentIndex);
+    select(currentTimeIndex());
 }
 
 QLineSeries *ParameterPlot::series() const
@@ -163,12 +186,21 @@ QLineSeries *ParameterPlot::series() const
     return m_series;
 }
 
+void ParameterPlot::setParameter(Parameter *p)
+{
+    m_parameter=p;
+    refresh();
+    selectDefault();
+}
 
 
 
+
+
+/*
 bool ParameterPlot::eventFilter(QObject *obj, QEvent *event)
 {
-    /*
+
     if (obj==m_view && event->type() == QEvent::MouseButtonPress) {
         QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
         if (mouseEvent->button() == Qt::LeftButton)
@@ -201,6 +233,7 @@ bool ParameterPlot::eventFilter(QObject *obj, QEvent *event)
             return true; // Event handled
         }
     }
-    */
+
     return false; // Event not handled
 }
+*/

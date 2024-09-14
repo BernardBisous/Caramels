@@ -2,6 +2,7 @@
 #define UNITPLOT_H
 
 
+#include "Interface/slider.h"
 #include "hardware/hardwareunit.h"
 #include "qscatterseries.h"
 #include <QWidget>
@@ -19,7 +20,13 @@ class UnitPlot  : public QWidget
 public:
     UnitPlot(QWidget*parent=nullptr);
     void removeMargins();
-    void handle(HardwareUnit* u);
+    void enable(bool s);
+
+
+
+
+
+    void handle(HardwareUnit* u, QList<Device*> devices=QList<Device*>(),QList<Parameter*>parameters=QList<Parameter*> ());
     void updateScale();
     void updateSensor(QLineSeries* l,Device*s);
     void updateParameter(QLineSeries* l, Parameter*p, QDateTime start);
@@ -27,6 +34,17 @@ public:
     float maxY();
     void setStartDate(const QDateTime &newStartDate);
     QLineSeries* paramSerie(Parameter*p);
+    QLineSeries* deviceSerie(Device*d);
+    void initSeriesParemeters();
+    void initSeriesDevices();
+
+
+    void hideAll(bool s);
+
+    void highlight(Parameter*p);
+    void highlight(Device*d);
+    void highlight(QList<QLineSeries*> l);
+    void updateHighlight();
 
     QDateTime endConfig();
     void mousePressEvent(QMouseEvent *event) override
@@ -40,14 +58,20 @@ public:
 
     HardwareUnit *client() const;
 
-    Device *targeting() const;
-    void setTargeting(Device *newTargeting);
 
+    QList<Device *> devices() const;
+    void setDevices(const QList<Device *> &newDevices);
+
+    QList<Parameter *> parameters() const;
+    void setParameters(const QList<Parameter *> &newParameters);
+
+    Device* attachedDevice(Parameter*p);
 
 public slots:
     void updatePlot();
     void updateSensors();
     void updateParameters();
+    void sliderChanged(int i);
 
 
 signals:
@@ -63,7 +87,17 @@ private:
     QDateTimeAxis *m_xAxis;
     QValueAxis *m_yAxis;
     QChart *m_chart;
-    Device* m_targeting;
+
+    Slider*m_rangeSlider;
+    int m_xRangeMs;
+
+    Device* m_highlightedDevice;
+    Parameter* m_highlightedParameter;
+
+    QList<Device*> m_devices;
+    QList<Parameter*> m_parameters;
+
+
 };
 
 #endif // UNITPLOT_H

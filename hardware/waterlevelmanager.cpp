@@ -4,149 +4,160 @@
 #include "hardware/pump.h"
 
 WaterLevelManager::WaterLevelManager(QObject *parent)
-    : HardwareUnit{parent},m_injectingState("")
+    : HardwareUnit{parent},m_dry(0),m_wet(0),m_filling(false),m_currentlyDry(true)
 {
     m_name="Arrosage";
-    attachDevice(m_pump=new Pump(MAIN_PUMP_PIN,"Pompe d'arrosage"));
-    attachDevice(m_entryValve=new SwitchedActuator(MAIN_VALVE_PIN,"Pompe d'arrosage"));
+    attachDevice(m_pump=new SwitchedActuator(MAIN_PUMP_PIN,false,"Pompe d'arrosage"));
+    attachDevice(m_entryValve=new Pump(MAIN_VALVE_PIN,"Pompe d'entrée"));
     attachDevice(m_levelUp=new BooleanSensor(WATER_LEVEL_PIN_1,"Cuve pleine"));
     attachDevice(m_levelDown=new BooleanSensor(WATER_LEVEL_PIN_2,"Cuve vide"));
 
-    attachInjector(new TankInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,NO_PIN,CHEMICAL_1,this));
-    attachInjector(new TankInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,CHEMICAL_2,this));
-    attachInjector(new TankInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,CHEMICAL_3,this));
+    m_idParameters<<WET_DELAY<<DRY_DELAY;
 
-    m_idParameters<<CHEMICAL_1<<CHEMICAL_2<<CHEMICAL_3;
+    m_dryTimer=new QTimer(this);
+    connect(m_dryTimer,SIGNAL(timeout()),this,SLOT(switchDry()));
+
+
+    m_entryValve->setRange(0,50);//ml/s
+    m_pump->setRange(0,10);
+    m_pump->setUnits("mL/s");
+    m_pump->setIntegralUnits("mL");
+    m_levelDown->setActiveHigh(false);
+
+    setDescription("En charge des niveaux d'eau dans la cuve et dans les racines, suivant les capteurs de niveau dans la cuve.");
 }
 
-void WaterLevelManager::attachInjector(TankInjector *c)
+QList<Device *> WaterLevelManager::interestingDevices()
 {
-    attachDevice(c->pump());
-    attachDevice(c->mixer());
-
-    attachDevice(c->levelSensor());
-    m_injectors.append(c);
-    connect(c,SIGNAL(injection(int)),this,SLOT(injectorSlot(int)));
-    connect(c,SIGNAL(console(QString)),this,SLOT(injectorConsole(QString)));
-
-    if(c->id()>0)
-        m_idParameters<<c->id();
+   return QList<Device *>()<<m_pump;
 }
+
+QList<Actuator *> WaterLevelManager::interestingIntegrals()
+{
+    return QList<Actuator *> ()<<m_entryValve;
+}
+
+
 
 void WaterLevelManager::reactToSensorsChanged()
 {
 
-    if(!activeConfig() || injecting())
+    if(!activeConfig())
         return;
 
     bool h=m_levelUp->currentValue();
     bool l=m_levelDown->currentValue();
 
-    if(!l && !h)
+    if(!h  && !m_filling)
     {
+        console("Remplissage de la cuve en cours");
         fillTank();
     }
 
-    else if(h&&l&&injecting())
+    else if(h  && m_filling)
     {
-        console("Remplissage terminé");
-        m_injectingState="";
-        emit injectingStateChanged(m_injectingState);
+        m_entryValve->startInjecting(false);
+        console("Remplissage terminé de la cuve " +QString::number(m_entryValve->integral())+"ml");
+        m_filling=false;
+
+
+        emit fillingTank(false);
     }
 }
 
 void WaterLevelManager::reactToParamChanged(Parameter *p, float v)
 {
-    for(int i=0;i<m_injectors.count();i++)
-        if(m_injectors[i]->id()==p->id())
-        {
-            m_injectors[i]->setCurrentValue(v);
-        }
-}
 
-void WaterLevelManager::attachParameter(Parameter *p)
-{
-    HardwareUnit::attachParameter(p);
-
+   // qDebug()<<"level params"<<v<<p->name();
     if(!p)
         return;
+    if(p==dry())
+        m_dry=v;
+    else if (p==wet())
+        m_wet=v;
 
-    for(int i=0;i<m_injectors.count();i++)
+    if(!m_dryTimer->isActive() && activeConfig())
     {
-        if(m_injectors[i]->id()==p->id())
-        {
-            m_injectors[i]->setName(p->name());
-            return;
-        }
+        setDry(false);
     }
 }
+
+void WaterLevelManager::finish()
+{
+     m_dryTimer->stop();
+     HardwareUnit::finish();
+}
+
 
 void WaterLevelManager::fillTank()
 {
-
-    for(int i=0;i<m_injectors.count();i++)
-    {
-       m_injectors[i]->fillTank();
-    }
-    console("Remplissage (injection)");
-    m_injectingState="Dosage";
-
-    emit injectingStateChanged(m_injectingState);
-
-
-
+    console("Remplissage eau");
+    m_filling=true;
+    m_entryValve->startInjecting(true);
+    emit fillingTank(true);
 }
 
 
-
-void WaterLevelManager::injectorSlot(int index)
+bool WaterLevelManager::filling() const
 {
-    bool b=true;
-    for(int i=0;i<m_injectors.count();i++)
-    {
-       if(m_injectors[i]->state()!=ChemicalInjector::ready)
-           b=false;
-    }
+    return m_filling;
+}
 
-    if(b)
+bool WaterLevelManager::isDry()
+{
+     return m_currentlyDry;
+}
+
+void WaterLevelManager::setDry(bool s)
+{
+    if(!s)
     {
-        console("Mixage terminé");
-        m_injectingState="Remplissage";
-        emit injectingStateChanged(m_injectingState);
-        m_entryValve->userApplyPurcent(100);
+        m_pump->userApplyPurcent(100);
     }
 
+    else
+    {
+        m_pump->userApplyPurcent(0);
+    }
+
+    m_currentlyDry=s;
+
+    if(activeConfig())
+    {
+
+        if(s)
+        {
+            console("sechage des racines pour "+QString::number(m_dry)+" secondes");
+            m_dryTimer->start(m_dry*1000);
+        }
+        else
+        {
+            console("Mouillage des racines pour "+QString::number(m_wet)+" heures");
+
+            m_dryTimer->start(m_wet*1000*Parameter::timeMultiplicator());
+        }
+    }
+
+    else
+        m_dryTimer->stop();
 }
 
-
-
-QString WaterLevelManager::injectingState() const
+float WaterLevelManager::totalInjected()
 {
-    return m_injectingState;
+    return m_entryValve->integral();
 }
 
-bool WaterLevelManager::injecting()
+QList<RealTimeValue> WaterLevelManager::injectedHitstoric()
 {
-    return !m_injectingState.isEmpty();
+    return m_entryValve->integralHistoric();
 }
 
-TankInjector::TankInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObject*parent):
-    ChemicalInjector(mixPin,pumpPin,LevelPin,ID,parent), m_current(0)
-{
-    setGain(120);
-}
-
-
-
-void TankInjector::setCurrentValue(float v)
-{
-    m_current=v;
-
-}
-
-void TankInjector::fillTank()
+void WaterLevelManager::switchDry()
 {
 
-    injectMl(m_current);
+    setDry(!isDry());
 }
+
+
+
 

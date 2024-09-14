@@ -15,6 +15,9 @@ public:
     typedef enum state{ready=0,mixing,injecting,empty}State;
     explicit ChemicalInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObject*p=nullptr);
 
+
+
+
     void setPump(Pump *newPump);
 
     void injectMl(float v);
@@ -23,6 +26,8 @@ public:
     void setGain( float msPerMl);
     float gain();
 
+    bool isLow();
+
     void setName(QString s);
     SwitchedActuator *mixer() const;
     Pump *pump() const;
@@ -30,6 +35,16 @@ public:
 
     int id() const;
     State state() const;
+
+
+    void enable(bool s);
+    bool isEnabled();
+    float remainingPurcent();
+    float totalInjected();
+
+    QString name() const;
+
+    QList<RealTimeValue> injectionHistoric();
 
 signals:
     void injection(int purcent);
@@ -48,7 +63,8 @@ private:
     State m_state;
     int m_id;
     float m_injectingValue;
-
+    bool m_enable;
+    QString m_name;
 };
 
 #endif // CHEMICALINJECTOR_H

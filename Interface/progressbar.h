@@ -14,6 +14,8 @@ public:
     float value() const;
     void setValue(double newValue);
 
+    void setBrush(QBrush b);
+
 protected:
   void paintEvent(QPaintEvent *event) override;
 
@@ -24,6 +26,8 @@ signals:
     void timeout();
 
 private:
+
+   QBrush m_brush;
    QTimer* m_timer;
    QTime m_startTime;
    int m_maxCount;

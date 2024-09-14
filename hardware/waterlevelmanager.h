@@ -2,62 +2,61 @@
 #define WATERLEVELMANAGER_H
 
 #include <QObject>
+#include "hardware/Pinout.h"
 #include "hardware/booleansensor.h"
 #include "hardware/chemicalinjector.h"
 #include "hardware/pump.h"
 #include "hardwareunit.h"
 
-class TankInjector: public ChemicalInjector
-{
-    Q_OBJECT
- public:
-    explicit TankInjector(int mixPin, int pumpPin, int LevelPin, int ID, QObject *parent = nullptr);
 
-    void setCurrentValue(float v);
-    void fillTank();
-
-private:
-    float m_current;
-};
 
 class WaterLevelManager : public HardwareUnit
 {
     Q_OBJECT
 public:
     explicit WaterLevelManager(QObject *parent = nullptr);
-    void attachInjector(TankInjector *c);
+
+    virtual QList<Device*> interestingDevices();
+    virtual QList<Actuator*> interestingIntegrals();
     virtual void reactToSensorsChanged();
     virtual void reactToParamChanged(Parameter*, float );
+    virtual void finish();
 
-    virtual void attachParameter(Parameter* p);
+    Parameter* dry(){return parameterFromId(DRY_DELAY);}
+    Parameter* wet(){return parameterFromId(WET_DELAY);}
+
     void fillTank();
+    bool filling() const;
+    bool isDry();
 
+    void setDry(bool s);
 
-    QString injectingState() const;
-    bool injecting();
+    float totalInjected();
 
-private slots:
-    void injectorSlot(int i);
-
-    void injectorConsole(QString s){console(s);}
-
+    QList<RealTimeValue> injectedHitstoric();
 
 
 
 signals:
+    void fillingTank(bool s);
 
-    void injectingStateChanged(QString s);
+private slots:
+    void switchDry();
 
 private:
-    Pump* m_pump;
+
+    float m_dry;
+    float m_wet;
+
+    bool m_currentlyDry;
+
+    SwitchedActuator* m_pump;
     BooleanSensor* m_levelDown;
     BooleanSensor* m_levelUp;
-    SwitchedActuator* m_entryValve;
-    QList<TankInjector*> m_injectors;
-    QString m_injectingState;
+    Pump* m_entryValve;
+    bool m_filling;
 
-
-
+    QTimer* m_dryTimer;
 };
 
 #endif // WATERLEVELMANAGER_H

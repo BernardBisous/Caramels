@@ -40,9 +40,7 @@ private:
     QCamera* m_cam;
     QImageCapture* m_capture;
     QMediaCaptureSession m_session;
-    QTimer* m_timer;
     QPixmap m_lastPixmap;
-
 };
 
 #endif // WEBCAM_H

@@ -1,18 +1,40 @@
 #include "pump.h"
-#define KEY "Flow[mL/s]"
+
+
 Pump::Pump(int pin, QString name,QObject *parent)
     :SwitchedActuator(pin,false,name,parent)
+
 {
-    setDataValue(KEY,"8.3");
+    setUnits("mL/s");
+    setIntegralUnits("ml");
 }
 
 void Pump::inject(float volumeML)
 {
-    impulseHigh(volumeML*flow()*1000);
+    int ms=volumeML*gain()*1000;
+
+   // qDebug()<<"pumpn injectr "<<m_name<<volumeML<<ms;
+    impulseHigh(ms);
 }
 
-float Pump::flow()
+void Pump::startInjecting(bool s)
 {
-    return dataValue(KEY).toFloat();
+    if(s)
+    {
+        userApplyPurcent(100);
+    }
+    else
+    {
+
+        userApplyPurcent(0);
+    }
+
 }
+
+void Pump::setFlow(float t)
+{
+    setRange(0,t);
+}
+
+
 

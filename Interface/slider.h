@@ -1,7 +1,7 @@
 #ifndef SLIDER_H
 #define SLIDER_H
 
-#include "qslider.h"
+#include <QSlider>
 #include <QWidget>
 
 class Slider : public QSlider {

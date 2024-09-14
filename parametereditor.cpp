@@ -43,6 +43,7 @@ void ParameterEditor::handle(Parameter *p)
         return;
 
     m_editor->setClient(p);
+    m_plot->setParameter(p);
     refresh();
 
 
@@ -60,7 +61,7 @@ void ParameterEditor::refresh()
     if(!m_client)
         return;
 
-    m_plot->refresh(m_client);
+    m_plot->refresh();
     m_name->load(m_client->name());
     m_desc->setText(m_client->description());
 
@@ -69,7 +70,7 @@ void ParameterEditor::refresh()
 
 void ParameterEditor::edit(int i)
 {
-    m_plot->refresh(m_client);
+    m_plot->refresh();
     m_plot->select(i);
 }
 
@@ -124,7 +125,7 @@ void ParameterEditor::keyPressEvent(QKeyEvent *event)
 void ParameterEditor::editSlot()
 {
 
-    m_plot->refresh(m_client);
+    m_plot->refresh();
     emit edited();
 
 }

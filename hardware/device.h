@@ -2,13 +2,11 @@
 #define DEVICE_H
 
 #include "hardware/serialtent.h"
+#include "parameter.h"
 #include "qdatetime.h"
 #include "qtimer.h"
 #include <QObject>
-
 #include <QHash>
-
-
 
 class RealTimeValue
 {
@@ -28,7 +26,12 @@ public:
     virtual void reactToDataEdited(QString key,QString val);
     virtual void reset();
 
+
+    virtual void retreiveLastValue();
     virtual float computeResult(QString){return 0;}
+
+    virtual QString userValue();
+
     void computeResults();
 
     int possibleParameterId();
@@ -39,7 +42,7 @@ public:
     void setDataValue(QString key, QString val, bool fromEditing=false);
 
     void loadSettings();
-    void setResult(QString key);
+    void setResult(QString key,QString units="");
     QStringList resultKeys();
     QStringList dataKeys();
     QString name() const;
@@ -48,18 +51,16 @@ public:
     QString storageFile();
     void startRecording(bool t);
 
-    void retreiveLastValue();
+
 
 
 
     void setRange(float min, float max);
-    void setGain(float t);
-    void setOffset(float t);
-
 
     float mapToPurcent(float val);
     float maxRange();
     float minRange();
+    void computeGains();
 
     static bool createDataDir();
 
@@ -82,8 +83,27 @@ public:
 
     void setRecordDelay(int newRecordDelay);
 
+    bool continousStreaming() const;
+
+    void attachParameter(Parameter*p);
+
+    Parameter *parameter() const;
+
+    QHash<QString, float> metaResults() const;
+
+    QHash<QString, QString> resultsUnits() const;
+    void setResultUnits(QString key,QString units);
+
+
+
+
+    bool enabled() const;
+    void enable(bool newEnable);
+
+    int maxValues() const;
+
 public slots:
-    void storeValue(float t);
+    void storeValue(RealTimeValue t);
 
 
 signals:
@@ -94,9 +114,13 @@ protected :
 
     void appendValue(float v);
     QList<RealTimeValue> m_values;
+    int m_maxValues;
 
     QHash<QString,QString> m_metaData;
-    QHash<QString,float> m_metaResults;
+    QHash<QString,float>m_metaResults;
+    QHash<QString,QString> m_resultsUnits;
+
+
     bool m_recording;
     int m_deviceId;
 
@@ -110,6 +134,13 @@ protected :
 
     QDateTime m_lastRecord;
     int m_recordDelay;
+
+    bool m_continousStreaming;
+
+    Parameter* m_parameter;
+
+    bool m_enable;
+
 };
 
 
@@ -120,16 +151,12 @@ class Sensor : public Device
 public:
     explicit Sensor(int pin, QString name="Sensor", QObject *parent = nullptr);
     virtual float aquire();
-    virtual void reactToDataEdited(QString key,QString val);
     virtual void begin();
-
-
 
 public slots:
     virtual void measure();
 
 protected :
-
     int m_pin;
 };
 
@@ -143,12 +170,27 @@ public:
     void test();
     virtual float filterInputValue(float v){return v;}
     virtual void applyPurcent(float v);
+     virtual void retreiveLastValue();
+    virtual QString userValue();
+
     void applyValue(float);
     void userApplyPurcent(float);
     virtual void reset();
     void stop();
     void impulse(float val, int ms, float valEnd);
     void impulseHigh(int ms);
+    void setIntegralUnits(QString s);
+
+    virtual float computeResult(QString);
+    void computeHistoricIntegral();
+    QList<RealTimeValue> integralHistoric();
+
+    float integral() const;
+    float immediateIntegral() const;
+    QString integralUnit();
+
+    bool integratedInteresting() const;
+    void setIntegratedInteresting(bool newIntegratedInteresting);
 
 signals:
     void impulseDone();
@@ -158,6 +200,8 @@ private slots:
 
 protected :
 
+    bool m_integratedInteresting;
+    float m_integral;
     float m_nextVal;
     QTimer* m_impulseTimer;
 };
@@ -167,8 +211,8 @@ class SwitchedActuator : public Actuator
     Q_OBJECT
 public:
     explicit SwitchedActuator (int m_pin,bool pwm, QString name="Switched Actuator",QObject *parent = nullptr);
-    virtual void applyPurcent(float v);
     virtual float filterInputValue(float v);
+    virtual void applyPurcent(float v);
 
 public slots:
 
@@ -185,6 +229,7 @@ class Motor : public Actuator
 public:
     explicit Motor (int dirpin,int pwm, QString name="Motor",QObject *parent = nullptr);
     virtual void applyValue(float v);
+    virtual void applyPurcent(float v);
 
 public slots:
 

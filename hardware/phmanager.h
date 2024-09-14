@@ -18,6 +18,8 @@ public:
     void regulate();
     float ph();
 
+    QList<ChemicalInjector *>  injectors();
+
 signals:
 
 

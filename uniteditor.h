@@ -6,6 +6,7 @@
 #include "parametereditor.h"
 #include "parameterlistwidget.h"
 #include "parameterplot.h"
+#include "unitoverview.h"
 #include "unitplot.h"
 #include <QWidget>
 
@@ -15,21 +16,22 @@ class UnitEditor : public QWidget
 public:
     explicit UnitEditor(QWidget *parent = nullptr);
     void handle(HardwareUnit* h);
+    //static UnitOverview* createOverview(HardwareUnit*u);
 
 public slots:
     void editDevice(int i);
     void editParameter(Parameter*p);
+    void editDevice(Device*d);
 
 private slots:
-
-
-
 
 private:
     HardwareUnit* m_client;
     DeviceListWidget*m_devices;
-    UnitPlot*m_plot;
+    UnitOverview* m_overview;
     ParameterValueEditor* m_paramEditor;
+    QStackedWidget* m_stack;
+
 };
 
 #endif // UNITEDITOR_H

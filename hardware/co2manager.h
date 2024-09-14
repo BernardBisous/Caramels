@@ -17,8 +17,6 @@ public:
     virtual void reactToSensorsChanged();
     float CO2();
     float excess();
-    void regulate();
-    int routineSecs();
     Parameter* parameterCO2(){return parameterFromId(CO2_LEVEL);}
 
 signals:
@@ -27,9 +25,6 @@ private:
     float m_command;
     SwitchedActuator*m_injector;
     AnalogSensor* m_sensor;
-    QDateTime m_lastReg;
-
-
 };
 
 #endif // CO2MANAGER_H

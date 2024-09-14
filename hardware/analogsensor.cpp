@@ -3,22 +3,32 @@
 
 #define SMOOTH_KEY "Smoothing"
 #define REG_KEY "Regulation"
+
 AnalogSensor::AnalogSensor(int pin, QString n, QObject *parent):
-    Sensor(pin,n,parent)
+    Sensor(pin,n,parent),m_lastRegTime()
 {
+
+
+    m_maxValues=100;
     setSmoothing(10);
-    setRegulationDelay(10);
+    setRegulationDelay(Parameter::timeMultiplicator());
+    setRecordDelay(Parameter::timeMultiplicator());
+    m_continousStreaming=true;
 }
 
 void AnalogSensor::setSmoothing(int values)
 {
-
-     setDataValue(SMOOTH_KEY,QString::number(values));
+    setDataValue(SMOOTH_KEY,QString::number(values));
 }
 
 int AnalogSensor::smoothing() const
 {
     return dataValue(SMOOTH_KEY).toInt();
+}
+
+int AnalogSensor::regulationDelay()
+{
+    return dataValue(REG_KEY).toInt();
 }
 
 void AnalogSensor::setRegulationDelay(int seconds)
@@ -27,19 +37,28 @@ void AnalogSensor::setRegulationDelay(int seconds)
 }
 
 bool AnalogSensor::shouldRegulate()
-{
-    int s=dataValue(REG_KEY).toInt();
-    if(s>0)
-    {
-        QDateTime now=QDateTime::currentDateTime();
-        if(!m_lastRegTime.isValid() || m_lastRegTime.secsTo(now)>s)
-        {
-            m_lastRegTime=now;
-            return true;
-        }
+{    
+    if(!m_lastRegTime.isValid() || !nextRegulation().isValid())
+        return true;
 
-    }
-    return false;
+    return (nextRegulation()<QDateTime::currentDateTime());
+}
+
+void AnalogSensor::begin()
+{
+    Sensor::begin();
+    m_lastRegTime=QDateTime();
+}
+
+QDateTime AnalogSensor::nextRegulation()
+{
+    int n=regulationDelay();
+
+    if(!m_lastRegTime.isValid() || n<=0 )
+        return QDateTime();
+
+    QDateTime t=m_lastRegTime;
+    return t.addSecs(n);
 }
 
 float AnalogSensor::smoothedValue() const
@@ -63,15 +82,50 @@ void AnalogSensor::reset()
     Sensor::reset();
 }
 
+void AnalogSensor::regulateNow()
+{
+
+    m_lastRegTime=QDateTime();
+    measure();
+}
+
+void AnalogSensor::setRegulated()
+{
+    m_lastRegTime=QDateTime::currentDateTime();
+    emit regulated();
+}
+
 void AnalogSensor::measure()
 {
     float a=aquire();
     m_smoothedValues.append(a);
     int n=smoothing();
+
     while(n<m_smoothedValues.count())
         m_smoothedValues.takeFirst();
 
     appendValue(smoothedValue());
+}
+
+float AnalogSensor::command() const
+{
+    return m_command;
+}
+
+void AnalogSensor::setCommand(float newCommand)
+{
+    m_command = newCommand;
+}
+
+float AnalogSensor::errorValue()
+{
+    return currentValue()-m_command;
+}
+
+QString AnalogSensor::userValue()
+{
+    QString err=" ("+QString::number(errorValue(),'f',1)+")";
+    return Sensor::userValue()+err;
 }
 
 

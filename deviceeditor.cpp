@@ -99,6 +99,8 @@ void DeviceEditor::handle(Device *c)
         QString sl=lc[i];
         QString units;
 
+        m_results.insert(sl,la);
+
         QRegularExpression regex(R"((\w+)(\[(\w+)\])?)");
         QRegularExpressionMatch match = regex.match(sl);
         if(match.hasMatch()) {
@@ -112,6 +114,7 @@ void DeviceEditor::handle(Device *c)
 
     }
 
+    setEnabled(m_client->enabled());
 
     refresh();
 }
@@ -123,10 +126,15 @@ QBrush DeviceEditor::backgroundBrush()
 
 void DeviceEditor::refresh()
 {
+
+    if(!m_client || !m_client->enabled())
+    {
+        hide();
+    }
     m_nameLabel->setText(m_client->name());
-
-
     valueSlot(m_client->currentValue());
+
+
 
 
 }
@@ -185,10 +193,26 @@ void DeviceEditor::sliderEdited(int i)
 
 void DeviceEditor::valueSlot(float t)
 {
-    m_status->setText(QString::number(t,'f',1)+m_client->units());
+    if(t==-1)
+         m_status->setText("Je ne sait pas");
+    else
+        m_status->setText(m_client->userValue());
+
     disconnect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
     m_valueSlider->setValue(m_client->currentPurcent());
     connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
+
+    auto l=m_client->metaResults();
+    auto ls=l.keys();
+
+
+    for(int i=0;i<ls.count();i++)
+    {
+        float val=l.value(ls[i]);
+        QString units=m_client->resultsUnits().value(ls[i]);
+        m_results.value(ls[i])->setText(QString::number(val)+units);
+
+    }
 }
 
 Device *DeviceEditor::client() const

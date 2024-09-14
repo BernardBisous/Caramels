@@ -18,16 +18,15 @@ void ConfigProgress::refresh(GrowConfig *c, QDateTime startDate)
     if(!c)
         return;
 
-    int totalSec=c->maxHours();
+    int totalSec=c->maxHours()*Parameter::timeMultiplicator();
 
     m_start->setText(startDate.toString("dd.MM - hh:mm"));
     m_end->setText(startDate.addSecs(totalSec).toString("dd.MM - hh:mm"));
+
     int elapsed=startDate.secsTo(QDateTime::currentDateTime());
     double v=elapsed;
     v=v/totalSec;
     m_progress->setValue(v);
-
-    //qDebug()<<"refrsh"<<totalSec<<v<<startDate<<elapsed<<totalSec;
 }
 
 void ConfigProgress::refresh(Tent *t)

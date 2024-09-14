@@ -1,18 +1,11 @@
 #include "webcamwidget.h"
-#include "parameter.h"
 #include "qboxlayout.h"
 
 #include <QMediaCaptureSession>
 #include <QImageCapture>
 
-
-
-
 WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
 {
-
-
-
     setLayout(new QHBoxLayout);
     layout()->addWidget(m_screen=new QVideoWidget);
     layout()->addWidget(m_picLabel=new QLabel);
@@ -33,20 +26,14 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
     connect(m_modeSwitch,SIGNAL(stateChanged(int)),this,SLOT(modeSlot()));
     connect(m_enableSwitch,SIGNAL(stateChanged(int)),this,SLOT(enableSlot()));
     connect(m_timeLaspe,SIGNAL(stateChanged(int)),this,SLOT(timelapse()));
-
     connect(m_finder,SIGNAL(clicked()),this,SLOT(findCam()));
-
     connect(m_timeLaspe,SIGNAL(clicked()),this,SLOT(timelapse()));
+
     m_lapseTimer=new QTimer(this);
     m_lapseTimer->setInterval(100);
     connect(m_lapseTimer,SIGNAL(timeout()),this,SLOT(lapsSlot()));
-
-
-
     setLiveMode(false);
     m_enableSwitch->setChecked(true);
-
-
 }
 
 void WebcamWidget::handle(Webcam *w)
@@ -58,8 +45,6 @@ void WebcamWidget::handle(Webcam *w)
 
 void WebcamWidget::printPicture(QString s)
 {
-
-
     m_picLabel->setPixmap(QPixmap(s).scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 }
 
@@ -90,22 +75,15 @@ void WebcamWidget::resetTimeLapse()
     m_frame = m_client->picsFiles();
 }
 
-
-
 void WebcamWidget::modeSlot()
 {
-    qDebug()<<"mode webcam";
     setLiveMode(m_modeSwitch->isChecked());
-
 }
-
-
 
 void WebcamWidget::enableSlot()
 {
     if(m_client)
         m_client->setEnabled(m_enableSwitch->isChecked());
-
 }
 
 void WebcamWidget::capturedSlot(QString fileName)
@@ -114,29 +92,23 @@ void WebcamWidget::capturedSlot(QString fileName)
        printPicture(fileName);
 }
 
-
-
-
-
 void WebcamWidget::findCam()
 {
     m_selectMenu->clear();
     m_client->findCam();
     m_selectMenu->addActions(m_client->availables());
     m_selectMenu->setActivate(m_client->name());
-
 }
 
 void WebcamWidget::timelapse()
 {
-
     if(!m_timeLaspe->isChecked())
     {
         m_lapseTimer->stop();
         return;
     }
     setLiveMode(false);
-   resetTimeLapse();
+    resetTimeLapse();
     m_lapseTimer->start();
 }
 
@@ -144,9 +116,7 @@ void WebcamWidget::lapsSlot()
 {
     if(m_frame.isEmpty())
     {
-
        resetTimeLapse();
-
     }
 
     printPicture(m_frame.first());

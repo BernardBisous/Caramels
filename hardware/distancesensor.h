@@ -2,7 +2,7 @@
 #define DISTANCESENSOR_H
 
 #include "hardware/device.h"
-#include "hardware/distancepoller.h"
+
 #include <QObject>
 
 class DistanceSensor : public Sensor

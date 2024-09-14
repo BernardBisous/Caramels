@@ -1,6 +1,7 @@
 #include "parameter.h"
 
-#define TIME_FACTOR 1
+#define TIME_FACTOR 3600
+
 
 Parameter::Parameter(QString name, QString units, int id):
     m_id(id),m_name(name),m_units(units)
@@ -189,6 +190,11 @@ void Parameter::addDefaultPoint(int index)
 
 }
 
+QString Parameter::userValueAt(int i)
+{
+    return QString::number(m_values[i].value)+m_units;
+}
+
 TimedValue Parameter::at(int i)
 {
     if(i<0 || i>=count())
@@ -212,13 +218,30 @@ float Parameter::valueAtTime(int h, bool *e)
         if( m_values[i].hourIndex>=h)
         {
             if(i)
-                return m_values[i-1].value;
+                return m_values[i].value;
 
             else
                  return m_values[0].value;
         }
     }
     *e=false;
+    return 0;
+}
+
+int Parameter::closerIndex(int h)
+{
+    for(int i=0;i<m_values.count();i++)
+    {
+        if( m_values[i].hourIndex>=h)
+        {
+            if(i)
+                return i;
+
+            else
+                 return 0;
+        }
+    }
+
     return 0;
 }
 

@@ -43,6 +43,8 @@ private:
     QWidget*m_dataWidget;
     QWidget*m_resultWidget;
 
+    QHash<QString,QLabel*> m_results;
+
 
 
     bool m_abstracted;

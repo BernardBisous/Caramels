@@ -32,15 +32,15 @@
 
 //Relays
 #define LIGHTS_POWER_PIN 40
-#define MAIN_PUMP_PIN 41
-#define MAIN_VALVE_PIN 42
+#define MAIN_PUMP_PIN 8
+#define MAIN_VALVE_PIN 10
 #define HUMIDIFIER_PIN 43
 #define WIND_POWER_PIN 44
 #define EXTRACTOR_PIN 45
 
 //Input pins
-#define WATER_LEVEL_PIN_1 47
-#define WATER_LEVEL_PIN_2 48
+#define WATER_LEVEL_PIN_1 48
+#define WATER_LEVEL_PIN_2 47
 
 // i2C virtual pins
 #define HEIGH_SENSE 200
@@ -55,6 +55,7 @@
 #define TEMP_3_PIN 59
 
 enum {LIGHTS_DAY=0,
+
       LIGHTS_SLEEP=1,
       LIGHTS_SPECTRUM=2,
       TEMPERATURE_AIR=3,
@@ -65,7 +66,9 @@ enum {LIGHTS_DAY=0,
       WIND_LEVEL=8,
       WIND_ROTATION=9,
       PH_LEVEL=10,
-      CHEMICAL_1=11,
+      DRY_DELAY=11,
+      WET_DELAY=12,
+      CHEMICAL_1=13,
       CHEMICAL_2,
       CHEMICAL_3,
       CHEMICAL_4,

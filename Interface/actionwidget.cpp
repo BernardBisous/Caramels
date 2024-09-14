@@ -50,7 +50,7 @@ void ActionWidget::paintEvent(QPaintEvent *e)
     painter.setBrush(b1);
 
 
-    QColor c=b1.color();
+
     QPen p=borderPen();
 
 
