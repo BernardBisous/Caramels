@@ -9,7 +9,7 @@
 
 #include "tent.h"
 #include <QWidget>
-#include "webcamwidget.h"
+#include "webcamoverview.h"
 
 class ConfigOverview : public QWidget
 {
@@ -35,7 +35,7 @@ private:
     ToolButton* m_restartButton;
     ConfigProgress* m_progress;
 
-   // WebcamWidget* m_cam;
+    CameraOverview* m_cam;
 
     EventManager* m_event;
     ConfigTop* m_topStart;

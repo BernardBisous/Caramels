@@ -7,7 +7,8 @@
 #include <QFile>
 
 #define DATA_DIR "pics"
-#define CAPTURE_DELAY_HOURS 5
+#define CAPTURE_DELAY_HOURS 10
+#include "parameter.h"
 
 Webcam::Webcam(QObject *parent)
     : QObject{parent},m_cam(nullptr),m_session(),m_lastPixmap()
@@ -107,7 +108,7 @@ void Webcam::exportAll(QString dir)
 
 void Webcam::scheduleNext()
 {
-    m_nextDate=QDateTime::currentDateTime().addSecs(CAPTURE_DELAY_HOURS*3600);
+    m_nextDate=QDateTime::currentDateTime().addSecs(CAPTURE_DELAY_HOURS*Parameter::timeMultiplicator());
 
 }
 
@@ -158,6 +159,7 @@ void Webcam::capturingSlot()
     m_lastPixmap=s;
     m_capture->captureToFile(s);
     m_cam->stop();
+    scheduleNext();
 
 }
 
@@ -199,6 +201,6 @@ void Webcam::capturedSlot(int, QString s)
     QString f=QString(DATA_DIR)+"/"+s;
 
 
-    scheduleNext();
+
     emit saved(f);
 }

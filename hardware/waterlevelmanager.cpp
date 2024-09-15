@@ -47,13 +47,13 @@ void WaterLevelManager::reactToSensorsChanged()
     bool h=m_levelUp->currentValue();
     bool l=m_levelDown->currentValue();
 
-    if(!h && !m_filling)
+    if(!h && !l && !m_filling)
     {
         console("Remplissage de la cuve en cours");
         fillTank();
     }
 
-    else if(h  && m_filling)
+    else if(h  && !l && m_filling)
     {
         m_entryValve->startInjecting(false);
         console("Remplissage terminé de la cuve " +QString::number(m_entryValve->integral())+"ml");

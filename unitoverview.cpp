@@ -4,7 +4,7 @@
 #define DETAIL_DEVICE false
 #define DETAIL_PARAMETER false
 UnitOverview::UnitOverview(QWidget *parent)
-    : QWidget{parent},m_client(nullptr),m_integral(nullptr)
+    : QWidget{parent},m_client(nullptr),m_integral(nullptr),m_selectedWidget(nullptr)
 {
     setLayout(new QVBoxLayout);
     layout()->setContentsMargins(0,0,0,0);
@@ -96,6 +96,7 @@ void UnitOverview::handle(HardwareUnit *u)
     printButtons(u->trigKeys());
 
     m_regulator->handle(u->regulatingSensor());
+
 
     showCentral();
     refresh();
@@ -220,7 +221,12 @@ void UnitOverview::deviceTrig()
         emit requestDeviceEdit(p->device());
 }
 
-void UnitOverview::dateChanged(QDateTime t)
+void UnitOverview::dateChanged(QDateTime )
+{
+
+}
+
+void UnitOverview::updateParamSelecction()
 {
 
 }
@@ -228,6 +234,26 @@ void UnitOverview::dateChanged(QDateTime t)
 ParameterPlot *UnitOverview::parameter() const
 {
     return m_parameter;
+}
+
+
+
+ParameterPlot *UnitOverview::paramPlot(Parameter *p)
+{
+     for(int i=0;i<m_parameters.count();i++)
+         if(m_parameters[i]->parameter()==p)
+             return m_parameters[i];
+
+     return nullptr;
+}
+
+DevicePlot *UnitOverview::devicePlot(Device *d)
+{
+    for(int i=0;i<m_devices.count();i++)
+        if(m_devices[i]->device()==d)
+            return m_devices[i];
+
+     return nullptr;
 }
 
 
@@ -254,23 +280,29 @@ void UnitOverview::enableCentral(bool s)
     }
 }
 
-void UnitOverview::resizeEvent(QResizeEvent *e)
-{
-    QWidget::resizeEvent(e);
 
-    //m_integral->setMinimumSize(size()/2);
-}
 
 
 
 
 void UnitOverview::editParameter(Parameter *p)
 {
-    m_stack->setCurrentWidget(m_parameter);
-    m_parameter->setParameter(p);
-    m_parameter->setStartDate(m_client->startTime());
+    if(DETAIL_PARAMETER)
+    {
+        m_stack->setCurrentWidget(m_parameter);
+        m_parameter->setParameter(p);
+        m_parameter->setStartDate(m_client->startTime());
+
+         enableCentral(false);
+    }
+
+
+
     m_device->handle(nullptr);
-    enableCentral(false);
+    m_selectedWidget=paramPlot(p);
+    update();
+
+
 }
 
 void UnitOverview::editDevice(Device *d)
@@ -282,6 +314,8 @@ void UnitOverview::editDevice(Device *d)
         enableCentral(false);
     }
 
+    m_selectedWidget=devicePlot(d);
+    update();
     m_parameter->setParameter(nullptr);
 
 }

@@ -70,6 +70,7 @@ SOURCES += \
     unitoverview.cpp \
     unitoverviews.cpp \
     unitplot.cpp \
+    webcamoverview.cpp \
     webcamwidget.cpp
 
 HEADERS += \
@@ -134,6 +135,7 @@ HEADERS += \
     unitoverview.h \
     unitoverviews.h \
     unitplot.h \
+    webcamoverview.h \
     webcamwidget.h
 
 FORMS +=

@@ -154,6 +154,7 @@ void ParameterPlot::initStyle()
     m_chart->setBackgroundBrush(palette().base());
     m_series->setColor(palette().highlight().color());
     m_chart->setPlotAreaBackgroundPen(QPen(Qt::yellow));
+    m_chart->setPlotAreaBackgroundVisible(true);
 
     m_xAxis->setGridLineColor(gridColor);
     m_xAxis->setLinePenColor(gridColor);
@@ -167,6 +168,9 @@ void ParameterPlot::initStyle()
     m_chart->setBackgroundRoundness(20);
 
     m_chart->setTitleBrush(textColor);
+
+    m_chart->setPlotAreaBackgroundPen(gridColor);
+
     m_chart->legend()->hide();
     m_chart->update();
 }

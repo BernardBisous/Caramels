@@ -3,6 +3,7 @@
 #include "chemicalinjector.h"
 
 
+
 PHManager::PHManager(QObject *parent)
     : HardwareUnit{parent},m_activ(false)
 {
@@ -13,8 +14,8 @@ PHManager::PHManager(QObject *parent)
 
     m_sensor->setUnits("");
     m_sensor->setRange(0,14);
-    m_phPlus->setGain(1); //1s/(PHunit*ml)
-    m_phMinus->setGain(1);
+    m_phPlus->setGain(0.5); //1s/(PHunit*ml)
+    m_phMinus->setGain(0.5);
 
 
     m_idParameters<<PH_LEVEL;

@@ -81,6 +81,7 @@ signals:
     void startChanged(QDateTime start);
 
 
+
 protected:
 
     QHash<int,Device*> m_couples;

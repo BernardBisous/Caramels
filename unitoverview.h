@@ -36,7 +36,6 @@ public:
     virtual void refreshCentral();
     virtual void enableCentral(bool s);
 
-    void resizeEvent(QResizeEvent*e);
     void editParameter(Parameter*p);
     void editDevice(Device*d);
     void showCentral();
@@ -54,14 +53,23 @@ public:
 
     ParameterPlot *parameter() const;
 
+
+
+    ParameterPlot* paramPlot(Parameter*p);
+    DevicePlot* devicePlot(Device*);
+
+
+
 private slots:
     void buttonTrig();
     void paramTrig();
     void deviceTrig();
     void dateChanged(QDateTime t);
+    void updateParamSelecction();
 signals:
     void requestParamEdit(Parameter*);
     void requestDeviceEdit(Device*d);
+
 
 protected:
     HardwareUnit* m_client;
@@ -85,6 +93,8 @@ protected:
     QWidget* m_devicesWidget;
 
     IntegralPlot* m_integral;
+
+    QWidget* m_selectedWidget;
 
 
 

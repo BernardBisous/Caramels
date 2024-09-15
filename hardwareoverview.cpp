@@ -55,6 +55,10 @@ HardwareOverview::HardwareOverview(QWidget *parent)
     m_sun->setPos(QPointF(10,-80));
     m_spectrum=printTextParameters("Color:",QPointF(70,-60));
 
+    QWidget*sp=new QWidget;
+    sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    layout()->addWidget(sp);
+
 
     if(AUTOPOLL)
         m_timer->start(1000); // Update every second

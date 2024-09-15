@@ -7,16 +7,18 @@
 
 #define HISTO_PATH "data/"
 #define MAX_VALUES 2
-#define LOAD_META false
 #define MAX_KEY "Max"
 #define MIN_KEY "Min"
 #define INTEGRAL_KEY "Total"
 
+#define LOAD_META true
+
+
 Device::Device(QString name,QObject *parent)
-    : QObject{parent},m_recording(true),
-      m_name(name),m_serial(nullptr),
-      m_lastRecord(),m_recordDelay(-1),m_continousStreaming(false),
-      m_parameter(nullptr),m_enable(true),m_maxValues(MAX_VALUES)
+    : QObject{parent},m_maxValues(MAX_VALUES),
+      m_recording(true),m_name(name),
+      m_serial(nullptr),m_lastRecord(),m_recordDelay(-1),
+      m_continousStreaming(false),m_parameter(nullptr),m_enable(true)
 {
     setRange(0,1);
     setUnits("");

@@ -48,7 +48,8 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     center->layout()->addWidget(sp);
 
-   // center->layout()->addWidget(m_cam=new WebcamWidget);
+    center->layout()->addWidget(m_cam=new CameraOverview);
+
     QFont f=font();
     f.setPointSize(36);
     m_name->setFont(f);
@@ -73,6 +74,7 @@ void ConfigOverview::setTent(Tent *t)
     if(t->config())
         m_event->handle(t->config()->events(),t);
 
+    m_cam->handle(t->cam());
     updateDate();
     refresh();
 }

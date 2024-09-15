@@ -444,7 +444,7 @@ void Tent::timerSlot()
 
 
 
-    if( m_cam->shouldCapture())
+    if( m_cam->shouldCapture() && (!m_lights || m_lights->isDayLight() ))
         m_cam->capture();
 
 
