@@ -32,6 +32,9 @@ public:
     virtual void finish();
     bool isDayLight();
 
+    virtual QList<Device*> interestingDevices();
+
+    virtual QList<Actuator*> interestingIntegrals();
 
     void updateSpectrum(float);
 

@@ -535,24 +535,17 @@ QList<RealTimeValue> Actuator::integralHistoric()
     float v=0;
     for(int i=0;i<l.count();i++)
     {
-        if(!i)
-        {
-
-        }
-        else
+        if(i)
         {
             RealTimeValue t;
-            t.time=l[i-1].time;
+            t.time=l[i].time;
 
+            int dx=l[i-1].time.msecsTo(t.time);
+            v+=(dx*l[i-1].value)/1000;
 
-            int dx=l[i-1].time.msecsTo(l[i].time);
-            v+=dx*l[i-1].value;
-
-            t.value=v/1000;
+            t.value=v;
 
             out<<t;
-
-
         }
 
     }
@@ -583,18 +576,20 @@ void Actuator::setIntegratedInteresting(bool newIntegratedInteresting)
 
 float Actuator::integral() const
 {
-    return m_integral+immediateIntegral();
+    return immediateIntegral();
 }
 
 float Actuator::immediateIntegral() const
 {
+
+
+    //TO fix
     if(m_values.isEmpty())
         return 0;
 
+    float s=m_values.last().time.msecsTo(QDateTime::currentDateTime())*currentValue();
 
-    float s=m_values.last().time.msecsTo(QDateTime::currentDateTime());
-
-    return s*currentValue()/1000;
+    return s/1000+m_integral;
 }
 
 QString Actuator::integralUnit()
@@ -637,8 +632,8 @@ void Sensor::measure()
 
 
 
-Motor::Motor(int dirpin, int pwm, QString name, QObject *parent):
-    Actuator(name,parent),m_dirPin(dirpin),m_pwmPin(pwm)
+Motor::Motor(int p1, int p2, QString name, QObject *parent):
+    Actuator(name,parent),m_pin1(p1),m_pin2(p2)
 {
 
 }
@@ -650,6 +645,56 @@ void Motor::applyValue(float )
 
 void Motor::applyPurcent(float v)
 {
+    if(v<50)
+    {
+        if(m_clockwise)
 
+            m_serial->write(m_pin2,0);
+
+        else
+            m_serial->write(m_pin1,v+50);
+
+        m_clockwise=false;
+    }
+    else
+    {
+        if(!m_clockwise)
+            m_serial->write(m_pin1,0);
+
+        else
+            m_serial->write(m_pin2,v+50);
+
+        m_clockwise=true;
+    }
+
+
+
+}
+
+void Motor::setMaxSpeed(float v)
+{
+    setRange(-v,v);
+}
+
+float Motor::maxSpeed()
+{
+    return maxRange();
+}
+
+void Motor::move(float t)
+{
+    if(t==0)
+        return;
+
+    if(t<0)
+    {
+        float s=-t/maxSpeed();
+        impulse(-maxSpeed(),s/1000,0);
+    }
+    else
+    {
+        float s=t/maxSpeed();
+        impulse(maxSpeed(),s/1000,0);
+    }
 }
 

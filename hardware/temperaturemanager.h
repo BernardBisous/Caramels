@@ -15,8 +15,9 @@ public:
     explicit TemperatureManager(QObject *parent = nullptr);
     virtual void reactToParamChanged(Parameter*, float );
     virtual void reactToSensorsChanged();
+    virtual QList<Actuator*> interestingIntegrals();
 
-
+virtual AnalogSensor*regulatingSensor();
     Parameter* temperatureParameter(){return parameterFromId(TEMPERATURE_AIR);}
     Parameter* humidityParameter(){return parameterFromId(HUMIDITY_AIR);}
     Parameter* windParameter(){return parameterFromId(WIND_LEVEL);}
@@ -42,8 +43,6 @@ private:
     SwitchedActuator* m_windpower;
     SwitchedActuator* m_rotation;
     SwitchedActuator* m_extractor;
-    float m_humidityCommand;
-    float m_temperatureCommand;
 
 
     CO2Manager* m_co2;

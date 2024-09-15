@@ -31,6 +31,8 @@ class ScrollArea : public QScrollArea
 {
     Q_OBJECT
 public:
+
+
     explicit ScrollArea(bool horizontal=false,QWidget *parent = nullptr);
     virtual void enterEvent(QEnterEvent *event);
     virtual void leaveEvent(QEvent *event);
@@ -46,6 +48,7 @@ public:
     QWidget* at(int i);
     int indexOf(QWidget*w);
     QList<QWidget*> widgets();
+    void scrollDown();
 
 signals:
     void trigger(int i, QWidget*);

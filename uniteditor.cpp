@@ -8,6 +8,7 @@ UnitEditor::UnitEditor(QWidget *parent)
     : QWidget{parent},m_overview(nullptr)
 {
     setLayout(new QHBoxLayout);
+    layout()->setContentsMargins(0,0,0,0);
     QWidget* edit=new QWidget;
     edit->setLayout(new QVBoxLayout);
     edit->layout()->setContentsMargins(0,0,0,0);
@@ -24,8 +25,12 @@ UnitEditor::UnitEditor(QWidget *parent)
     m_paramEditor->setSeries(m_overview->parameter()->series());
     m_paramEditor->hide();
     layout()->addWidget(edit);
-    edit->setFixedWidth(250);
+
+
+    m_devices->setFixedWidth(250);
     connect(m_devices,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
+
+    m_devices->setHidden(true);
 }
 
 void UnitEditor::handle(HardwareUnit *h)
@@ -33,6 +38,17 @@ void UnitEditor::handle(HardwareUnit *h)
     m_client=h;
     m_devices->fillList(h );
     m_overview->handle(h);
+    m_paramEditor->setHidden(true);
+}
+
+void UnitEditor::showDevices(bool s)
+{
+    m_devices->setHidden(!s);
+}
+
+void UnitEditor::showDevices()
+{
+    showDevices(m_devices->isHidden());
 }
 
 
@@ -68,5 +84,10 @@ void UnitEditor::editDevice(Device *d)
     int i=m_client->devices().indexOf(d);
     if(i>=0)
         editDevice(i);
+}
+
+ParameterValueEditor *UnitEditor::paramEditor() const
+{
+    return m_paramEditor;
 }
 

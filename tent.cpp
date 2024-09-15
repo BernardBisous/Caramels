@@ -49,13 +49,13 @@ void Tent::initDevices()
     Device::createDataDir();
     addUnit(m_pumps=new WaterLevelManager(this));
     addUnit(m_chemichals=new ChemicalManager(this));
-  //  addUnit(m_lights=new LightsUnit(this));
-  //  addUnit(m_leveler=new TolLeveler(this));
-  //  addUnit(m_temperatures=new TemperatureManager(this));
+    addUnit(m_lights=new LightsUnit(this));
+    addUnit(m_leveler=new TolLeveler(this));
+    addUnit(m_temperatures=new TemperatureManager(this));
     addUnit(m_Co2=new CO2Manager(this));
-  //  addUnit(m_ph=new PHManager(this));
+    addUnit(m_ph=new PHManager(this));
 
-  //  m_temperatures->setCo2(m_Co2);
+    m_temperatures->setCo2(m_Co2);
     connect(m_pumps,SIGNAL(fillingTank(bool)),this,SLOT(tankFilledSlot(bool)));
 
 }
@@ -212,7 +212,9 @@ void Tent::loadSetting()
 
 void Tent::restart()
 {  
+    finish();
     clearAllData();
+
     setStartDate(QDateTime::currentDateTime());
 }
 
@@ -395,11 +397,11 @@ void Tent::console(QString s)
         return;
     }
     QTextStream out(&file);
-    out << QDateTime::currentDateTime().toString("dd.MM hh:mm")+" :\n"+s+"\n";
+    QString t=QDateTime::currentDateTime().toString("dd.MM hh:mm")+" "+s+"\n";
+    out << t ;
     file.close();
-    return;
 
-    emit consoleRequest(s);
+    emit consoleRequest(t);
 }
 
 void Tent::hardwareSlot(QByteArray &d)
@@ -457,7 +459,6 @@ ChemicalManager *Tent::chemichals() const
 QList<ChemicalInjector *> Tent::injectors()
 {
     QList<ChemicalInjector *> out;
-
     if(m_ph)
         out<<m_ph->injectors();
 
@@ -465,6 +466,15 @@ QList<ChemicalInjector *> Tent::injectors()
         out<<m_chemichals->injectors();
 
     return out;
+}
+
+void Tent::setEventsDone()
+{
+    if(m_startedDate.isValid())
+    {
+        console("All events done");
+        finish();
+    }
 }
 /*
 void Tent::storeResults()

@@ -16,7 +16,11 @@ class UnitEditor : public QWidget
 public:
     explicit UnitEditor(QWidget *parent = nullptr);
     void handle(HardwareUnit* h);
+    void showDevices(bool s);
+    void showDevices();
     //static UnitOverview* createOverview(HardwareUnit*u);
+
+    ParameterValueEditor *paramEditor() const;
 
 public slots:
     void editDevice(int i);

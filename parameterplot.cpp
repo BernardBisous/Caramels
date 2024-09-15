@@ -30,7 +30,7 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
     m_series->attachAxis(m_yAxis);
 
     // Set chart title
-    m_chart->setTitle("Parameter Plot");
+
 
     // Set chart view layout
     m_view->setChart(m_chart);
@@ -48,7 +48,7 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
     m_xAxis->setVisible(false);
 
 
-
+    setMinimumSize(1,10);
     initStyle();
 }
 
@@ -80,7 +80,7 @@ void ParameterPlot::refresh()
     float err=qAbs(max-min);
     err=err*0.1;
 
-    m_chart->setTitle(m_parameter->name() +" ["+m_parameter->units()+"]");
+
     m_yAxis->setTitleText(m_parameter->units());
 
     if(!sel.isEmpty())
@@ -96,7 +96,7 @@ void ParameterPlot::refresh()
     m_xAxis->setRange(-5,m_parameter->maxX()+5);
     m_yAxis->setRange(min-err,max+err);
 
-
+   refreshTitle();
 }
 
 QDateTime ParameterPlot::startDate() const
@@ -121,6 +121,19 @@ int ParameterPlot::currentTimeIndex()
 int ParameterPlot::closerIndexPoint(int hourIndex)
 {
     return m_parameter->closerIndex(hourIndex);
+}
+
+void ParameterPlot::refreshTitle()
+{
+    if(!m_parameter)
+        return;
+
+    auto l=m_series->selectedPoints();
+    if(!l.isEmpty())
+    {
+        QString value=m_parameter->userValueAt(l.first());
+        m_chart->setTitle(m_parameter->name() +": "+value);
+    }
 }
 
 Parameter *ParameterPlot::parameter() const
@@ -164,13 +177,14 @@ void ParameterPlot::initStyle()
 void ParameterPlot::select(int a)
 {
     m_series->deselectAllPoints();
+
+    if(a<0)
+        return;
+
     m_series->selectPoint(a);
 
-    if(m_parameter)
-    {
-        QString value=m_parameter->userValueAt(a);
-        m_chart->setTitle(m_parameter->name() +" "+value);
-    }
+    refreshTitle();
+
 }
 
 void ParameterPlot::selectDefault()

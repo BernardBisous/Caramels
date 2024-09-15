@@ -21,13 +21,18 @@ IntegralPlot::IntegralPlot(QWidget *parent)
 
 
 
-    m_chart->setTitle("Total injected");
     // Add the series to the chart
     initStyle();
  //   updatePlot();
 
     m_xAxis->setTitleVisible(false);
     setRenderHint(QPainter::Antialiasing);
+
+    setMinimumSize(1,50);
+
+    m_timer=new QTimer(this);
+    m_timer->setInterval(200);
+    connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 }
 
 void IntegralPlot::handle(Actuator *c)
@@ -58,6 +63,7 @@ void IntegralPlot::handle(QList<Actuator *> s)
     initStyle();
     updatePlot();
 
+
     m_chart->legend()->setVisible(s.count()>1);
 
 }
@@ -76,7 +82,8 @@ void IntegralPlot::attach(Actuator *c)
 
 
 
-    m_chart->setTitle("Total injected ["+c->integralUnit()+"]");
+
+    m_chart->setTitle("Total ["+c->integralUnit()+"]");
     initStyle();
     updatePlot();
 
@@ -138,24 +145,25 @@ void IntegralPlot::updateSeries(Actuator *c, QLineSeries *s)
     if(!l.isEmpty())
         sh=l.first().time;
 
-    float max=0;
-    QDateTime minDate;
-    if(!l.isEmpty())
-        minDate=l.first().time;
-    else
-        minDate=QDateTime::currentDateTime().addSecs(-10);
 
+
+    if(!l.isEmpty() && (!minDate.isValid() || minDate>l.first().time))
+        minDate=l.first().time;
 
     for(int i=0;i<l.count();i++)
     {
-        if(l[i].time>minDate)
-        {
-            if(!i|| max<l[i].value )
-                max=l[i].value;
+        float val=l[i].value;
+        if(max<val )
+            max=val;
+
+        else if(min>val)
+            min=val;
 
 
-            s->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
-        }
+        s->append(l[i].time.toMSecsSinceEpoch(),val);
+
+      //  if(i==l.count()-1)
+      //       s->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),val);
     }
 
 
@@ -168,9 +176,8 @@ void IntegralPlot::updateSeries(Actuator *c, QLineSeries *s)
     s->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),c->integral());
     m_chart->addSeries(s);
 
-    m_xAxis->setRange(minDate,QDateTime::currentDateTime().addSecs(1));
-    m_yAxis->setMax(max);
-    m_yAxis->setMin(0);
+
+
 
     s->attachAxis(m_xAxis);
     s->attachAxis(m_yAxis);
@@ -178,11 +185,46 @@ void IntegralPlot::updateSeries(Actuator *c, QLineSeries *s)
 
 void IntegralPlot::setEnabledPlot(bool s)
 {
-    qDebug()<<"enable integrals to implement";
+    if(s)
+        m_timer->start();
+    else
+        m_timer->stop();
 }
 
 void IntegralPlot::updatePlot()
 {
+
+
+    float min=0;
+    float max=0;
+
+    float maxDev=0;
+    minDate=QDateTime();
+
+    bool empty=true;
     for(int i=0;i<m_devices.count();i++)
+    {
+
         updateSeries(m_devices[i],m_series[i]);
+
+        float v=m_devices[i]->currentValue();
+        if(v>0)
+        {
+            empty=false;
+        }
+    }
+
+    m_xAxis->setRange(minDate,QDateTime::currentDateTime());
+    m_yAxis->setRange(min,max);
+
+
+    if(max!=0 &&  !empty)
+    {
+        setEnabledPlot(true);
+    }
+}
+
+void IntegralPlot::timerSlot()
+{
+    updatePlot();
 }

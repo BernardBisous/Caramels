@@ -1,11 +1,12 @@
 #ifndef DISTANCESENSOR_H
 #define DISTANCESENSOR_H
 
-#include "hardware/device.h"
+#include "hardware/analogsensor.h"
+
 
 #include <QObject>
 
-class DistanceSensor : public Sensor
+class DistanceSensor : public AnalogSensor
 {
     Q_OBJECT
 public:

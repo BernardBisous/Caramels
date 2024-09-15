@@ -22,7 +22,7 @@ public:
 signals:
 
 private:
-    float m_command;
+
     SwitchedActuator*m_injector;
     AnalogSensor* m_sensor;
 };

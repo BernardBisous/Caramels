@@ -8,9 +8,13 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
 {
     setLayout(new QHBoxLayout);
     layout()->addWidget(m_screen=new QVideoWidget);
+
     layout()->addWidget(m_picLabel=new QLabel);
+
     m_screen->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    layout()->addWidget(m_settings=new QWidget);
+
+
+    m_settings=new QWidget(this);
     m_settings->setLayout(new QVBoxLayout);
     m_settings->layout()->addWidget(m_finder=new ToolButton("Find cam"));
     m_settings->layout()->addWidget(m_selectMenu=new MenuButton);
@@ -18,10 +22,9 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
     m_settings->layout()->addWidget(m_modeSwitch=new SwitchCheckBox("Live mode"));
     m_settings->layout()->addWidget(m_timeLaspe=new SwitchCheckBox("Timelapse"));
 
-    m_settings->setFixedWidth(200);
-    QWidget* sp=new QWidget;
-    sp->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
-    m_settings->layout()->addWidget(sp);
+    m_settings->show();
+    layout()->addWidget(m_settings);
+
 
     connect(m_modeSwitch,SIGNAL(stateChanged(int)),this,SLOT(modeSlot()));
     connect(m_enableSwitch,SIGNAL(stateChanged(int)),this,SLOT(enableSlot()));
@@ -40,12 +43,23 @@ void WebcamWidget::handle(Webcam *w)
 {
     m_client=w;
     findCam();
+
+
+    m_screen->hide();
+
+
     connect(w,SIGNAL(saved(QString)),this,SLOT(capturedSlot(QString)));
 }
 
 void WebcamWidget::printPicture(QString s)
 {
-    m_picLabel->setPixmap(QPixmap(s).scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
+    printPicture(QPixmap(s));
+
+}
+
+void WebcamWidget::printPicture(QPixmap p)
+{
+    m_picLabel->setPixmap(p.scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 }
 
 void WebcamWidget::setLiveMode(bool s)
@@ -61,10 +75,20 @@ void WebcamWidget::setLiveMode(bool s)
     {
         m_client->session()->setVideoOutput(m_screen);
         m_client->startLive();
+
+       // layout()->addWidget(m_settings);
+
     }
 
     else
     {
+
+
+      //  m_settings->setGeometry(20,20,200,200);
+       // m_settings->show();
+
+        m_settings->raise();
+        m_settings->show();
         m_client->start();
     }
 }
@@ -72,8 +96,25 @@ void WebcamWidget::setLiveMode(bool s)
 void WebcamWidget::resetTimeLapse()
 {
 
-    m_frame = m_client->picsFiles();
+    QStringList ls=m_client->picsFiles();
+    m_lapsFrames.clear();
+    for(int i=0;i<ls.count();i++)
+    {
+        m_lapsFrames<<QPixmap(ls[i]);
+    }
+
+    m_lapsCounter=0;
 }
+
+void WebcamWidget::resizeEvent(QResizeEvent *e)
+{
+
+    QWidget::resizeEvent(e);
+
+
+}
+
+
 
 void WebcamWidget::modeSlot()
 {
@@ -102,6 +143,7 @@ void WebcamWidget::findCam()
 
 void WebcamWidget::timelapse()
 {
+
     if(!m_timeLaspe->isChecked())
     {
         m_lapseTimer->stop();
@@ -114,13 +156,11 @@ void WebcamWidget::timelapse()
 
 void WebcamWidget::lapsSlot()
 {
-    if(m_frame.isEmpty())
+    if(m_lapsCounter>=m_lapsFrames.count())
     {
-       resetTimeLapse();
+       m_lapsCounter=0;
     }
-
-    printPicture(m_frame.first());
-    m_frame.removeFirst();
+    printPicture(m_lapsFrames[m_lapsCounter]);
 }
 
 

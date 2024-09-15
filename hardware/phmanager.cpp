@@ -22,6 +22,7 @@ PHManager::PHManager(QObject *parent)
     m_phPlus->setName("PH+");
     m_phMinus->setName("PH-");
 
+    setDescription("En charge de la gestion de l'acidité de l'eau via deux injecteurs dans la cuve");
     attachCouples(PH_LEVEL,m_sensor);
 }
 
@@ -31,7 +32,8 @@ void PHManager::reactToParamChanged(Parameter *p, float f)
     if(p && p==parameterFromId(PH_LEVEL))
     {
         m_activ=true;
-        m_command=f;
+        m_sensor->setCommand(f);
+        reactToSensorsChanged();
     }
 }
 
@@ -63,6 +65,11 @@ void PHManager::finish()
     HardwareUnit::finish();
 }
 
+QList<Actuator *> PHManager::interestingIntegrals()
+{
+    return QList<Actuator *> ()<<m_phPlus->pump()<<m_phMinus->pump();
+}
+
 void PHManager::attachInjector(ChemicalInjector *c)
 {
 
@@ -83,8 +90,10 @@ void PHManager::regulate()
         return;
     }
 
-    float err=ph()-m_command;
-   // qDebug()<<"reg PH"<<err<<m_command;
+    float err=m_sensor->errorValue();
+
+    console("Regulating PH "+m_sensor->userValue());
+
     if(err>0)
     {
         m_phMinus->injectMl(err);
@@ -93,4 +102,5 @@ void PHManager::regulate()
     {
         m_phPlus->injectMl(-err);
     }
+    m_sensor->setRegulated();
 }

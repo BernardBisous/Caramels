@@ -227,9 +227,12 @@ class Motor : public Actuator
 {
     Q_OBJECT
 public:
-    explicit Motor (int dirpin,int pwm, QString name="Motor",QObject *parent = nullptr);
+    explicit Motor (int pin1,int pin2, QString name="Motor",QObject *parent = nullptr);
     virtual void applyValue(float v);
     virtual void applyPurcent(float v);
+    void setMaxSpeed(float v);
+    float maxSpeed();
+    void move(float t);
 
 public slots:
 
@@ -237,8 +240,10 @@ public slots:
 protected :
 
 private:
-    int m_dirPin;
-    int m_pwmPin;
+
+    bool m_clockwise;
+    int m_pin1;
+    int m_pin2;
 };
 
 

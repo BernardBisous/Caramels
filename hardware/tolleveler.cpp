@@ -3,50 +3,62 @@
 TolLeveler::TolLeveler(QObject *parent)
     : HardwareUnit{parent}
 {
-    m_name="Hauteur des lights";
-    attachDevice(m_lifter=new TopLifter(HEIGH_LIFTER_DIR,HEIGH_LIFTER_PWM,"Ascenseur de lights ",this));
+    m_name="Ascenceur";
+    attachDevice(m_lifter=new TopLifter(HEIGH_LIFTER_UP,HEIGH_LIFTER_DOWN,"Ascenseur",this));
     attachDevice(m_sensor=new DistanceSensor(HEIGH_SENSE,"Capteur de hauteur",this));
 
 
-    connect(m_sensor,SIGNAL(newValue(float)),this,SLOT(heighNewValue(float)));
-    m_idParameters<<LIGHT_HEIGH;
+    m_sensor->setUnits("cm");
+    m_sensor->setRange(0,2000);
+    m_lifter->setUnits("cm/s");
+    m_lifter->setMaxSpeed(2);//cm/s
 
+    m_lifter->setIntegratedInteresting(true);
+    m_lifter->setIntegralUnits("cm");
+
+    setDescription("Gestion de la hauteur des lampes via un ascenseur");
+
+    m_idParameters<<LIGHT_HEIGH;
     attachCouples(LIGHT_HEIGH,m_sensor);
 }
 
-void TolLeveler::begin()
+
+QList<Device *> TolLeveler::interestingDevices()
 {
-    HardwareUnit::begin();
+    return m_devices;
+}
+
+QList<Actuator *> TolLeveler::interestingIntegrals()
+{
+    return QList<Actuator *> ()<<m_lifter;
 }
 
 void TolLeveler::reactToParamChanged(Parameter *p, float v)
 {
-    if(p==heigh())
-    {
-        m_distance=v;
+    m_sensor->setCommand(v);
+    reactToSensorsChanged();
+}
 
+void TolLeveler::reactToSensorsChanged()
+{
+
+    if(m_sensor->shouldRegulate())
+    {
+        float err=m_sensor->errorValue();
+        console("Regulating heigh : "+m_sensor->userValue());
+        m_lifter->move(err);
+        m_sensor->setRegulated();
     }
 }
-
-void TolLeveler::heighNewValue(float v)
-{
-    //qDebug()<<"new heigh value"<<v<<m_distance;
-    float dist=m_distance-v;
-    m_lifter->liftCm(dist);
-}
-
 
 
 TopLifter::TopLifter(int dir, int pwm, QString name, QObject *parent):
     Motor(dir,pwm,name,parent)
 {
-    setDataValue("Speed[cm/s]","1");
+
 }
 
 void TopLifter::liftCm(float t)
 {
-
-
-   // qDebug()<<"sent to rotation for"<<ms;
 
 }

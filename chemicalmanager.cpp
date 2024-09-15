@@ -1,11 +1,13 @@
 #include "chemicalmanager.h"
 #include "hardware/Pinout.h"
 
+#define VOLUME_TANK_KEY "Cuve [L]"
+#define DEFAULT_CUVE "50" //L
 ChemicalManager::ChemicalManager(QObject *parent)
     : HardwareUnit{parent}
 {
 
-    m_name="Produits chimiques 💀";
+    m_name="Engrais";
     attachInjector(new TankInjector(CHEM_MIX_1_PIN,CHEM_PUMP_1_PIN,NO_PIN,CHEMICAL_1,this));
     attachInjector(new TankInjector(CHEM_MIX_2_PIN,CHEM_PUMP_2_PIN,NO_PIN,CHEMICAL_2,this));
     attachInjector(new TankInjector(CHEM_MIX_3_PIN,CHEM_PUMP_3_PIN,NO_PIN,CHEMICAL_3,this));
@@ -148,20 +150,32 @@ void ChemicalManager::fillTankSlot(bool l)
 TankInjector::TankInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObject*parent):
     ChemicalInjector(mixPin,pumpPin,LevelPin,ID,parent), m_current(0)
 {
-    setGain(120);
+    pump()->setDataValue(VOLUME_TANK_KEY,DEFAULT_CUVE);
 }
 
 
 
 void TankInjector::setCurrentValue(float v)
 {
+
+    qDebug()<<"sould inject"<<name()<<v;
     m_current=v;
 
+}
+
+float TankInjector::volumeTank()
+{
+    return pump()->dataValue(VOLUME_TANK_KEY).toFloat();
+}
+
+float TankInjector::injectingVolumeMl()
+{
+    return m_current*volumeTank();
 }
 
 void TankInjector::fillTank()
 {
     if(isEnabled())
-        injectMl(m_current);
+        injectMl(injectingVolumeMl());
 }
 

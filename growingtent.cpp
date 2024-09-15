@@ -36,22 +36,26 @@ GrowingTent::GrowingTent(QWidget* parent)
     QWidget* c=new QWidget;
     c->setLayout(new QVBoxLayout);
     c->layout()->addWidget(bar);
-    c->layout()->addWidget(m_stack=new QStackedWidget);
+
+    QWidget* mc=new QWidget;
+    mc->setLayout(new QHBoxLayout);
+    mc->layout()->addWidget(m_stack=new QStackedWidget);
+    mc->layout()->addWidget(m_console=new ConsoleWidget);
+    c->layout()->addWidget(mc);
+    m_console->setTent(m_tent);
+    m_console->setEnableConsole(false);
 
 
     m_stack->addWidget(m_overview=new Overview);
     m_stack->addWidget(m_tentEdit=new TentEditor(this));
-    m_stack->addWidget(m_webcam=new WebcamWidget);
-    m_webcam->handle(m_tent->cam());
-
-
-
+    m_stack->addWidget(m_cam=new WebcamWidget);
+    m_cam->handle(m_tent->cam());
 
     QFont f=font();
     f.setPointSize(f.pointSize()+15);
     m_nameLab->setFont(f);
 
-    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Camera"); // dirty
+    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Webcam"); // dirty
 
     setCentralWidget(c);
 
@@ -66,10 +70,6 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_overview->loadHardware(m_tent);
 
     goToIndex(General);
-
-
-
-
 }
 
 void GrowingTent::loadStyle()
@@ -117,12 +117,19 @@ void GrowingTent::loadStyle()
 
 void GrowingTent::goToIndex(int i)
 {
+    if(i==Hardware)
+        m_tentEdit->edit(0);
+
     m_stack->setCurrentIndex(i);
     m_selector->setActive(i);
 }
 
 void GrowingTent::help()
 {
+    bool b=m_console->enabledConsole();
+    m_console->setEnableConsole(!b);
+    m_selector->helpButton()->setChecked(!b);
+ /*
     QUrl fileUrl = QUrl::fromLocalFile(HELP_FILE);
 
        // Open the file using desktop services
@@ -131,6 +138,7 @@ void GrowingTent::help()
        } else {
            qDebug() << "Failed to open file";
        }
+       */
 }
 
 void GrowingTent::editUnit(HardwareUnit *s)

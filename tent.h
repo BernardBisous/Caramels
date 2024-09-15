@@ -85,6 +85,7 @@ public:
     QList<ChemicalInjector*> injectors();
 
 
+    void setEventsDone();
     /*
     void storeResults();
     void storeResult(Result r);

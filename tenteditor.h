@@ -21,16 +21,19 @@ public:
 private slots:
     void listSlot(int i, QWidget *);
     void paramListSlot(int i,Parameter* p);
+    void showDevices();
 
 private:
     Tent*m_client;
     ScrollArea* m_units;
     int m_currentUnit;
     UnitEditor* m_editor;
-    SerialEditor* m_ports;
-    ParameterListWidget*m_parameters;
+    ToolButton* m_devices;
 
 
+
+   // SerialEditor* m_ports;
+   // ParameterListWidget*m_parameters;
 };
 
 #endif // TENTEDITOR_H

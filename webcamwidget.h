@@ -23,10 +23,12 @@ public:
     explicit WebcamWidget(QWidget *parent = nullptr) ;
     void handle(Webcam* w);
     void printPicture(QString s);
-
+    void printPicture(QPixmap p);
     static bool createDataDir();
     void setLiveMode(bool s=true);
     void resetTimeLapse();
+
+    void resizeEvent(QResizeEvent*e);
 
 private slots:
     void modeSlot();
@@ -51,8 +53,11 @@ private:
 
     QTimer* m_lapseTimer;
     QStringList m_frame;
+    int m_lapsCounter;
 
+    QList<QPixmap> m_lapsFrames;
     Webcam* m_client;
+
 
 
 };

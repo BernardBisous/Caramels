@@ -6,16 +6,15 @@
 #include "qdatetime.h"
 #include "qlabel.h"
 #include <QWidget>
-
+#include "tent.h"
 class EventManager : public QWidget
 {
     Q_OBJECT
 public:
     explicit EventManager(QWidget *parent = nullptr);
-    void handle(Events* e);
+    void handle(Events* e,Tent* t);
     void refresh();
-
-
+    void showAll(bool s);
 
 
     QDateTime startedDate() const;
@@ -25,10 +24,13 @@ public slots:
     void skip();
     void start();
     void cancel();
-signals:
+
+
 
 private :
 
+    Tent* m_tent;
+    bool m_abstracted;
     QDateTime m_eventStart;
     QDateTime m_startedDate;
     Events*m_client;

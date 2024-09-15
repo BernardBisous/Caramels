@@ -24,7 +24,7 @@ CO2Manager::CO2Manager(QObject *parent)
 
 void CO2Manager::reactToParamChanged(Parameter *, float v)
 {
-    m_command=v;
+
     m_sensor->setCommand(v);
     reactToSensorsChanged();
 }
@@ -36,7 +36,7 @@ void CO2Manager::reactToSensorsChanged()
 
 
         float err=excess();
-        console("Regulating CO2 : value:"+QString::number(CO2())+" Parameter: "+QString::number(m_command)+"ppm");
+        console("Regulating CO2 : "+m_sensor->userValue());
 
         if(err<0)
         {
@@ -54,7 +54,7 @@ float CO2Manager::CO2()
 
 float CO2Manager::excess()
 {
-    return CO2()-m_command;
+    return CO2()-m_sensor->command();
 }
 
 

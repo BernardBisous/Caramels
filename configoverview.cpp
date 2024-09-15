@@ -17,38 +17,43 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     QWidget* na=new QWidget;
     na->setLayout(new QHBoxLayout);
     na->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    na->layout()->addWidget(m_name=new QLabel);
+    na->layout()->setSpacing(20);
+
+
+
+
+    QWidget*nw=new QWidget;
+    nw->setLayout(new QVBoxLayout);
+    nw->layout()->setContentsMargins(0,0,0,0);
+    nw->layout()->addWidget(m_name=new QLabel);
+    nw->layout()->addWidget(m_progress=new ConfigProgress);
+
+    na->layout()->addWidget(nw);
+    na->layout()->addWidget(m_event=new EventManager);
+
+
+    m_event->showAll(false);
     na->layout()->addWidget(m_restartButton=new ToolButton("Restart"));
+
     m_name->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_restartButton->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    center->layout()->addWidget(na);
-    center->layout()->addWidget(m_progress=new ConfigProgress);
     m_progress->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_progress->layout()->setContentsMargins(0,0,0,0);
 
-    QWidget*rw=new QWidget;
-    rw->setLayout(new QHBoxLayout);
+    center->layout()->addWidget(na);
 
 
-    QWidget* plots=new QWidget;
-    plots->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    m_plotLayout=new QGridLayout;
-    plots->setLayout(m_plotLayout);
-    m_plotLayout->addWidget(m_event=new EventManager,0,0);
 
+    QWidget* sp=new QWidget;
+    sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    center->layout()->addWidget(sp);
 
-     rw->layout()->addWidget(plots);
-    // rw->layout()->addWidget(m_results=new ResultsWidget);
-    // rw->layout()->addWidget(m_injection=new InjectionWidget);
-
-    center->layout()->addWidget(rw);
-
-    m_plotLayout->setContentsMargins(0,0,0,0);
-    m_plotLayout->setSpacing(0);
-
+   // center->layout()->addWidget(m_cam=new WebcamWidget);
     QFont f=font();
     f.setPointSize(36);
     m_name->setFont(f);
+
+
 
     connect(m_restartButton,SIGNAL(clicked()),this,SLOT(restart()));
 }
@@ -60,27 +65,13 @@ void ConfigOverview::setTent(Tent *t)
     if(!t)
         return;
 
+   // m_cam->handle(t->cam());
     connect(t,SIGNAL(newValue(int)),this,SLOT(valueSlot(int)));
     connect(t,SIGNAL(dateChanged(QDateTime)),this,SLOT(updateDate()));
     connect(t,SIGNAL(dateChanged(QDateTime)),m_event,SLOT(setStartedDate(QDateTime)));
 
     if(t->config())
-        m_event->handle(t->config()->events());
-
-
-
-    /*
-
-    m_plotLayout->addWidget(plot(t->temperatures()),0,1);
-    m_plotLayout->addWidget(plot(t->co2Manager()),0,2);
-    m_plotLayout->addWidget(plot(t->lights()),1,0);
-    m_plotLayout->addWidget(plot(t->pumps()),1,1);
-    m_plotLayout->addWidget(plot(t->phManager()),1,2);
-    */
-
-   // m_injection->handle(t);
-   // m_results->handle(t);
-
+        m_event->handle(t->config()->events(),t);
 
     updateDate();
     refresh();
@@ -97,22 +88,8 @@ void ConfigOverview::refresh()
 
     m_name->setText(b->name());
     m_progress->refresh(b,m_client->startedDate());
-  //  m_injection->updatePlot();
 
 }
-
-UnitPlot *ConfigOverview::plot(HardwareUnit *u)
-{
-    UnitPlot*p=new UnitPlot;
-    m_plots.append(p);
-    p->removeMargins();
-    p->handle(u);
-    connect(p,SIGNAL(clicked()),this,SLOT(plotTrigg()));
-    return p;
-}
-
-
-
 
 void ConfigOverview::restart()
 {
@@ -146,13 +123,11 @@ void ConfigOverview::updateDate()
     }
 
     m_event->setStartedDate(m_client->startedDate());
-    for(int i=0;i<m_plots.count();i++)
-        m_plots[i]->setStartDate(m_client->startedDate());
+
 }
 
-void ConfigOverview::valueSlot(int i)
+void ConfigOverview::valueSlot(int )
 {
-  //  qDebug()<<"refreshConfig"<<i;
     refresh();
 }
 
@@ -178,12 +153,4 @@ void ConfigOverview::actionTop(QString s, ActionWidget *)
 
            m_client->exportAll(directory);
     }
-}
-
-void ConfigOverview::plotTrigg()
-{
-
-    UnitPlot* t=dynamic_cast<UnitPlot*>(sender());
-    if(t)
-        emit edit(t->client());
 }

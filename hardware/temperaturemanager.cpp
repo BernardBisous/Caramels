@@ -1,12 +1,10 @@
 #include "temperaturemanager.h"
 
 
-#define FREQ_KEY "Routine freq."
-
 TemperatureManager::TemperatureManager(QObject *parent)
     : HardwareUnit{parent},m_co2(nullptr)
 {
-    m_name="Température & Humidité";
+    m_name="Climat";
     attachDevice(m_airSensor=new AnalogSensor(TEMP_1_PIN,"Température de l'air",this));
     attachDevice(m_waterSensor=new AnalogSensor(TEMP_2_PIN,"Température de l'eau",this));
     attachDevice(m_humiditySensor=new AnalogSensor(HUMIDTY_PIN,"Humidité relative",this));
@@ -18,30 +16,40 @@ TemperatureManager::TemperatureManager(QObject *parent)
     m_idParameters<<TEMPERATURE_AIR<<HUMIDITY_AIR<<TEMPERATURE_WATER<<WIND_LEVEL<<WIND_ROTATION;
 
 
-    m_humidifier->setDataValue(FREQ_KEY,QString::number(60));
+    m_humiditySensor->setUnits("%");
+
 
     m_waterSensor->setUnits("°c");
     m_airSensor->setUnits("°c");
     m_waterSensor->setRange(10,60);
     m_airSensor->setRange(10,60);
 
+    m_humidifier->setIntegralUnits("mL");
+    m_humidifier->setRange(0,5);//ml/s
+    m_humidifier->setUnits("mL/s");
 
+    m_extractor->setUnits("m3/s");
+    m_extractor->setIntegralUnits("m3");
 
     attachCouples(TEMPERATURE_AIR,m_airSensor);
     attachCouples(HUMIDITY_AIR,m_humiditySensor);
+
+    setDescription("Gestion du climat, vents et tempêtes, ainsi que l'extracteur général");
 }
 
 void TemperatureManager::reactToParamChanged(Parameter *p, float f)
 {
     if(p==temperatureParameter())
     {
-        m_temperatureCommand=f;
+        m_airSensor->setCommand(f);
+
         regulateWind();
     }
 
     else if(p==humidityParameter())
     {
-        m_humidityCommand=f;
+        m_humiditySensor->setCommand(f);
+
         regulateHumidity();
 
     }
@@ -68,12 +76,24 @@ void TemperatureManager::reactToSensorsChanged()
 
 }
 
+QList<Actuator *> TemperatureManager::interestingIntegrals()
+{
+    return QList<Actuator *> ()<<m_humidifier;
+}
+
+AnalogSensor *TemperatureManager::regulatingSensor()
+{
+    return m_humiditySensor;
+}
+
 void TemperatureManager::regulateHumidity()
 {
     float hExcess=humidityExcess();
      if(hExcess<0)
      {
+         console("Humidifying "+m_humiditySensor->userValue());
          m_humidifier->impulseHigh(-hExcess*m_humidifier->gain());
+         m_airSensor->setRegulated();
      }
 }
 
@@ -86,10 +106,13 @@ void TemperatureManager::regulateWind()
     float hExcess=humidityExcess();
     bool extract=(hExcess>0 || co2Excess>0);
 
+    console("Regulating wind "+m_humiditySensor->userValue()+ " "+m_airSensor->userValue());
     if(extract)
         m_extractor->userApplyPurcent(100);
     else
         m_extractor->userApplyPurcent(0);
+
+    m_humiditySensor->setRegulated();
 }
 
 
@@ -110,12 +133,12 @@ float TemperatureManager::humidity()
 
 float TemperatureManager::humidityExcess()
 {
-    return humidity()-m_humidityCommand;
+    return m_humiditySensor->errorValue();
 }
 
 float TemperatureManager::temperatureExcess()
 {
-    return airTemperature()-m_temperatureCommand;
+    return m_airSensor->errorValue();
 }
 
 void TemperatureManager::setCo2(CO2Manager *newCo2)

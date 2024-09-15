@@ -3,11 +3,12 @@
 
 
 
+
 Lights::Lights(int pin, QObject* parent):SwitchedActuator(pin,false,"Lighs 400W_XE",parent)
 {
     setUnits("W");
-    setRange(0,150);//Total lights power
-
+    setRange(0,300);//Total lights power
+    setIntegralUnits("Ws");
 }
 
 float Lights::computeResult(QString s)
@@ -26,9 +27,10 @@ LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):
 
 
 
-LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent}
+LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent},m_delayNight(0),m_delayDay(0)
 {
-    m_name="Lights";
+    m_name="Lampes";
+    setDescription("Gestion de la puissance et du spectre de la lumière");
     m_switchTimer=new QTimer(this);
     connect(m_switchTimer,SIGNAL(timeout()),this,SLOT(switchLights()));
 
@@ -52,11 +54,13 @@ void LightsUnit::switchLights()
 
     if(b)
     {
+        console("Switching lights off for "+QString::number(m_delayNight/(1000*3600))+"h");
         m_switchTimer->setInterval(m_delayNight);
         m_power->userApplyPurcent(0);
     }
     else
     {
+         console("Switching lights on for "+QString::number(m_delayDay/(1000*3600))+"h");
         m_switchTimer->setInterval(m_delayDay);
         m_power->userApplyPurcent(100);
     }
@@ -74,18 +78,24 @@ void LightsUnit::reactToParamChanged(Parameter *p, float f)
     }
     else if(p==day())
     {
-        m_delayDay=f*1000*3600;
-        if(!m_switchTimer->isActive())
+        bool bl=m_delayDay;
+
+        m_delayDay=f*1000*Parameter::timeMultiplicator();
+
+        if(!bl)
             switchLights();
     }
     else if(p==night())
     {
-        m_delayNight=f*100;
+        m_delayNight=f*1000*Parameter::timeMultiplicator();
     }
 }
 
 void LightsUnit::finish()
 {
+
+    m_delayDay=0;
+    m_delayNight=0;
     m_switchTimer->stop();
     m_power->applyPurcent(0);
     HardwareUnit::finish();
@@ -96,9 +106,19 @@ bool LightsUnit::isDayLight()
     return m_power->currentValue();
 }
 
+QList<Device *> LightsUnit::interestingDevices()
+{
+    return m_devices;
+}
+
+QList<Actuator *> LightsUnit::interestingIntegrals()
+{
+    return QList<Actuator *> ()<<m_power;
+}
+
 void LightsUnit::updateSpectrum(float t)
 {
-   // qDebug()<<"updateSpectrum"<<t;
+    console("Setting light sprectrum to "+m_spectrum->userValue());
     m_spectrum->applyValue(t);
 }
 

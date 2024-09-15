@@ -3,7 +3,8 @@
 #include "qdatetime.h"
 #include <parameter.h>
 EventManager::EventManager(QWidget *parent)
-    : QWidget{parent},m_eventStart(),m_client(nullptr)
+    : QWidget{parent},m_eventStart(),m_client(nullptr),
+      m_abstracted(true),m_tent(nullptr)
 {
 
     setLayout(new QVBoxLayout);
@@ -15,6 +16,7 @@ EventManager::EventManager(QWidget *parent)
     m_editor->setHoverable(false);
 
     m_editor->setMaximumHeight(80);
+    layout()->addWidget(new QLabel("Prochain évenement:"));
     layout()->addWidget(m_editor);
 
 
@@ -51,42 +53,41 @@ EventManager::EventManager(QWidget *parent)
     m_listLabel->setAlignment(Qt::AlignTop);
 }
 
-void EventManager::handle(Events *e)
+void EventManager::handle(Events *e, Tent *t)
 {
     m_client=e;
+    m_tent=t;
+    refresh();
 }
 
 void EventManager::refresh()
 {
-
-
-    bool end=(!m_client || !m_client->count());
+    if(!m_tent || !m_client)
+        return;
+    bool end=( !m_client->count());
     m_emptyLabel->setHidden(!end);
     m_editor->setHidden(end);
-    m_listLabel->setHidden(end);
+    m_listLabel->setHidden(end || m_abstracted);
+
 
     if(end)
     {
+        m_tent->setEventsDone();
         return;
     }
+
+
+
 
     QString sl;
     for(int i=0;i<m_client->count();i++)
     {
         Event e=m_client->at(i);
         QDateTime t=m_startedDate.addSecs(Parameter::timeMultiplicator()*e.hourIndex);
-
         if(!i)
         {
             m_dateLabel->setText(t.toString("dd/MM"));
-
-
-            if(m_eventStart.isValid())
-            {
-                m_nameLabel->setText(e.name + "(running)");
-            }
-            else
-                m_nameLabel->setText(e.name);
+            m_nameLabel->setText(e.name);
         }
 
         else
@@ -98,6 +99,17 @@ void EventManager::refresh()
 
     }
     m_listLabel->setText(sl);
+}
+
+void EventManager::showAll(bool s)
+{
+    m_abstracted=!s;
+
+    if(!s)
+    {
+        layout()->setContentsMargins(0,0,0,0);
+    }
+    refresh();
 
 }
 
@@ -113,26 +125,15 @@ void EventManager::setStartedDate(QDateTime newStartedDate)
     m_startedDate = newStartedDate;
 
     if(m_client)
-        m_client->reset();
-
-    refresh();
+        refresh();
 }
 
 void EventManager::skip()
 {
-    if(!m_eventStart.isValid())
-    {
 
-         m_startButton->setText("Done");
-        m_skipButton->setText("Cancel");
-    }
-    else
-    {
-         cancel();
-         m_startButton->setText("Start");
-         m_skipButton->setText("Skip");
-         return;
-    }
+    cancel();
+    m_tent->console("Event skip "+m_client->list().first().name);
+
     m_client->skipNext();
     refresh();
 }
@@ -146,6 +147,7 @@ void EventManager::start()
     {
         int m=m_eventStart.secsTo(QDateTime::currentDateTime());
 
+        m_tent->console("Event start "+m_client->list().first().name);
         m_eventStart=QDateTime();
         m_startButton->setText("Start");
         m_skipButton->setText("Skip");

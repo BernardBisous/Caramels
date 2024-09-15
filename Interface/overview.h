@@ -29,7 +29,7 @@ private:
     HardwareOverview* m_hardware;
     ConfigOverview* m_config;
     PlantationEditor* m_plantation;
-    ConsoleWidget* m_console;
+
 
 
 };

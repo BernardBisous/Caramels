@@ -3,7 +3,7 @@
 #include "qlabel.h"
 
 #define PURCENT_INC 5
-#define BUTTONS_SIZE 50
+#define BUTTONS_SIZE 40
 ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     : QWidget{parent},m_client(nullptr),
       m_mode(modeOffset),m_series(nullptr),
@@ -11,16 +11,20 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
 {
     setLayout(new QVBoxLayout);
 
+    layout()->addWidget(m_name=new QLabel);
+
+    layout()->setContentsMargins(0,0,0,0);
   //  layout()->setContentsMargins(0,0,0,0);
     QWidget* modeWidget=new QWidget;
     modeWidget->setLayout(new QHBoxLayout);
-    modeWidget->layout()->setContentsMargins(0,0,0,20);
+    modeWidget->layout()->setContentsMargins(0,0,0,0);
 
     QWidget* vn=new QWidget;
     vn->setLayout(new QVBoxLayout);
-    vn->layout()->addWidget(m_name=new QLabel);
-    vn->layout()->addWidget(m_value=new QLabel);
-    modeWidget->layout()->addWidget(vn);
+    vn->layout()->setContentsMargins(0,0,0,0);
+
+
+    modeWidget->layout()->addWidget(m_value=new QLabel);
     modeWidget->layout()->addWidget(addMode(":/icons/offset","Offset"));
     modeWidget->layout()->addWidget(addMode(":/icons/gain","Gain"));
 
@@ -34,20 +38,21 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
      QWidget*b=new QWidget;
      QHBoxLayout* gr=new QHBoxLayout;
      gr->setContentsMargins(0,0,0,0);
-     gr->addWidget(m_up=new ToolButton("Up",":/icons/up"));
-     gr->addWidget(m_down=new ToolButton("Down",":/icons/down"));
+     gr->addWidget(m_up=new ToolButton("Up",":/icons/plus"));
+     gr->addWidget(m_down=new ToolButton("Down",":/icons/less"));
      gr->addWidget(m_left=new ToolButton("Left",":/icons/left"));
      gr->addWidget(m_right=new ToolButton("Right",":/icons/right"));
 
+     gr->setContentsMargins(0,0,0,0);
      b->setLayout(gr);
 
      layout()->addWidget(b);
 
 
-     m_up->setRound(60);
-     m_down->setRound(60);
-     m_left->setRound(60);
-     m_right->setRound(60);
+     m_up->setRound(BUTTONS_SIZE);
+     m_down->setRound(BUTTONS_SIZE);
+     m_left->setRound(BUTTONS_SIZE);
+     m_right->setRound(BUTTONS_SIZE);
 
     connect(m_up,SIGNAL(clicked()),this,SLOT(up()));
     connect(m_down,SIGNAL(clicked()),this,SLOT(down()));

@@ -7,8 +7,6 @@
 AnalogSensor::AnalogSensor(int pin, QString n, QObject *parent):
     Sensor(pin,n,parent),m_lastRegTime()
 {
-
-
     m_maxValues=100;
     setSmoothing(10);
     setRegulationDelay(Parameter::timeMultiplicator());
@@ -79,12 +77,12 @@ float AnalogSensor::smoothedValue() const
 void AnalogSensor::reset()
 {
     m_smoothedValues.clear();
+    m_lastRegTime=QDateTime();
     Sensor::reset();
 }
 
 void AnalogSensor::regulateNow()
 {
-
     m_lastRegTime=QDateTime();
     measure();
 }

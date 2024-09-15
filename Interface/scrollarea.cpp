@@ -170,6 +170,11 @@ QList<QWidget *> ScrollArea::widgets()
     return out;
 }
 
+void ScrollArea::scrollDown()
+{
+    verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+}
+
 void ScrollArea::trigSlot()
 {
     QWidget* w=dynamic_cast<ActionWidget*>(sender());

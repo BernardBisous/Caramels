@@ -12,6 +12,8 @@ class TankInjector: public ChemicalInjector
     explicit TankInjector(int mixPin, int pumpPin, int LevelPin, int ID, QObject *parent = nullptr);
 
     void setCurrentValue(float v);
+    float volumeTank();
+    float injectingVolumeMl();
     void fillTank();
 
 private:

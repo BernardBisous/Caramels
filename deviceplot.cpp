@@ -26,7 +26,7 @@ DevicePlot::DevicePlot(QWidget *parent):
 
 
     m_yAxis->setTitleVisible(false);
-    m_xAxis->setTitleVisible(false);
+    m_xAxis->setVisible(false);
 
     initStyle();
     setRenderHint(QPainter::Antialiasing);
@@ -116,6 +116,7 @@ void DevicePlot::updatePlot()
         return;
 
 
+
     auto lh=m_device->historic();
 
 
@@ -154,32 +155,15 @@ void DevicePlot::updatePlot()
          }
     }
 
-
-
-
-
-
-
-
-
     if(m_series->count()<=1)
     {
        m_series->append(minDate.toMSecsSinceEpoch(),m_device->currentValue());
     }
-
-
-
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
-
     m_chart->addSeries(m_series);
-
     m_series->selectPoint(m_series->count()-1);
-
-
     m_yAxis->setRange(m_device->minRange()*1.1,m_device->maxRange()*1.1);
-
     m_chart->setTitle(m_device->name()+" : "+m_device->userValue());
-
     m_series->attachAxis(m_xAxis);
     m_series->attachAxis(m_yAxis);
 
@@ -201,6 +185,7 @@ void DevicePlot::sliderChanged(int val)
         range=100;
 
     setXRangeSecs(range);
+
 }
 
 Device *DevicePlot::device() const
@@ -222,4 +207,6 @@ void DevicePlot::updateScale()
         m_xAxis->setRange(now.addSecs(-m_xRangeSecs),now);
     else
         m_xAxis->setRange(m_minDate,now);
+
+    m_chart->update();
 }

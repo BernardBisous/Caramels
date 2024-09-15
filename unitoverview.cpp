@@ -1,20 +1,31 @@
 #include "unitoverview.h"
 #include "qboxlayout.h"
-
+#include <QSplitter>
+#define DETAIL_DEVICE false
+#define DETAIL_PARAMETER false
 UnitOverview::UnitOverview(QWidget *parent)
     : QWidget{parent},m_client(nullptr),m_integral(nullptr)
 {
     setLayout(new QVBoxLayout);
+    layout()->setContentsMargins(0,0,0,0);
     QWidget* top=new QWidget;
     top->setLayout(new QHBoxLayout);
     top->layout()->setContentsMargins(0,0,0,0);
-    top->layout()->addWidget(m_name=new QLabel);
+
+    QWidget*mw=new QWidget;
+    mw->setLayout(new QVBoxLayout);
+
+    mw->layout()->addWidget(m_name=new QLabel);
+    mw->layout()->addWidget(m_desc=new QLabel);
+    top->layout()->addWidget(mw);
+    mw->layout()->setContentsMargins(0,0,0,0);
     top->layout()->addWidget(m_buttons=new QWidget);
     top->layout()->addWidget(m_regulator=new RegulatorWidget);
 
 
     layout()->addWidget(top);
-    layout()->addWidget(m_desc=new QLabel);
+
+
     top->layout()->setContentsMargins(0,0,0,0);
     m_desc->setWordWrap(true);
     m_desc->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
@@ -25,23 +36,27 @@ UnitOverview::UnitOverview(QWidget *parent)
     top->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     layout()->addWidget(m_stack=new QStackedWidget);
 
-    m_stack->addWidget(m_overviewWidget=new QWidget);
+    QSplitter*ovSplit=new QSplitter;
+    m_overviewWidget=ovSplit;
+
+    m_stack->addWidget(ovSplit);
     m_stack->addWidget(m_parameter=new ParameterPlot);
     m_stack->addWidget(m_device=new DevicePlot);
 
 
-    m_overviewWidget->setLayout(new QVBoxLayout);
-
-    QWidget* wp=new QWidget;
-    wp->setLayout(new QHBoxLayout);
-    wp->layout()->setContentsMargins(0,0,0,0);
-    wp->layout()->addWidget(m_integral=new IntegralPlot);
-    wp->layout()->addWidget(m_parametersWidget=new QWidget);
+   // m_overviewWidget->setLayout(new QVBoxLayout);
+    ovSplit->setOrientation(Qt::Vertical);
+    QSplitter* wp=new QSplitter;
+    m_paramSplitter=wp;
+    //wp->setOrientation(Qt::Horizontal);
+    //wp->layout()->setContentsMargins(0,0,0,0);
+    wp->addWidget(m_integral=new IntegralPlot);
+    wp->addWidget(m_parametersWidget=new QWidget);
 
     m_parametersWidget->setLayout(new QVBoxLayout);
 
-    m_overviewWidget->layout()->addWidget(wp);
-    m_overviewWidget->layout()->addWidget(m_devicesWidget=new QWidget);
+    ovSplit->addWidget(wp);
+    ovSplit->addWidget(m_devicesWidget=new QWidget);
     m_devicesWidget->setLayout(new QHBoxLayout);
 
 
@@ -81,6 +96,7 @@ void UnitOverview::handle(HardwareUnit *u)
     printButtons(u->trigKeys());
 
     m_regulator->handle(u->regulatingSensor());
+
     showCentral();
     refresh();
 
@@ -114,12 +130,13 @@ void UnitOverview::printIntegral(QList<Actuator *> d)
 void UnitOverview::printParameter(Parameter *p,QDateTime t)
 {
     ParameterPlot* pp=new ParameterPlot;
+    m_parametersWidget->layout()->addWidget(pp);
+
     pp->setStartDate(t);
     pp->setParameter(p);
 
     m_parameters<<pp;
     connect(pp,SIGNAL(clicked()),this,SLOT(paramTrig()));
-    m_parametersWidget->layout()->addWidget(pp);
 
 }
 
@@ -132,11 +149,12 @@ void UnitOverview::printParameters(QList<Parameter *> pl,QDateTime start)
 void UnitOverview::printDevice(Device *p)
 {
     DevicePlot* pp=new DevicePlot;
+    m_devicesWidget->layout()->addWidget(pp);
     pp->handle(p);
     m_devices<<pp;
     connect(pp,SIGNAL(clicked()),this,SLOT(deviceTrig()));
 
-    m_devicesWidget->layout()->addWidget(pp);
+
 }
 
 void UnitOverview::printDevices(QList<Device *> pl)
@@ -154,6 +172,30 @@ void UnitOverview::printButtons(QStringList l)
         m_buttonList<<b;
         m_buttons->layout()->addWidget(b);
     }
+}
+
+void UnitOverview::computeLayout()
+{
+    m_overviewWidget->setStretchFactor(0,2);
+    m_paramSplitter->setStretchFactor(0,1);
+
+    m_overviewWidget->setStretchFactor(1,1);
+    m_paramSplitter->setStretchFactor(1,1);
+
+    m_parametersWidget->setHidden(m_parameters.isEmpty());
+    m_devicesWidget->setHidden(m_devices.isEmpty());
+            /*
+    if(m_devices.isEmpty())
+        m_overviewWidget->setStretchFactor(1,-1);
+    else
+         m_overviewWidget->setStretchFactor(1,1);
+
+    if(m_parameters.isEmpty())
+         m_paramSplitter->setStretchFactor(1,-1);
+    else
+         m_paramSplitter->setStretchFactor(1,1);
+                 */
+
 }
 
 void UnitOverview::buttonTrig()
@@ -216,7 +258,7 @@ void UnitOverview::resizeEvent(QResizeEvent *e)
 {
     QWidget::resizeEvent(e);
 
-    m_integral->setMinimumSize(size()/2);
+    //m_integral->setMinimumSize(size()/2);
 }
 
 
@@ -233,10 +275,15 @@ void UnitOverview::editParameter(Parameter *p)
 
 void UnitOverview::editDevice(Device *d)
 {
-    m_stack->setCurrentWidget(m_device);
+    if(DETAIL_DEVICE)
+    {
+        m_stack->setCurrentWidget(m_device);
+        m_device->handle(d);
+        enableCentral(false);
+    }
+
     m_parameter->setParameter(nullptr);
-    m_device->handle(d);
-    enableCentral(false);
+
 }
 
 void UnitOverview::showCentral()
@@ -246,6 +293,8 @@ void UnitOverview::showCentral()
     m_stack->setCurrentWidget(m_overviewWidget);
     m_device->handle(nullptr);
     m_parameter->setParameter(nullptr);
+
+    computeLayout();
 }
 
 

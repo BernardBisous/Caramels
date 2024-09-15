@@ -8,8 +8,8 @@
 #include "qlabel.h"
 
 #include "tent.h"
-#include "unitplot.h"
 #include <QWidget>
+#include "webcamwidget.h"
 
 class ConfigOverview : public QWidget
 {
@@ -18,7 +18,6 @@ public:
     explicit ConfigOverview(QWidget *parent = nullptr);
     void setTent(Tent*t);
     void refresh();
-    UnitPlot* plot(HardwareUnit*u);
 
 signals:
     void edit(HardwareUnit* t);
@@ -28,7 +27,6 @@ private slots:
     void updateDate();
     void valueSlot(int i);
     void actionTop(QString,ActionWidget*);
-    void plotTrigg();
 
 private:
     QLabel* m_name;
@@ -36,13 +34,11 @@ private:
     Tent* m_client;
     ToolButton* m_restartButton;
     ConfigProgress* m_progress;
-    QList<UnitPlot*> m_plots;
-    //ResultsWidget* m_results;
-    QGridLayout* m_plotLayout;
+
+   // WebcamWidget* m_cam;
+
     EventManager* m_event;
     ConfigTop* m_topStart;
-   // InjectionWidget* m_injection;
-
 };
 
 #endif // CONFIGOVERVIEW_H

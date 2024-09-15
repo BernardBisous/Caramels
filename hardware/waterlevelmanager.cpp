@@ -17,7 +17,6 @@ WaterLevelManager::WaterLevelManager(QObject *parent)
     m_dryTimer=new QTimer(this);
     connect(m_dryTimer,SIGNAL(timeout()),this,SLOT(switchDry()));
 
-
     m_entryValve->setRange(0,50);//ml/s
     m_pump->setRange(0,10);
     m_pump->setUnits("mL/s");
@@ -29,7 +28,7 @@ WaterLevelManager::WaterLevelManager(QObject *parent)
 
 QList<Device *> WaterLevelManager::interestingDevices()
 {
-   return QList<Device *>()<<m_pump;
+   return QList<Device *>()<<m_pump<<m_entryValve;
 }
 
 QList<Actuator *> WaterLevelManager::interestingIntegrals()
@@ -48,7 +47,7 @@ void WaterLevelManager::reactToSensorsChanged()
     bool h=m_levelUp->currentValue();
     bool l=m_levelDown->currentValue();
 
-    if(!h  && !m_filling)
+    if(!h && !m_filling)
     {
         console("Remplissage de la cuve en cours");
         fillTank();

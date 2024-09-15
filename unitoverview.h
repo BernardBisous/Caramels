@@ -11,7 +11,7 @@
 #include "deviceplot.h"
 #include <QStackedWidget>
 #include "Interface/toolbutton.h"
-
+#include <QSplitter>
 class ActuatorWidget:public QWidget
 {
     Q_OBJECT
@@ -50,6 +50,7 @@ public:
 
     void printButtons(QStringList l);
 
+    void computeLayout();
 
     ParameterPlot *parameter() const;
 
@@ -66,7 +67,8 @@ protected:
     HardwareUnit* m_client;
     QLabel* m_name;
     QLabel* m_desc;
-    QWidget* m_overviewWidget;
+    QSplitter* m_overviewWidget;
+    QSplitter* m_paramSplitter;
     QWidget* m_buttons;
     ParameterPlot* m_parameter;
     DevicePlot* m_device;

@@ -24,6 +24,7 @@ public:
 
 public slots:
     void updatePlot() ;
+    void timerSlot();
 
 signals:
 
@@ -33,6 +34,14 @@ private:
     QDateTimeAxis *m_xAxis;
     QValueAxis *m_yAxis;
     QList<QLineSeries*> m_series;
+
+    QTimer* m_timer;
+
+    QDateTime minDate;
+    float min;
+    float max;
 };
+
+
 
 #endif // INTEGRALPLOT_H

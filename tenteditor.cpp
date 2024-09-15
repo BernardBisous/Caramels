@@ -5,24 +5,41 @@ TentEditor::TentEditor(QWidget *parent)
 {
 
     setLayout(new QHBoxLayout);
+    layout()->setContentsMargins(0,0,0,0);
+
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
-    list->layout()->addWidget(m_ports=new SerialEditor);
+   // list->layout()->addWidget(m_ports=new SerialEditor);
     list->layout()->addWidget(new QLabel("Unités de contole:"));
     list->layout()->addWidget(m_units=new ScrollArea);
-    list->layout()->addWidget(m_parameters=new ParameterListWidget);
+   // list->layout()->addWidget(m_parameters=new ParameterListWidget);
     list->layout()->setContentsMargins(0,0,0,0);
     list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+
+
+
     m_units->setContentsMargins(0,0,0,0);
-    m_parameters->layout()->setContentsMargins(0,0,0,0);
+  //  m_parameters->layout()->setContentsMargins(0,0,0,0);
     list->setMaximumWidth(200);
+
+    QWidget* sp=new QWidget;
+    sp->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+    list->layout()->addWidget(sp);
+
 
     layout()->addWidget(list);
     layout()->addWidget(m_editor=new UnitEditor);
 
 
+
+    list->layout()->addWidget(m_editor->paramEditor());
+    list->layout()->addWidget(m_devices=new ToolButton("Périphériques..."));
+
+    list->layout()->setSpacing(20);
+
+    connect(m_devices,SIGNAL(clicked()),this,SLOT(showDevices()));
     connect(m_units,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
-    connect(m_parameters,SIGNAL(selected(int,Parameter*)),this,SLOT(paramListSlot(int,Parameter*)));
+  //  connect(m_parameters,SIGNAL(selected(int,Parameter*)),this,SLOT(paramListSlot(int,Parameter*)));
 }
 
 void TentEditor::handle(Tent *t)
@@ -41,7 +58,9 @@ void TentEditor::handle(Tent *t)
     if(!l.isEmpty())
         edit(0);
 
-    m_ports->handle(t);
+
+
+  //  m_ports->handle(t);
 
 }
 
@@ -54,8 +73,8 @@ void TentEditor::edit(int index)
     HardwareUnit*c=m_client->units()[index];
     m_currentUnit=index;
     m_editor->handle(c);
-    m_parameters->setHidden(c->parameters().isEmpty());
-    m_parameters->handleHadware(c);
+//    m_parameters->setHidden(c->parameters().isEmpty());
+//    m_parameters->handleHadware(c);
 
     auto l=m_units->widgets();
     for(int i=0;i<l.count();i++)
@@ -95,5 +114,10 @@ void TentEditor::paramListSlot(int , Parameter *p)
 
     m_editor->editParameter(p);
 
+}
+
+void TentEditor::showDevices()
+{
+    m_editor->showDevices();
 }
 
