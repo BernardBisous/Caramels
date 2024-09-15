@@ -1,22 +1,34 @@
 #include "webcam.h"
 #include "qtimer.h"
 
-#define CAPTURE_DELAY 5000
-#include "parameter.h"
+
 #include <QMediaDevices>
 #include <QDir>
 #include <QFile>
 
 #define DATA_DIR "pics"
+#define CAPTURE_DELAY_HOURS 5
 
 Webcam::Webcam(QObject *parent)
-    : QObject{parent},m_session(),m_lastPixmap(),m_cam(nullptr)
+    : QObject{parent},m_cam(nullptr),m_session(),m_lastPixmap()
 {
     m_capture=new QImageCapture;
      connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
 
+
+
+
     createDataDir();
-    findCam();
+     findCam();
+}
+
+bool Webcam::shouldCapture()
+{
+
+    if(!m_nextDate.isValid())
+        return true;
+
+    return m_nextDate<QDateTime::currentDateTime();
 }
 
 void Webcam::setEnabled(bool s)
@@ -93,6 +105,14 @@ void Webcam::exportAll(QString dir)
     }
 }
 
+void Webcam::scheduleNext()
+{
+    m_nextDate=QDateTime::currentDateTime().addSecs(CAPTURE_DELAY_HOURS*3600);
+
+}
+
+
+
 void Webcam::capture()
 {
     if(!m_cam)
@@ -100,6 +120,7 @@ void Webcam::capture()
 
     m_cam->start();
     QTimer::singleShot(1000,this,SLOT(capturingSlot()));
+
 }
 
 void Webcam::findCam()
@@ -137,19 +158,19 @@ void Webcam::capturingSlot()
     m_lastPixmap=s;
     m_capture->captureToFile(s);
     m_cam->stop();
+
 }
 
 void Webcam::start()
 {
     m_session.setImageCapture(m_capture);
-
     capture();
-
 
 }
 
 void Webcam::stop()
 {
+
   // m_cam->stop();
 }
 
@@ -173,7 +194,11 @@ QStringList Webcam::availables()
 
 void Webcam::capturedSlot(int, QString s)
 {
+
+
     QString f=QString(DATA_DIR)+"/"+s;
-   // qDebug()<<"printi ng picaa"<<f;
-    emit saved(s);
+
+
+    scheduleNext();
+    emit saved(f);
 }

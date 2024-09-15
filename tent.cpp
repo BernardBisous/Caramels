@@ -34,6 +34,7 @@ Tent::Tent(QObject *parent)
     m_timer->setInterval(Parameter::timeMultiplicator()*1000);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
 
+    connect(m_cam,SIGNAL(saved(QString)),this,SLOT(camCaptureSlot(QString)));
     connect(m_serial,SIGNAL(newValues(QByteArray&)),this,SLOT(hardwareSlot(QByteArray&)));
 
     connect(m_serial,SIGNAL(connectedChanged(bool)),this,SLOT(serialConnectSlot(bool)));
@@ -214,7 +215,7 @@ void Tent::restart()
 {  
     finish();
     clearAllData();
-
+    console("start config "+m_config->name());
     setStartDate(QDateTime::currentDateTime());
 }
 
@@ -223,11 +224,12 @@ void Tent::start()
     if(!m_startedDate.isValid() || !m_config)
         return;
 
-    console("start config "+m_config->name());
 
     m_cam->start();
     timerSlot();
     m_timer->start();
+
+
     for(int i=0;i<m_devices.count();i++)
     {
         m_devices[i]->startRecording(true);
@@ -385,6 +387,7 @@ QString Tent::allConsole()
 void Tent::finish()
 {
     m_timer->stop();
+    m_cam->capture();
     setStartDate(QDateTime());
     stopAll();
     console("Finished config");
@@ -419,6 +422,11 @@ void Tent::serialConnectSlot(bool s)
     emit connectedHardware(s);
 }
 
+void Tent::camCaptureSlot(QString s)
+{
+    console("Wecamp pix save"+s.right(10));
+}
+
 void Tent::timerSlot()
 {
 
@@ -435,8 +443,10 @@ void Tent::timerSlot()
         m_units[i]->update(h);
 
 
-    if(!m_lights || m_lights->isDayLight())
+
+    if( m_cam->shouldCapture())
         m_cam->capture();
+
 
 
    // storeResults();
@@ -696,5 +706,9 @@ void Tent::stopAll()
     for(int i=0;i<m_units.count();i++)
     {
         m_units[i]->finish();
+    }
+    for(int i=0;i<m_devices.count();i++)
+    {
+        m_devices[i]->startRecording(false);
     }
 }

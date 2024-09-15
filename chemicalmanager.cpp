@@ -158,7 +158,7 @@ TankInjector::TankInjector(int mixPin, int pumpPin, int LevelPin ,int ID, QObjec
 void TankInjector::setCurrentValue(float v)
 {
 
-    qDebug()<<"sould inject"<<name()<<v;
+
     m_current=v;
 
 }
