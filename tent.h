@@ -10,6 +10,9 @@
 #include "hardware/temperaturemanager.h"
 #include "hardware/tolleveler.h"
 #include "hardware/waterlevelmanager.h"
+
+#include "Interface/generalmanager.h"
+
 #include "hardware/webcam.h"
 #include "qdatetime.h"
 #include <QObject>
@@ -58,6 +61,7 @@ public:
     GrowConfig *config() const;
     HardwareUnit* unitForId(int id);
 
+    float height();
     float PH();
     float temperature(int sensorIndex);
     float CO2();
@@ -134,6 +138,7 @@ private:
 
     QTimer* m_timer;
 
+    GeneralManager* m_general;
     TemperatureManager* m_temperatures;
     PHManager*m_ph;
     CO2Manager* m_Co2;
@@ -142,6 +147,8 @@ private:
     WaterLevelManager* m_pumps;
     ChemicalManager* m_chemichals;
     SerialTent* m_serial;
+
+
 
     Webcam* m_cam;
 };

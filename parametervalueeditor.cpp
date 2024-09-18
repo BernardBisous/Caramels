@@ -6,7 +6,7 @@
 #define BUTTONS_SIZE 40
 ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     : QWidget{parent},m_client(nullptr),
-      m_mode(modeOffset),m_series(nullptr),
+      m_mode(modeOffset),m_plot(nullptr),
       m_gain(PURCENT_INC)
 {
     setLayout(new QVBoxLayout);
@@ -25,8 +25,9 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
 
 
     modeWidget->layout()->addWidget(m_value=new QLabel);
-    modeWidget->layout()->addWidget(addMode(":/icons/offset","Offset"));
     modeWidget->layout()->addWidget(addMode(":/icons/gain","Gain"));
+    modeWidget->layout()->addWidget(addMode(":/icons/offset","Offset"));
+    modeWidget->layout()->addWidget(addMode(":/icons/point","Point"));
 
     QFont f=font();
     f.setPixelSize(16);
@@ -59,7 +60,7 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     connect(m_left,SIGNAL(clicked()),this,SLOT(left()));
     connect(m_right,SIGNAL(clicked()),this,SLOT(right()));
 
-    setMode(modeGain);
+    setMode(modeOffset);
 }
 
 Parameter *ParameterValueEditor::client() const
@@ -72,6 +73,14 @@ void ParameterValueEditor::setClient(Parameter *newClient)
 
     m_client = newClient;
     refreshValue();
+}
+
+void ParameterValueEditor::refreshPlot()
+{
+    if(!m_plot)
+        return;
+
+    m_plot->refresh();
 }
 
 void ParameterValueEditor::refresh()
@@ -120,14 +129,22 @@ void ParameterValueEditor::move(int inc)
     qDebug()<<"move point";
     float val=(inc*m_gain)+100;
     val=val/100;
-    if(m_mode==modeOffset)
+    if(m_mode!=modeGain)
     {
         float e=qAbs(m_client->maxY()-m_client->minY());
         val=inc*e*m_gain/100;
     }
 
-    m_client->movePoints(m_indexes,val,m_mode==modeOffset);
+    if(m_mode!=modeAlone)
+        m_client->movePoints(QList<int>(),val,m_mode==modeOffset);
+
+    else
+        m_client->movePoints(m_indexes,val,m_mode==modeOffset);
+
     refreshValue();
+    refreshPlot();
+
+
     emit changed();
 }
 
@@ -168,16 +185,6 @@ void ParameterValueEditor::right()
 
 
 
-void ParameterValueEditor::setSeries(QLineSeries *newSeries)
-{
-
-    m_series = newSeries;
-
-    if(!newSeries)
-        return;
-
-    connect(m_series,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
-}
 
 void ParameterValueEditor::refreshValue()
 {
@@ -208,10 +215,10 @@ void ParameterValueEditor::refreshValue()
 
 int ParameterValueEditor::lastSelected()
 {
-    if(!m_series || m_series->selectedPoints().isEmpty())
+    if(!m_plot || !m_plot->series() || m_plot->series()->selectedPoints().isEmpty())
         return -1;
 
-    return m_series->selectedPoints().last();
+    return m_plot->series()->selectedPoints().last();
 }
 
 void ParameterValueEditor::setGain(float newGain)
@@ -221,30 +228,60 @@ void ParameterValueEditor::setGain(float newGain)
 
 void ParameterValueEditor::selectOffset(int inc)
 {
+    if(!m_plot)
+        return;
+
     QList<int> v,a;
-    a=m_series->selectedPoints();
+    QLineSeries*sl=m_plot->series();
+    a=sl->selectedPoints();
 
     if(a.isEmpty())
     {
         if(inc<0)
-            m_series->selectPoint(m_series->count()-1);
+            sl->selectPoint(sl->count()-1);
         else
-            m_series->selectPoint(0);
+            sl->selectPoint(0);
         return;
     }
     for(int i=0;i<a.count();i++)
     {
         int ia=a[i]+inc;
 
-        if(ia<m_series->count() && ia>0)
+        if(ia<sl->count() && ia>0)
             v<<ia;
     }
-     disconnect(m_series,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
-    m_series->deselectAllPoints();
-    m_series->selectPoints(v);
-     connect(m_series,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
+    sl->deselectAllPoints();
+    sl->selectPoints(v);
+     connect(sl,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
      seriesSelected();
 
+}
+
+void ParameterValueEditor::setPlot(ParameterPlot *p)
+{
+    if(m_plot)
+    {
+        if(m_plot->series())
+        {
+            disconnect(m_plot->series(),SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
+            m_plot->series()->setPointsVisible(false);
+        }
+    }
+
+
+
+
+    m_plot=p;
+
+    if(m_plot)
+    {
+        if(m_plot->series())
+        {
+            connect(m_plot->series(),SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
+            m_plot->series()->setPointsVisible(true);
+        }
+        connect(m_plot->series(),SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
+    }
 }
 
 void ParameterValueEditor::modeEdited()
@@ -259,5 +296,6 @@ void ParameterValueEditor::modeEdited()
 
 void ParameterValueEditor::seriesSelected()
 {
-    edit(m_series->selectedPoints());
+    if(m_plot&&m_plot->series())
+    edit(m_plot->series()->selectedPoints());
 }

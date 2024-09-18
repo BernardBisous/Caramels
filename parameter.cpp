@@ -232,7 +232,7 @@ int Parameter::closerIndex(int h)
 {
     for(int i=0;i<m_values.count();i++)
     {
-        if( m_values[i].hourIndex>=h)
+        if( m_values[i].hourIndex>h)
         {
             if(i)
                 return i-1;

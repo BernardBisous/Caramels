@@ -1,33 +1,33 @@
 #include "uniteditor.h"
-#include "qlabel.h"
 
-#include "hardware/waterlevelmanager.h"
-#include "unitoverviews.h"
 
 UnitEditor::UnitEditor(QWidget *parent)
     : QWidget{parent},m_overview(nullptr)
 {
     setLayout(new QHBoxLayout);
     layout()->setContentsMargins(0,0,0,0);
+    layout()->setSpacing(20);
     QWidget* edit=new QWidget;
     edit->setLayout(new QVBoxLayout);
     edit->layout()->setContentsMargins(0,0,0,0);
     edit->layout()->addWidget(m_devices=new DeviceListWidget);
+
     edit->layout()->addWidget(m_paramEditor=new ParameterValueEditor);
 
 
     layout()->addWidget(m_overview=new UnitOverview);
-     connect(m_paramEditor,SIGNAL(changed()),m_overview->parameter(),SLOT(refresh()));
+    connect(m_paramEditor,SIGNAL(changed()),m_overview->parameter(),SLOT(refresh()));
+    connect(m_overview,SIGNAL(requestDeviceEdit(Device*)),this,SLOT(editDevice(Device*)));
+    connect(m_overview,SIGNAL(requestParamEdit(Parameter*)),this,SLOT(editParameter(Parameter*)));
+    m_paramEditor->setPlot(m_overview->parameter());
 
-     connect(m_overview,SIGNAL(requestDeviceEdit(Device*)),this,SLOT(editDevice(Device*)));
-     connect(m_overview,SIGNAL(requestParamEdit(Parameter*)),this,SLOT(editParameter(Parameter*)));
-
-    m_paramEditor->setSeries(m_overview->parameter()->series());
     m_paramEditor->hide();
     layout()->addWidget(edit);
 
 
-    m_devices->setMinimumWidth(250);
+    m_devices->removeMargins();
+    m_devices->setMinimumWidth(200);
+
     connect(m_devices,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
 
     m_devices->setHidden(true);
@@ -37,6 +37,7 @@ void UnitEditor::handle(HardwareUnit *h)
 {
     m_client=h;
     m_devices->fillList(h );
+
     m_overview->handle(h);
     m_paramEditor->setHidden(true);
 }
@@ -72,8 +73,14 @@ void UnitEditor::editParameter(Parameter *p)
     m_paramEditor->setClient(p);
     m_paramEditor->setHidden(!p);
 
+
+
     m_devices->setChecked(-1);
     m_overview->editParameter(p);
+
+    auto ps=m_overview->paramPlot(p);
+    if(ps)
+        m_paramEditor->setPlot(ps);
 }
 
 void UnitEditor::editDevice(Device *d)

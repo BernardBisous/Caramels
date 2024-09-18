@@ -11,7 +11,6 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
 
     // Create a line series to hold the data points
     m_series = new QLineSeries();
-    m_series->setPointsVisible();
 
     // Create axes
     m_xAxis = new QValueAxis();
@@ -50,6 +49,9 @@ ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
 
     setMinimumSize(1,10);
     initStyle();
+
+    m_selectedItem=m_chart->scene()->addEllipse(10,10,20,20,QPen(palette().highlight().color()),palette().highlight());
+    m_selectedItem->hide();
 }
 
 void ParameterPlot::refresh()
@@ -78,8 +80,14 @@ void ParameterPlot::refresh()
     m_parameter->rangeY(&max,&min);
 
     float err=qAbs(max-min);
-    err=err*0.1;
 
+    if(err==0)
+        err=max;
+
+    if(err==0)
+        err=1;
+
+    err=err*0.1;
 
     m_yAxis->setTitleText(m_parameter->units());
 
@@ -193,6 +201,7 @@ void ParameterPlot::select(int a)
     m_series->selectPoint(a);
 
     refreshTitle();
+    m_chart->update();
 }
 
 void ParameterPlot::selectDefault()
@@ -213,6 +222,14 @@ void ParameterPlot::setParameter(Parameter *p)
     m_parameter=p;
     refresh();
     selectDefault();
+}
+
+void ParameterPlot::setHighlight(bool s)
+{
+    if(s)
+        m_selectedItem->show();
+    else
+        m_selectedItem->hide();
 }
 
 

@@ -16,7 +16,7 @@ ParameterEditor::ParameterEditor(QWidget *parent)
 
     m_editWidget->layout()->addWidget( m_editor=new ParameterValueEditor);
    connect(m_editor,SIGNAL(changed()),this,SLOT(editSlot()));
-   m_editor->setSeries(m_plot->series());
+   m_editor->setPlot(m_plot);
 
     QWidget* s=new QWidget;
     s->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);

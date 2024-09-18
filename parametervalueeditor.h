@@ -3,6 +3,7 @@
 
 #include "Interface/toolbutton.h"
 #include "parameter.h"
+#include "parameterplot.h"
 #include "qlabel.h"
 #include "qlineseries.h"
 #include <QWidget>
@@ -11,13 +12,14 @@ class ParameterValueEditor : public QWidget
 {
     Q_OBJECT
 public:
-    typedef enum mode{modeGain=0,modeOffset,modeAlone,modeRemove}Mode;
+    typedef enum mode{modeGain=0,modeOffset,modeAlone}Mode;
     explicit ParameterValueEditor(QWidget *parent = nullptr);
 
     Parameter *client() const;
     void setClient(Parameter *newClient);
 
 
+    void refreshPlot();
     void refresh();
     ToolButton *addMode(QString icon,QString title);
     Mode mode() const;
@@ -32,7 +34,8 @@ public:
     void setOffset(float newOffset);
     void selectOffset(int v);
 
-    void setSeries(QLineSeries *newSeries);
+    void setPlot(ParameterPlot* p);
+
     void refreshValue();
     int lastSelected();
 
@@ -67,7 +70,8 @@ private:
 
 
 
-    QLineSeries* m_series;
+    ParameterPlot*m_plot;
+
 
     float m_gain;
 

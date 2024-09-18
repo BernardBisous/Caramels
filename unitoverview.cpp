@@ -4,7 +4,7 @@
 #define DETAIL_DEVICE false
 #define DETAIL_PARAMETER false
 UnitOverview::UnitOverview(QWidget *parent)
-    : QWidget{parent},m_client(nullptr),m_integral(nullptr),m_selectedWidget(nullptr)
+    : QWidget{parent},m_client(nullptr),m_integral(nullptr)
 {
     setLayout(new QVBoxLayout);
     layout()->setSpacing(30);
@@ -44,13 +44,9 @@ UnitOverview::UnitOverview(QWidget *parent)
     m_stack->addWidget(m_parameter=new ParameterPlot);
     m_stack->addWidget(m_device=new DevicePlot);
 
-
-   // m_overviewWidget->setLayout(new QVBoxLayout);
     ovSplit->setOrientation(Qt::Vertical);
     QSplitter* wp=new QSplitter;
     m_paramSplitter=wp;
-    //wp->setOrientation(Qt::Horizontal);
-    //wp->layout()->setContentsMargins(0,0,0,0);
     wp->addWidget(m_integral=new IntegralPlot);
     wp->addWidget(m_parametersWidget=new QWidget);
 
@@ -289,9 +285,11 @@ void UnitOverview::enableCentral(bool s)
     }
 }
 
-
-
-
+void UnitOverview::resetHighlight()
+{
+    for(int i=0;i<m_parameters.count();i++)
+        m_parameters[i]->setHighlight(false);
+}
 
 
 void UnitOverview::editParameter(Parameter *p)
@@ -302,13 +300,20 @@ void UnitOverview::editParameter(Parameter *p)
         m_parameter->setParameter(p);
         m_parameter->setStartDate(m_client->startTime());
 
-         enableCentral(false);
+        enableCentral(false);
     }
 
 
 
     m_device->handle(nullptr);
-    m_selectedWidget=paramPlot(p);
+    auto pa=paramPlot(p);
+    if(pa)
+    {
+        resetHighlight();
+        pa->setHighlight(true);
+    }
+
+
     update();
 
 
@@ -323,7 +328,7 @@ void UnitOverview::editDevice(Device *d)
         enableCentral(false);
     }
 
-    m_selectedWidget=devicePlot(d);
+    resetHighlight();
     update();
     m_parameter->setParameter(nullptr);
 

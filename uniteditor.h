@@ -18,7 +18,7 @@ public:
     void handle(HardwareUnit* h);
     void showDevices(bool s);
     void showDevices();
-    //static UnitOverview* createOverview(HardwareUnit*u);
+    static UnitOverview* createOverview(HardwareUnit*u);
 
     ParameterValueEditor *paramEditor() const;
 

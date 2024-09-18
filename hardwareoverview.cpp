@@ -36,9 +36,10 @@ HardwareOverview::HardwareOverview(QWidget *parent)
 
 
 
-    m_ph=printTextParameters("PH:",QPointF(20,280));
-    m_waterTemp=printTextParameters("Temp:",QPointF(80,280));
 
+
+    m_ph=printTextParameters("PH:",QPointF(20,280));
+    m_heigh=printTextParameters("Hauteur:",QPointF(10,20));
     m_CO2=printTextParameters("CO2:",QPointF(10,110));
     m_humidity=printTextParameters("Humidity:",QPointF(10,160));
     m_airTemp=printTextParameters("Temperature:",QPointF(10,210));
@@ -141,10 +142,10 @@ void HardwareOverview::update()
 
 
     m_ph->setPlainText(QString::number(m_tent->PH(),'f',1));
-    m_waterTemp->setPlainText(QString::number(m_tent->temperature(0),'f',1)+"°c");
-    m_airTemp->setPlainText(QString::number(m_tent->temperature(1),'f',1)+"°c");
+    m_airTemp->setPlainText(QString::number(m_tent->temperature(0),'f',1)+"°c");
     m_humidity->setPlainText(QString::number(m_tent->humidity(),'f',1)+"%");
     m_CO2->setPlainText(QString::number(m_tent->CO2(),'f',1)+"ppm");
+    m_heigh->setPlainText(QString::number(m_tent->height(),'f',2)+"m");
 
 
     if(m_pumps)

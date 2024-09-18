@@ -26,7 +26,7 @@
 #define CHEM_MIX_4_PIN 34
 #define CHEM_PUMP_4_PIN 35
 #define CHEM_MIX_5_PIN 36
-#define CHEM_PUMP_5_PIN 337
+#define CHEM_PUMP_5_PIN 37
 #define CHEM_MIX_6_PIN 38
 #define CHEM_PUMP_6_PIN 39
 
@@ -37,22 +37,21 @@
 #define HUMIDIFIER_PIN 43
 #define WIND_POWER_PIN 44
 #define EXTRACTOR_PIN 45
+#define GENERAL_PIN 46
 
 //Input pins
 #define WATER_LEVEL_PIN_1 48
 #define WATER_LEVEL_PIN_2 47
 
-// i2C virtual pins
-#define HEIGH_SENSE 200
+//virtual pins
+#define HEIGH_SENSE 53
+#define HUMIDTY_PIN 64
+#define TEMP_1_PIN 63
 
 //Analog pins
-#define HUMIDTY_PIN 56
-#define TEMP_4_PIN 57
 #define CO2_SENSOR_PIN 58
-#define PH_SENSOR_PIN 55
-#define TEMP_1_PIN 54
-#define TEMP_2_PIN 59
-#define TEMP_3_PIN 59
+#define PH_SENSOR_PIN 59
+#define POWER_SENSE 61
 
 enum {LIGHTS_DAY=0,
 

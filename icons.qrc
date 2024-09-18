@@ -15,5 +15,6 @@
         <file alias="right">lib/right.png</file>
         <file alias="up">lib/Top.png</file>
         <file alias="less">lib/moins.png</file>
+        <file alias="point">lib/point.png</file>
     </qresource>
 </RCC>

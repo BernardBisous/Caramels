@@ -160,6 +160,9 @@ QList<RealTimeValue> Device::historic()
     }
     file.close();
 
+    if(!output.isEmpty())
+        output.takeLast();
+
     return output;
 }
 
@@ -198,6 +201,12 @@ void Device::setRange(float min, float max)
     setDataValue(MAX_KEY,QString::number(max));
     setDataValue(MIN_KEY,QString::number(min));
     computeGains();
+}
+
+void Device::setMaxRange(float max)
+{
+    setDataValue(MAX_KEY,QString::number(max));
+     computeGains();
 }
 
 float Device::mapToPurcent(float val)

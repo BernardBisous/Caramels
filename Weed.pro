@@ -14,6 +14,7 @@ SOURCES += \
     Interface/drawerselector.cpp \
     Interface/emailnotifier.cpp \
     Interface/events.cpp \
+    Interface/generalmanager.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
     Interface/overview.cpp \
@@ -63,7 +64,6 @@ SOURCES += \
     parametervalueeditor.cpp \
     plantation.cpp \
     regulatorwidget.cpp \
-    resultplot.cpp \
     tent.cpp \
     tenteditor.cpp \
     tentlistwidget.cpp \
@@ -80,6 +80,7 @@ HEADERS += \
     Interface/drawerselector.h \
     Interface/emailnotifier.h \
     Interface/events.h \
+    Interface/generalmanager.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
     Interface/overview.h \
@@ -129,7 +130,6 @@ HEADERS += \
     parametervalueeditor.h \
     plantation.h \
     regulatorwidget.h \
-    resultplot.h \
     tent.h \
     tenteditor.h \
     tentlistwidget.h \

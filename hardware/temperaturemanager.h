@@ -26,7 +26,6 @@ virtual AnalogSensor*regulatingSensor();
     void regulateWind();
 
     float airTemperature();
-    float waterTemperature();
     float humidity();
 
     float humidityExcess();
@@ -37,7 +36,6 @@ virtual AnalogSensor*regulatingSensor();
 
 private:
     AnalogSensor* m_airSensor;
-    AnalogSensor* m_waterSensor;
     AnalogSensor* m_humiditySensor;
     SwitchedActuator* m_humidifier;
     SwitchedActuator* m_windpower;

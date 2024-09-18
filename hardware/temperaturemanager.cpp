@@ -6,7 +6,6 @@ TemperatureManager::TemperatureManager(QObject *parent)
 {
     m_name="Climat";
     attachDevice(m_airSensor=new AnalogSensor(TEMP_1_PIN,"Température de l'air",this));
-    attachDevice(m_waterSensor=new AnalogSensor(TEMP_2_PIN,"Température de l'eau",this));
     attachDevice(m_humiditySensor=new AnalogSensor(HUMIDTY_PIN,"Humidité relative",this));
     attachDevice(m_humidifier=new SwitchedActuator(HUMIDIFIER_PIN,false,"Humidificateur"));
     attachDevice(m_windpower=new SwitchedActuator(WIND_POWER_PIN,10,"Ventilateur",this));
@@ -17,12 +16,10 @@ TemperatureManager::TemperatureManager(QObject *parent)
 
 
     m_humiditySensor->setUnits("%");
+    m_humiditySensor->setRange(0,100);
 
-
-    m_waterSensor->setUnits("°c");
     m_airSensor->setUnits("°c");
-    m_waterSensor->setRange(10,60);
-    m_airSensor->setRange(10,60);
+    m_airSensor->setRange(0,100);
 
     m_humidifier->setIntegralUnits("mL");
     m_humidifier->setRange(0,5);//ml/s
@@ -121,10 +118,7 @@ float TemperatureManager::airTemperature()
     return m_airSensor->currentValue();
 }
 
-float TemperatureManager::waterTemperature()
-{
-     return m_waterSensor->currentValue();
-}
+
 
 float TemperatureManager::humidity()
 {

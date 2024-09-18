@@ -4,6 +4,7 @@
 DeviceListWidget::DeviceListWidget(QWidget *parent)
     : ScrollArea{false,parent},m_current(-1)
 {
+
     connect(this,SIGNAL(trigger(int,QWidget*)),this,SLOT(listSlot(int,QWidget*)));
 }
 

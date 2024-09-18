@@ -56,6 +56,7 @@ public:
 
 
     void setRange(float min, float max);
+    void setMaxRange(float mx);
 
     float mapToPurcent(float val);
     float maxRange();

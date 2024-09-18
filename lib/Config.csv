@@ -8,8 +8,8 @@ Heigh,Hauteur des plants,m,6,Hauteur des lights par rapport à la canopée,50,60
 CO2,Concentration de CO2,ppm,7,CO2 dans l'air,400,400,400,400,400,400,400,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600
 Wind,Force du vent,%,9,Quantité de mouvement du vent,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60
 PH,PH,ph,10,Acidité de l'eau,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6
-Water ,Temps sec,s,11,Longueur du séchage en S,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,10,10,10,7,7,7,7,7,7,7,7,7,7,7,7,7,7
-Water ,Temps imergé,h,12,Temps entre les séchages en h,2,2,2,2,2,2,2,2,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6
 Dosage,Mélasse,mL/L,13,Concentration de produit 1,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7
 Dosage,Boost,ml/L,14,Concentration de produit 2,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6
 Events,Taillages,,20,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure
+Water ,Temps sec,s,11,Longueur du séchage en S,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
+Water ,Temps imergé,h,12,Temps entre les séchages en h,6,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8

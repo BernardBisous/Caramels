@@ -7,9 +7,8 @@ TolLeveler::TolLeveler(QObject *parent)
     attachDevice(m_lifter=new TopLifter(HEIGH_LIFTER_UP,HEIGH_LIFTER_DOWN,"Ascenseur",this));
     attachDevice(m_sensor=new DistanceSensor(HEIGH_SENSE,"Capteur de hauteur",this));
 
-
     m_sensor->setUnits("cm");
-    m_sensor->setRange(0,2000);
+    m_sensor->setRange(0,1000);
     m_lifter->setUnits("cm/s");
     m_lifter->setMaxSpeed(2);//cm/s
 
@@ -49,6 +48,11 @@ void TolLeveler::reactToSensorsChanged()
         m_lifter->move(-err);
         m_sensor->setRegulated();
     }
+}
+
+float TolLeveler::heighValue()
+{
+    return 0.355;
 }
 
 

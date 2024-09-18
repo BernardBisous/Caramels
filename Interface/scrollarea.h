@@ -38,6 +38,7 @@ public:
     virtual void leaveEvent(QEvent *event);
     void setHorizontal(bool b=true);
     void clear();
+    void removeMargins();
     void fillList(QStringList s);
     void addWidget(QWidget *w);
     void addActionText(QString s);

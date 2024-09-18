@@ -96,6 +96,12 @@ void ScrollArea::clear()
     }
 }
 
+void ScrollArea::removeMargins()
+{
+if(widget() && widget()->layout())
+    widget()->layout()->setContentsMargins(0,0,0,0);
+}
+
 void ScrollArea::fillList(QStringList s)
 {
     clear();

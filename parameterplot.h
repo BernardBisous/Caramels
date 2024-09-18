@@ -22,6 +22,7 @@ public:
 //    bool eventFilter(QObject *obj, QEvent *event) override;
     void setParameter(Parameter*p);
 
+    void setHighlight(bool s);
     void setXrange(int t);
     void initStyle();
     void select(int);
@@ -69,6 +70,8 @@ private:
     Parameter *m_parameter;
 
     QDateTime m_startDate;
+
+    QGraphicsItem* m_selectedItem;
 
 
 };

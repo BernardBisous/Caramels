@@ -24,7 +24,7 @@ public:
     virtual void reactToParamChanged(Parameter*, float );
     virtual void reactToSensorsChanged();
     Parameter* heigh(){return parameterFromId(LIGHT_HEIGH);}
-
+    float heighValue();
 private slots:
 
 

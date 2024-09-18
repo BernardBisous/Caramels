@@ -17,7 +17,9 @@
 Tent::Tent(QObject *parent)
     : QObject{parent},m_config(nullptr),
       m_temperatures(nullptr),m_ph(nullptr),
-      m_Co2(nullptr),m_leveler(nullptr),m_lights(nullptr),m_pumps(nullptr),m_chemichals(nullptr)
+      m_Co2(nullptr),m_leveler(nullptr),
+      m_lights(nullptr),m_pumps(nullptr),
+      m_chemichals(nullptr), m_general(nullptr)
 {
 
 
@@ -55,6 +57,7 @@ void Tent::initDevices()
     addUnit(m_temperatures=new TemperatureManager(this));
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
+    addUnit(m_general=new GeneralManager(this));
 
     if(m_temperatures && m_Co2)
         m_temperatures->setCo2(m_Co2);
@@ -148,6 +151,14 @@ HardwareUnit *Tent::unitForId(int id)
     }
 
     return nullptr;
+}
+
+float Tent::height()
+{
+    if(m_leveler)
+        return-1;
+
+    return m_leveler->heighValue();
 }
 
 
@@ -325,7 +336,7 @@ float Tent::temperature(int sensorIndex)
     switch(sensorIndex)
     {
     case 0: return m_temperatures->airTemperature();
-    default: return m_temperatures->waterTemperature();
+    default: return -1;
     }
 }
 
@@ -412,7 +423,6 @@ void Tent::console(QString s)
 
 void Tent::hardwareSlot(QByteArray &)
 {
-
     for(int i=0;i<m_units.count();i++)
     {
         m_units[i]->updateSensors();

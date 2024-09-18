@@ -36,6 +36,8 @@ public:
     virtual void refreshCentral();
     virtual void enableCentral(bool s);
 
+
+    void resetHighlight();
     void editParameter(Parameter*p);
     void editDevice(Device*d);
     void showCentral();
@@ -94,8 +96,6 @@ protected:
     QWidget* m_devicesWidget;
 
     IntegralPlot* m_integral;
-
-    QWidget* m_selectedWidget;
 
 
 

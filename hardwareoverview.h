@@ -48,8 +48,8 @@ private:
     Tent *m_tent;
     QTimer *m_timer;
 
+    QGraphicsTextItem * m_heigh;
     QGraphicsTextItem * m_ph;
-    QGraphicsTextItem * m_waterTemp;
     QGraphicsTextItem * m_CO2;
     QGraphicsTextItem * m_humidity;
     QGraphicsTextItem * m_airTemp;

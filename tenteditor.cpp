@@ -6,18 +6,16 @@ TentEditor::TentEditor(QWidget *parent)
 
     setLayout(new QHBoxLayout);
     layout()->setContentsMargins(0,0,0,0);
+    layout()->setSpacing(20);
 
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
 
     list->layout()->addWidget(m_units=new ScrollArea);
+    m_units->removeMargins();
     list->layout()->setContentsMargins(0,0,0,0);
     list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
-
-
-
     m_units->setContentsMargins(0,0,0,0);
-  //  m_parameters->layout()->setContentsMargins(0,0,0,0);
     list->setFixedWidth(200);
 
     QWidget* sp=new QWidget;
@@ -55,11 +53,6 @@ void TentEditor::handle(Tent *t)
 
     if(!l.isEmpty())
         edit(0);
-
-
-
-  //  m_ports->handle(t);
-
 }
 
 void TentEditor::edit(int index)
