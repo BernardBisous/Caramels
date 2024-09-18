@@ -150,7 +150,9 @@ void HardwareOverview::update()
     if(m_pumps)
     {
 
-        bool sp=m_tent->pumps()->isDry();
+        bool sp=false;
+        if(m_tent->pumps())
+            sp=m_tent->pumps()->isDry();
 
         if( sp)
             m_pumps->hide();
@@ -159,8 +161,10 @@ void HardwareOverview::update()
 
         m_pumps->update();
 
-        bool fp=m_tent->pumps()->filling();
-        if(fp)
+        sp=false;
+        if(m_tent->pumps())
+            sp=m_tent->pumps()->filling();
+        if(sp)
             m_tank->show();
         else
             m_tank->hide();

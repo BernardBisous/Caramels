@@ -56,8 +56,11 @@ void Tent::initDevices()
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
 
-    m_temperatures->setCo2(m_Co2);
-    connect(m_pumps,SIGNAL(fillingTank(bool)),this,SLOT(tankFilledSlot(bool)));
+    if(m_temperatures && m_Co2)
+        m_temperatures->setCo2(m_Co2);
+
+    if(m_pumps)
+        connect(m_pumps,SIGNAL(fillingTank(bool)),this,SLOT(tankFilledSlot(bool)));
 
 }
 
@@ -407,7 +410,7 @@ void Tent::console(QString s)
     emit consoleRequest(t);
 }
 
-void Tent::hardwareSlot(QByteArray &d)
+void Tent::hardwareSlot(QByteArray &)
 {
 
     for(int i=0;i<m_units.count();i++)
@@ -439,8 +442,11 @@ void Tent::timerSlot()
         return;
     }
 
-    for(int i=0;i<m_units.count();i++)
-        m_units[i]->update(h);
+    if(m_startedDate.isValid())
+    {
+        for(int i=0;i<m_units.count();i++)
+            m_units[i]->update(h);
+    }
 
 
 

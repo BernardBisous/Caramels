@@ -3,6 +3,7 @@
 
 #include "hardware/analogsensor.h"
 #include "hardware/device.h"
+#include "hardware/regulatingtimer.h"
 #include "parameter.h"
 #include <QObject>
 
@@ -20,6 +21,7 @@ public:
     virtual void attachParameter(Parameter* p);
     virtual QList<Actuator*> interestingIntegrals(){return actuators(true);}
     virtual QList<Device*> interestingDevices(){return coupledDevices();}
+
 
     virtual QStringList trigKeys(){return QStringList();}
     virtual void trigKey(QString s);
@@ -74,11 +76,16 @@ public:
     QString description() const;
     void setDescription(const QString &newDescription);
 
+    RegulatingTimer *regulator() const;
+    void setRegulator(RegulatingTimer *newRegulator);
+    void setTimeRegulated(Actuator* a);
+
 signals:
 
     void finished();
     void consoleRequest(QString);
     void startChanged(QDateTime start);
+    void newParameters();
 
 
 
@@ -96,6 +103,8 @@ protected:
     QDateTime m_endTime;
 
     QString m_description;
+
+    RegulatingTimer* m_regulator;
 
 };
 

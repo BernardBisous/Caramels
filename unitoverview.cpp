@@ -7,6 +7,7 @@ UnitOverview::UnitOverview(QWidget *parent)
     : QWidget{parent},m_client(nullptr),m_integral(nullptr),m_selectedWidget(nullptr)
 {
     setLayout(new QVBoxLayout);
+    layout()->setSpacing(30);
     layout()->setContentsMargins(0,0,0,0);
     QWidget* top=new QWidget;
     top->setLayout(new QHBoxLayout);
@@ -73,6 +74,9 @@ UnitOverview::UnitOverview(QWidget *parent)
 
 void UnitOverview::handle(HardwareUnit *u)
 {
+    if(m_client)
+        disconnect(m_client,SIGNAL(newParameters()),this,SLOT(updateParamSelection()));
+
     m_client=u;
 
 
@@ -96,11 +100,12 @@ void UnitOverview::handle(HardwareUnit *u)
     printButtons(u->trigKeys());
 
     m_regulator->handle(u->regulatingSensor());
+    m_regulator->setRegulator(u->regulator());
 
 
+    connect(m_client,SIGNAL(newParameters()),this,SLOT(updateParamSelection()));
     showCentral();
     refresh();
-
 }
 
 void UnitOverview::refresh()
@@ -226,10 +231,14 @@ void UnitOverview::dateChanged(QDateTime )
 
 }
 
-void UnitOverview::updateParamSelecction()
+void UnitOverview::updateParamSelection()
 {
-
+    for(int i=0;i<m_parameters.count();i++)
+    {
+        m_parameters[i]->selectDefault();
+    }
 }
+
 
 ParameterPlot *UnitOverview::parameter() const
 {

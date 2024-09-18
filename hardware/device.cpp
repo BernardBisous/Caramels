@@ -53,6 +53,7 @@ void Device::reset()
 
 
 
+
 void Device::computeResults()
 {
     auto l=m_metaResults.keys();
@@ -463,6 +464,20 @@ QString Actuator::userValue()
     return Device::userValue();
 }
 
+void Actuator::switchStateUser()
+{
+    setStateHigh(currentPurcent()==neutralPurcent());
+}
+
+void Actuator::setStateHigh(bool s)
+{
+    if(s)
+        userApplyPurcent(100);
+
+    else
+        userApplyPurcent(neutralPurcent());
+}
+
 void Actuator::applyValue(float v)
 {
     if(!m_values.isEmpty())
@@ -493,7 +508,7 @@ void Actuator::reset()
 void Actuator::stop()
 {
     m_impulseTimer->stop();
-    userApplyPurcent(0);
+    userApplyPurcent(neutralPurcent());
 }
 
 void Actuator::impulse(float val,int ms, float valEnd)
@@ -647,7 +662,12 @@ void Motor::applyValue(float )
 
 void Motor::applyPurcent(float v)
 {
-    if(v<50)
+    if(v==50)
+    {
+        m_serial->write(m_pin1,0);
+        m_serial->write(m_pin2,0);
+    }
+    else if(v<50)
     {
         if(m_clockwise)
 
@@ -691,12 +711,12 @@ void Motor::move(float t)
     if(t<0)
     {
         float s=-t/maxSpeed();
-        impulse(-maxSpeed(),s/1000,0);
+        impulse(-maxSpeed(),s*1000,0);
     }
     else
     {
         float s=t/maxSpeed();
-        impulse(maxSpeed(),s/1000,0);
+        impulse(maxSpeed(),s*1000,0);
     }
 }
 

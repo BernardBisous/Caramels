@@ -46,7 +46,7 @@ void TolLeveler::reactToSensorsChanged()
     {
         float err=m_sensor->errorValue();
         console("Regulating heigh : "+m_sensor->userValue());
-        m_lifter->move(err);
+        m_lifter->move(-err);
         m_sensor->setRegulated();
     }
 }

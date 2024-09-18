@@ -2,7 +2,7 @@
 
 
 HardwareUnit::HardwareUnit(QObject *parent)
-    : QObject{parent},m_description("Regular hardware unit")
+    : QObject{parent},m_description("Regular hardware unit"),m_regulator(nullptr)
 {
 
 }
@@ -28,6 +28,7 @@ void HardwareUnit::update(int index)
             atEnd=false;
             reactToParamChanged(m_parameters[i],v);
 
+
         }
     }
 
@@ -35,12 +36,18 @@ void HardwareUnit::update(int index)
     {
         emit finished();
     }
+
+    emit newParameters();
+
 }
 
 void HardwareUnit::finish()
 {
     for(int i=0;i<m_devices.count();i++)
         m_devices[i]->reset();
+
+    if(m_regulator)
+        m_regulator->reset();
 
     m_startTime=QDateTime();
     computeEndTime();
@@ -278,5 +285,21 @@ QString HardwareUnit::description() const
 void HardwareUnit::setDescription(const QString &newDescription)
 {
     m_description = newDescription;
+}
+
+RegulatingTimer *HardwareUnit::regulator() const
+{
+    return m_regulator;
+}
+
+void HardwareUnit::setRegulator(RegulatingTimer *newRegulator)
+{
+    m_regulator = newRegulator;
+}
+
+void HardwareUnit::setTimeRegulated(Actuator *a)
+{
+    setRegulator(new RegulatingTimer(this));
+    regulator()->setDevice(a);
 }
 

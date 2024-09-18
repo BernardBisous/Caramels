@@ -22,7 +22,12 @@ void CameraOverview::load()
     QStringList ls=m_client->picsFiles();
     for(int i=0;i<ls.count();i++)
     {
-        m_pixmaps.append(QPixmap(ls[i]).scaled(size(),Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
+        QPixmap ps=QPixmap(ls[i]);
+        if(!ps.isNull())
+        {
+           m_pixmaps.append(ps.scaled(size(),Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
+        }
+
     }
 }
 
@@ -30,7 +35,14 @@ void CameraOverview::loadFirst()
 {
     QStringList ls=m_client->picsFiles();
     if(!ls.isEmpty())
-        setPixmap(QPixmap(ls.last()).scaled(size(),Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
+    {
+        QPixmap ps=QPixmap(ls.last());
+        if(!ps.isNull())
+        {
+           m_pixmaps.append(ps.scaled(size(),Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
+        }
+    }
+
 
 }
 
@@ -52,6 +64,7 @@ void CameraOverview::start()
 void CameraOverview::handle(Webcam *w)
 {
     m_client=w;
+    connect(w,SIGNAL(saved(QString)),this,SLOT(pixSlot(QString)));
     reset();
 }
 
@@ -75,6 +88,11 @@ void CameraOverview::updatePixmap()
 
     setPixmap(m_pixmaps[m_counter]);
     m_counter = (m_counter + 1) % m_pixmaps.size();
+}
+
+void CameraOverview::pixSlot(QString)
+{
+    start();
 }
 
 int CameraOverview::frameDelay() const

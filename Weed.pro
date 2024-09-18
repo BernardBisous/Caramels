@@ -47,6 +47,7 @@ SOURCES += \
     hardware/lights.cpp \
     hardware/phmanager.cpp \
     hardware/pump.cpp \
+    hardware/regulatingtimer.cpp \
     hardware/serialtent.cpp \
     hardware/temperaturemanager.cpp \
     hardware/tolleveler.cpp \
@@ -113,6 +114,7 @@ HEADERS += \
     hardware/lights.h \
     hardware/phmanager.h \
     hardware/pump.h \
+    hardware/regulatingtimer.h \
     hardware/serialtent.h \
     hardware/temperaturemanager.h \
     hardware/tolleveler.h \

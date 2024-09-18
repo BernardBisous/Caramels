@@ -26,6 +26,7 @@ protected:
 
 public slots:
      void updatePixmap();
+     void pixSlot(QString);
 private:
 
 

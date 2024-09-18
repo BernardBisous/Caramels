@@ -7,7 +7,7 @@
 #include <QFile>
 
 #define DATA_DIR "pics"
-#define CAPTURE_DELAY_HOURS 10
+#define CAPTURE_DELAY_HOURS 3
 #include "parameter.h"
 
 Webcam::Webcam(QObject *parent)

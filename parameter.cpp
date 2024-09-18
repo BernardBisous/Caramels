@@ -235,7 +235,7 @@ int Parameter::closerIndex(int h)
         if( m_values[i].hourIndex>=h)
         {
             if(i)
-                return i;
+                return i-1;
 
             else
                  return 0;

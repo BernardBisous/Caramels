@@ -59,7 +59,8 @@ void WebcamWidget::printPicture(QString s)
 
 void WebcamWidget::printPicture(QPixmap p)
 {
-    m_picLabel->setPixmap(p.scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
+    if(!p.isNull())
+        m_picLabel->setPixmap(p.scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 }
 
 void WebcamWidget::setLiveMode(bool s)

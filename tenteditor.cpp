@@ -9,10 +9,8 @@ TentEditor::TentEditor(QWidget *parent)
 
     QWidget* list=new QWidget;
     list->setLayout(new QVBoxLayout);
-   // list->layout()->addWidget(m_ports=new SerialEditor);
-    list->layout()->addWidget(new QLabel("Unités de contole:"));
+
     list->layout()->addWidget(m_units=new ScrollArea);
-   // list->layout()->addWidget(m_parameters=new ParameterListWidget);
     list->layout()->setContentsMargins(0,0,0,0);
     list->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
 
@@ -20,7 +18,7 @@ TentEditor::TentEditor(QWidget *parent)
 
     m_units->setContentsMargins(0,0,0,0);
   //  m_parameters->layout()->setContentsMargins(0,0,0,0);
-    list->setMaximumWidth(200);
+    list->setFixedWidth(200);
 
     QWidget* sp=new QWidget;
     sp->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);

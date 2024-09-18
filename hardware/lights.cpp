@@ -9,6 +9,8 @@ Lights::Lights(int pin, QObject* parent):SwitchedActuator(pin,false,"Lighs 400W_
     setUnits("W");
     setRange(0,300);//Total lights power
     setIntegralUnits("Ws");
+
+
 }
 
 float Lights::computeResult(QString s)
@@ -27,45 +29,31 @@ LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):
 
 
 
-LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent},m_delayNight(0),m_delayDay(0)
+LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent}
 {
     m_name="Lampes";
     setDescription("Gestion de la puissance et du spectre de la lumière");
-    m_switchTimer=new QTimer(this);
-    connect(m_switchTimer,SIGNAL(timeout()),this,SLOT(switchLights()));
 
     attachDevice(m_power=new Lights(LIGHTS_POWER_PIN,this));
     attachDevice(m_spectrum=new LightsSpectrum(LIGHTS_SPECTRUM_PIN,this));
 
     m_idParameters<<LIGHTS_DAY<<LIGHTS_SLEEP<<LIGHTS_SPECTRUM;
+    setTimeRegulated(m_power);
 }
 
 void LightsUnit::begin()
 {
     HardwareUnit::begin();
-
-
-   // switchLights();
 }
 
-void LightsUnit::switchLights()
+void LightsUnit::regulatorSlot(bool s)
 {
-    bool b=m_power->currentValue()>0;
+   if(s)
+       console("Switching lights on for "+QString::number(regulator()->high()/(1000*3600))+"h");
 
-    if(b)
-    {
-        console("Switching lights off for "+QString::number(m_delayNight/(1000*3600))+"h");
-        m_switchTimer->setInterval(m_delayNight);
-        m_power->userApplyPurcent(0);
-    }
-    else
-    {
-         console("Switching lights on for "+QString::number(m_delayDay/(1000*3600))+"h");
-        m_switchTimer->setInterval(m_delayDay);
-        m_power->userApplyPurcent(100);
-    }
 
-    m_switchTimer->start();
+   else
+       console("Switching lights off for "+QString::number(regulator()->low()/(1000*3600))+"h");
 
 }
 
@@ -76,28 +64,25 @@ void LightsUnit::reactToParamChanged(Parameter *p, float f)
         updateSpectrum(f);
         return;
     }
+
     else if(p==day())
     {
-        bool bl=m_delayDay;
+       regulator()->setDelayHigh(f/3600*Parameter::timeMultiplicator());
 
-        m_delayDay=f*1000*Parameter::timeMultiplicator();
+        if(!f)
+            regulator()->startState(true);
 
-        if(!bl)
-            switchLights();
     }
     else if(p==night())
     {
-        m_delayNight=f*1000*Parameter::timeMultiplicator();
+        regulator()->setDelayLow(f/3600*Parameter::timeMultiplicator());
     }
 }
 
 void LightsUnit::finish()
 {
-
-    m_delayDay=0;
-    m_delayNight=0;
-    m_switchTimer->stop();
-    m_power->applyPurcent(0);
+    regulator()->reset();
+    m_power->userApplyPurcent(0);
     HardwareUnit::finish();
 }
 

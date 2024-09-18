@@ -46,14 +46,9 @@ public:
     Parameter* spectrum(){return parameterFromId(LIGHTS_SPECTRUM);}
 
 public slots:
-    void switchLights();
+    void regulatorSlot(bool s);
 
 private:
-
-    int m_delayNight;
-    int m_delayDay;
-
-    QTimer * m_switchTimer;
     Lights* m_power;
     LightsSpectrum* m_spectrum;
 };

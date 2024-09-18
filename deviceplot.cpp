@@ -172,7 +172,6 @@ void DevicePlot::updatePlot()
 
 void DevicePlot::sliderChanged(int val)
 {
-
     QDateTime now=QDateTime::currentDateTime();
     int max=m_minDate.secsTo(now);
 
@@ -180,12 +179,7 @@ void DevicePlot::sliderChanged(int val)
     r=r/100;
 
     float range=max*r;
-
-    if(range<100)
-        range=100;
-
     setXRangeSecs(range);
-
 }
 
 Device *DevicePlot::device() const

@@ -2,22 +2,25 @@
 #include "qboxlayout.h"
 
 RegulatorWidget::RegulatorWidget(QWidget *parent)
-    : QWidget{parent},m_client(nullptr)
+    : ActionWidget{parent},m_client(nullptr),m_regulator(nullptr)
 {
+
+    setHoverable(false);
+    setMode(noBorder);
     setLayout(new QHBoxLayout);
     layout()->setContentsMargins(0,0,0,0);
     layout()->setSpacing(20);
 
     QWidget*v=new QWidget;
     v->setLayout(new QVBoxLayout);
-    v->layout()->setContentsMargins(0,0,0,0);
+
     v->layout()->addWidget(new QLabel("Next regulation:"));
     v->layout()->addWidget(m_regLabel=new QLabel);
 
 
     QWidget*z=new QWidget;
     z->setLayout(new QVBoxLayout);
-    z->layout()->setContentsMargins(0,0,0,0);
+
     z->layout()->addWidget(new QLabel("Value:"));
     z->layout()->addWidget(m_valueLabel=new QLabel);
 
@@ -41,39 +44,84 @@ RegulatorWidget::RegulatorWidget(QWidget *parent)
 void RegulatorWidget::handle(AnalogSensor *a)
 {
 
-    if(m_client)
-    {
-        disconnect(m_client,SIGNAL(regulated()),this,SLOT(refresh()));
-        disconnect(m_client,SIGNAL(newValue(float)),this,SLOT(valueSlot(float)));
-    }
+
 
     m_client=a;
+
+
+
     if(m_client)
     {
         connect(m_client,SIGNAL(regulated()),this,SLOT(refresh()));
         connect(m_client,SIGNAL(newValue(float)),this,SLOT(valueSlot(float)));
     }
 
-    setHidden(!m_client);
+    m_regulator=nullptr;
     refresh();
 }
+
+void RegulatorWidget::reset()
+{
+    if(m_client)
+    {
+        disconnect(m_client,SIGNAL(regulated()),this,SLOT(refresh()));
+        disconnect(m_client,SIGNAL(newValue(float)),this,SLOT(valueSlot(float)));
+        m_client=nullptr;
+    }
+
+    m_regulator=nullptr;
+
+    if(m_regulator && m_regulator->device())
+        disconnect(m_regulator->device(),SIGNAL(newValue(float)),this,SLOT(refresh()));
+
+}
+
+
+void RegulatorWidget::setRegulator(RegulatingTimer *newRegulator)
+{
+
+    if(m_regulator && m_regulator->device())
+        disconnect(m_regulator->device(),SIGNAL(newValue(float)),this,SLOT(refresh()));
+
+    m_button->setText("Switch");
+    m_regulator = newRegulator;
+
+    setHidden(!m_regulator);
+
+    if(m_regulator && m_regulator->device())
+        connect(m_regulator->device(),SIGNAL(newValue(float)),this,SLOT(refresh()));
+
+
+    refresh();
+}
+
 
 void RegulatorWidget::refresh()
 {
 
-    if(!m_client)
-        return;
+    setHidden(!m_client && !m_regulator);
 
-    QDateTime t=m_client->nextRegulation();
-    if(t.isValid())
+    if(m_client)
     {
-        m_regLabel->setText(m_client->nextRegulation().toString("hh:mm"));
+        QDateTime t=m_client->nextRegulation();
+        if(t.isValid())
+        {
+            m_regLabel->setText(m_client->nextRegulation().toString("hh:mm"));
+        }
+        else
+            m_regLabel->setText("Soudain");
+
+
+        m_valueLabel->setText(m_client->userValue());
     }
-    else
-        m_regLabel->setText("Soudain");
 
 
-    m_valueLabel->setText(m_client->userValue());
+
+    else if(m_regulator)
+    {
+        m_valueLabel->setText(m_regulator->currentString());
+        m_regLabel->setText(m_regulator->nextSwitch().toString("hh:mm"));
+    }
 }
 
 void RegulatorWidget::valueSlot(float )
@@ -86,7 +134,18 @@ void RegulatorWidget::buttonSlot()
     if(m_client)
     {
         m_client->regulateNow();
-        refresh();
+
     }
+    if(m_regulator)
+    {
+        m_regulator->userSwitch();
+    }
+    refresh();
 }
+
+RegulatingTimer *RegulatorWidget::regulator() const
+{
+    return m_regulator;
+}
+
 

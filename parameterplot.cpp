@@ -4,7 +4,7 @@
 #include <QDate>
 #include <QGraphicsLayout>
 ParameterPlot::ParameterPlot(QWidget* parent): QWidget(parent),
-    m_startDate(),m_parameter(nullptr)
+    m_parameter(nullptr),m_startDate()
 {
     m_view = new QChartView(this);
     m_view->setRenderHint(QPainter::Antialiasing);
@@ -112,10 +112,12 @@ void ParameterPlot::setStartDate(QDateTime newStartDate)
 
 int ParameterPlot::currentTimeIndex()
 {
-    if(m_startDate.isValid())
-        return m_startDate.secsTo(QDateTime::currentDateTime())/Parameter::timeMultiplicator();
+    if(!m_startDate.isValid() || !m_parameter)
+        return -1;
 
-    return -1;
+    int elapsedH=m_startDate.secsTo(QDateTime::currentDateTime())/Parameter::timeMultiplicator();
+
+    return m_parameter->closerIndex(elapsedH);
 }
 
 int ParameterPlot::closerIndexPoint(int hourIndex)
@@ -182,13 +184,15 @@ void ParameterPlot::select(int a)
 {
     m_series->deselectAllPoints();
 
+
+
     if(a<0)
         return;
+
 
     m_series->selectPoint(a);
 
     refreshTitle();
-
 }
 
 void ParameterPlot::selectDefault()

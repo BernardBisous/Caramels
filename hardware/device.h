@@ -25,7 +25,7 @@ public:
     virtual void load(QDataStream& s);
     virtual void reactToDataEdited(QString key,QString val);
     virtual void reset();
-
+    virtual float neutralPurcent(){return 0;}
 
     virtual void retreiveLastValue();
     virtual float computeResult(QString){return 0;}
@@ -172,6 +172,8 @@ public:
     virtual void applyPurcent(float v);
      virtual void retreiveLastValue();
     virtual QString userValue();
+    void switchStateUser();
+    void setStateHigh(bool s=true);
 
     void applyValue(float);
     void userApplyPurcent(float);
@@ -230,6 +232,7 @@ public:
     explicit Motor (int pin1,int pin2, QString name="Motor",QObject *parent = nullptr);
     virtual void applyValue(float v);
     virtual void applyPurcent(float v);
+    virtual float neutralPurcent(){return 50;}
     void setMaxSpeed(float v);
     float maxSpeed();
     void move(float t);

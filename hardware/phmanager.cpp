@@ -97,11 +97,22 @@ void PHManager::regulate()
 
     if(err>0)
     {
-        m_phMinus->injectMl(err);
+        m_phMinus->injectMl(20);
     }
     else
     {
-        m_phPlus->injectMl(-err);
+        m_phPlus->injectMl(20);
     }
     m_sensor->setRegulated();
+}
+
+QList<Device *> PHManager::interestingDevices()
+{
+    QList<Device *> out;
+
+    out<<m_sensor;
+    out<<m_phPlus->pump();
+    out<<m_phMinus->pump();
+
+    return out;
 }

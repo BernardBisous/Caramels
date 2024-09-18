@@ -1,7 +1,7 @@
 #include "chemicalinjector.h"
 
 #define VOLUME_ML 1000
-#define MIN_INJECTION_MS 100
+#define MIN_INJECTION_MS 1000
 #define MIXER_POWER_W 40
 #define PUMP_FLOW 10 //mL/s
 ChemicalInjector::ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int ID, QObject*parent )

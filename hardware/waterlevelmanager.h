@@ -20,7 +20,6 @@ public:
     virtual QList<Actuator*> interestingIntegrals();
     virtual void reactToSensorsChanged();
     virtual void reactToParamChanged(Parameter*, float );
-    virtual void finish();
 
     Parameter* dry(){return parameterFromId(DRY_DELAY);}
     Parameter* wet(){return parameterFromId(WET_DELAY);}
@@ -29,12 +28,8 @@ public:
     bool filling() const;
     bool isDry();
 
-    void setDry(bool s);
-
     float totalInjected();
-
     QList<RealTimeValue> injectedHitstoric();
-
 
 
 signals:
@@ -44,19 +39,13 @@ private slots:
     void switchDry();
 
 private:
-
-    float m_dry;
-    float m_wet;
-
-    bool m_currentlyDry;
-
     SwitchedActuator* m_pump;
     BooleanSensor* m_levelDown;
     BooleanSensor* m_levelUp;
     Pump* m_entryValve;
     bool m_filling;
 
-    QTimer* m_dryTimer;
+
 };
 
 #endif // WATERLEVELMANAGER_H

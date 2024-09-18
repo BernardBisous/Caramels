@@ -17,6 +17,8 @@ public:
     virtual QList<Actuator*> interestingIntegrals();
     void attachInjector(ChemicalInjector* c);
     void regulate();
+    virtual QList<Device*> interestingDevices();
+
     float ph();
 
     QList<ChemicalInjector *>  injectors();

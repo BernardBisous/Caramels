@@ -352,7 +352,8 @@ void TopWidget::setImage(QString url, bool autoResize)
 
 void TopWidget::setImage(QPixmap p, bool autoResize)
 {
-    m_pix=p.scaled(this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_pix=p.
+            scaled(this->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     m_autoresize=autoResize;
 
     QPalette pal( palette() );

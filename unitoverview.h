@@ -65,7 +65,8 @@ private slots:
     void paramTrig();
     void deviceTrig();
     void dateChanged(QDateTime t);
-    void updateParamSelecction();
+    void updateParamSelection();
+
 signals:
     void requestParamEdit(Parameter*);
     void requestDeviceEdit(Device*d);

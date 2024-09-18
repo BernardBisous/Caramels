@@ -27,7 +27,7 @@ UnitEditor::UnitEditor(QWidget *parent)
     layout()->addWidget(edit);
 
 
-    m_devices->setFixedWidth(250);
+    m_devices->setMinimumWidth(250);
     connect(m_devices,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
 
     m_devices->setHidden(true);
@@ -59,7 +59,7 @@ void UnitEditor::showDevices()
 void UnitEditor::editDevice(int i)
 {
     auto c=m_client;
-    if(!c || i>=c->devices().count())
+    if(i<0 || !c || i>=c->devices().count())
         return;
 
     m_devices->setChecked(i);
