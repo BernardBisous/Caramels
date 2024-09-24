@@ -8,6 +8,7 @@
 #include <QObject>
 
 
+
 class HardwareUnit : public QObject
 {
     Q_OBJECT
@@ -21,7 +22,7 @@ public:
     virtual void attachParameter(Parameter* p);
     virtual QList<Actuator*> interestingIntegrals(){return actuators(true);}
     virtual QList<Device*> interestingDevices(){return coupledDevices();}
-
+    virtual QString diagnose(bool*){return "";}
 
     virtual QStringList trigKeys(){return QStringList();}
     virtual void trigKey(QString s);
@@ -80,12 +81,15 @@ public:
     void setRegulator(RegulatingTimer *newRegulator);
     void setTimeRegulated(Actuator* a);
 
+
+
 signals:
 
     void finished();
     void consoleRequest(QString);
     void startChanged(QDateTime start);
     void newParameters();
+    void error(QString s,bool w);
 
 
 

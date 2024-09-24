@@ -3,12 +3,13 @@
 
 #define SMOOTH_KEY "Smoothing"
 #define REG_KEY "Regulation"
+#define WATCHDOG_INDEX 3
 
 AnalogSensor::AnalogSensor(int pin, QString n, QObject *parent):
-    Sensor(pin,n,parent),m_lastRegTime()
+    Sensor(pin,n,parent),m_lastRegTime(),m_consecutiveErrors(0)
 {
     m_maxValues=100;
-    setSmoothing(10);
+    setSmoothing(5);
     setRegulationDelay(Parameter::timeMultiplicator());
     setRecordDelay(Parameter::timeMultiplicator());
     m_continousStreaming=true;
@@ -96,6 +97,27 @@ void AnalogSensor::setRegulated()
 void AnalogSensor::measure()
 {
     float a=aquire();
+
+    if(a<=0)
+    {
+
+        m_consecutiveErrors++;
+
+        if(m_consecutiveErrors==WATCHDOG_INDEX)
+        {
+            m_consecutiveErrors++;
+            emit error("Pas de signal, vérifier les branchements ou changer le capteur",false);
+        }
+        return;
+    }
+
+    if(m_consecutiveErrors)
+    {
+        emit error("",false);
+        m_consecutiveErrors=0;
+    }
+
+
     m_smoothedValues.append(a);
     int n=smoothing();
 
@@ -122,6 +144,9 @@ float AnalogSensor::errorValue()
 
 QString AnalogSensor::userValue()
 {
+    if(m_consecutiveErrors)
+          return "No signal";
+
     QString err=" ("+QString::number(errorValue(),'f',1)+")";
     return Sensor::userValue()+err;
 }

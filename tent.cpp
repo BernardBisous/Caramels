@@ -27,22 +27,17 @@ Tent::Tent(QObject *parent)
     m_name="Tente Visionaire";
     m_id=3;
 
+    m_state=new StateNotifier(this);
     m_serial=new SerialTent(this);
-
-
     m_cam=new Webcam(this);
     initDevices();
+
     m_timer=new QTimer(this);
     m_timer->setInterval(Parameter::timeMultiplicator()*1000);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
-
     connect(m_cam,SIGNAL(saved(QString)),this,SLOT(camCaptureSlot(QString)));
     connect(m_serial,SIGNAL(newValues(QByteArray&)),this,SLOT(hardwareSlot(QByteArray&)));
-
     connect(m_serial,SIGNAL(connectedChanged(bool)),this,SLOT(serialConnectSlot(bool)));
-
-
-
 
     loadSetting();
 }
@@ -155,7 +150,7 @@ HardwareUnit *Tent::unitForId(int id)
 
 float Tent::height()
 {
-    if(m_leveler)
+    if(!m_leveler)
         return-1;
 
     return m_leveler->heighValue();
@@ -182,6 +177,7 @@ void Tent::addUnit(HardwareUnit *u)
     m_units.append(u);
     u->setStartTime(m_startedDate);
     addDevice(u->devices());
+    m_state->append(u);
     connect(u,SIGNAL(consoleRequest(QString)),this,SLOT(console(QString)));
 }
 
@@ -476,6 +472,13 @@ void Tent::tankFilledSlot(bool s)
 
     //storeResults();
 }
+
+StateNotifier *Tent::state() const
+{
+    return m_state;
+}
+
+
 
 ChemicalManager *Tent::chemichals() const
 {

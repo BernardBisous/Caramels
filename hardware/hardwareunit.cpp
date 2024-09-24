@@ -105,6 +105,8 @@ AnalogSensor *HardwareUnit::regulatingSensor()
 
 
 
+
+
 void HardwareUnit::attachCouples(int p, Device *e)
 {
     m_couples.insert(p,e);

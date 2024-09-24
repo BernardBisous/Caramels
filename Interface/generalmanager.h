@@ -19,7 +19,9 @@ signals:
 private:
     SwitchedActuator* m_relay;
     AnalogSensor* m_sensor;
+    AnalogSensor* m_sensor12;
     SwitchedActuator *m_fans;
+
 };
 
 #endif // GENERALMANAGER_H

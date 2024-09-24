@@ -11,7 +11,6 @@ class TopLifter : public Motor
     Q_OBJECT
 public:
     explicit TopLifter(int dir, int pwm,QString name,QObject *parent = nullptr);
-    void liftCm(float t);
 };
 
 class TolLeveler : public HardwareUnit

@@ -4,54 +4,76 @@
 
 #define NO_PIN -1
 
-//PWM
-#define LIGHTS_SPECTRUM_PIN 2
-#define HEIGH_LIFTER_UP 3
-#define HEIGH_LIFTER_DOWN 4
-#define CO2_INJECTOR_PIN 5
-#define WIND_ROTATION_PIN 6
-#define INTERNAL_FAN_PIN 7
 
-//Digital
-#define CHEM_PUMP_PH_PLUS_PIN 24
-#define CHEM_MIX_PH_PLUS_PIN 25
-#define CHEM_PUMP_PH_MINUS_PIN 26
-#define CHEM_MIX_PH_MINUS_PIN 27
-#define CHEM_MIX_1_PIN 28
-#define CHEM_PUMP_1_PIN 29
-#define CHEM_MIX_2_PIN 30
-#define CHEM_PUMP_2_PIN 31
-#define CHEM_MIX_3_PIN 32
-#define CHEM_PUMP_3_PIN 33
-#define CHEM_MIX_4_PIN 34
-#define CHEM_PUMP_4_PIN 35
-#define CHEM_MIX_5_PIN 36
-#define CHEM_PUMP_5_PIN 37
-#define CHEM_MIX_6_PIN 38
-#define CHEM_PUMP_6_PIN 39
+#define SMTP_PASS "xrmn qizc gqap ncay"
+
+//Cablage arduino
+//#define DHT_1 18
+//#define DHT_2 32
+//#define DHT_3 34
+
+//Motors
+#define HEIGH_LIFTER_UP 2
+#define HEIGH_LIFTER_DOWN 4
+#define WIND_ROTATION_PIN 6
+#define WIND_ROTATION_PIN_2 8
+
+// PWM output
+#define LIGHTS_SPECTRUM_PIN 3// pas cablé
 
 //Relays
-#define LIGHTS_POWER_PIN 40
-#define MAIN_PUMP_PIN 41
-#define MAIN_VALVE_PIN 42
+#define MAIN_PUMP_PIN 26
+#define EXTRACTOR_PIN 25
+#define LIGHTS_POWER_PIN 22
+#define WIND_POWER_PIN 27
+#define RELAY_5 28
+
+//12VSwitch
+#define INTERNAL_FAN_PIN 19
+#define CO2_INJECTOR_PIN 39
+#define MAIN_VALVE_PIN 41
 #define HUMIDIFIER_PIN 43
-#define WIND_POWER_PIN 44
-#define EXTRACTOR_PIN 45
-#define GENERAL_PIN 46
 
 //Input pins
-#define WATER_LEVEL_PIN_1 48
-#define WATER_LEVEL_PIN_2 47
+#define WATER_LEVEL_PIN_1 14
+#define WATER_LEVEL_PIN_2 16
+
+//Analog input pins
+#define PH_SENSOR_PIN 97
+#define POWER_SENSE2 98
+#define POWER_SENSE 99 // pas cablé
+#define CO2_SENSOR_PIN 100
 
 //virtual pins
-#define HEIGH_SENSE 53
-#define HUMIDTY_PIN 64
-#define TEMP_1_PIN 63
+#define HEIGH_SENSE 120
+#define HUMIDTY_PIN_1 121
+#define HUMIDTY_PIN_2 122
+#define HUMIDTY_PIN_3 123
+#define TEMP_1_PIN 125
+#define TEMP_2_PIN 126
+#define TEMP_3_PIN 127
 
-//Analog pins
-#define CO2_SENSOR_PIN 58
-#define PH_SENSOR_PIN 59
-#define POWER_SENSE 61
+
+//Injectors
+#define CHEM_PUMP_PH_PLUS_PIN 45
+#define CHEM_PUMP_PH_MINUS_PIN 47//pas cablé
+#define CHEM_MIX_PH_PLUS_PIN NO_PIN
+#define CHEM_MIX_PH_MINUS_PIN NO_PIN
+#define CHEM_MIX_1_PIN NO_PIN
+#define CHEM_PUMP_1_PIN NO_PIN
+#define CHEM_MIX_2_PIN NO_PIN
+#define CHEM_PUMP_2_PIN NO_PIN
+#define CHEM_MIX_3_PIN NO_PIN
+#define CHEM_PUMP_3_PIN NO_PIN
+#define CHEM_MIX_4_PIN NO_PIN
+#define CHEM_PUMP_4_PIN NO_PIN
+#define CHEM_MIX_5_PIN NO_PIN
+#define CHEM_PUMP_5_PIN NO_PIN
+#define CHEM_MIX_6_PIN NO_PIN
+#define CHEM_PUMP_6_PIN NO_PIN
+
+
+
 
 enum {LIGHTS_DAY=0,
 

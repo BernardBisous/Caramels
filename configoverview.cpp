@@ -20,7 +20,7 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     na->layout()->setSpacing(20);
 
 
-
+    na->layout()->addWidget(m_state=new StateWidget);
 
     QWidget*nw=new QWidget;
     nw->setLayout(new QVBoxLayout);
@@ -30,6 +30,7 @@ ConfigOverview::ConfigOverview(QWidget *parent)
 
     na->layout()->addWidget(nw);
     na->layout()->addWidget(m_event=new EventManager);
+
 
 
     m_event->showAll(false);
@@ -74,6 +75,7 @@ void ConfigOverview::setTent(Tent *t)
     if(t->config())
         m_event->handle(t->config()->events(),t);
 
+    m_state->handle(t->state());
     m_cam->handle(t->cam());
     updateDate();
     refresh();
@@ -90,6 +92,7 @@ void ConfigOverview::refresh()
 
     m_name->setText(b->name());
     m_progress->refresh(b,m_client->startedDate());
+    m_state->refresh();
 
 }
 

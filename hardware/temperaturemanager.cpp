@@ -5,21 +5,23 @@ TemperatureManager::TemperatureManager(QObject *parent)
     : HardwareUnit{parent},m_co2(nullptr)
 {
     m_name="Climat";
-    attachDevice(m_airSensor=new AnalogSensor(TEMP_1_PIN,"Température de l'air",this));
-    attachDevice(m_humiditySensor=new AnalogSensor(HUMIDTY_PIN,"Humidité relative",this));
+
+    addDHT(HUMIDTY_PIN_1,TEMP_1_PIN);
+    addDHT(HUMIDTY_PIN_2,TEMP_2_PIN);
+    addDHT(HUMIDTY_PIN_3,TEMP_3_PIN);
+
     attachDevice(m_humidifier=new SwitchedActuator(HUMIDIFIER_PIN,false,"Humidificateur"));
     attachDevice(m_windpower=new SwitchedActuator(WIND_POWER_PIN,10,"Ventilateur",this));
     attachDevice(m_rotation=new SwitchedActuator(WIND_ROTATION_PIN,10,"Orienteur du vent",this));
     attachDevice(m_extractor=new SwitchedActuator(EXTRACTOR_PIN,10,"Extracteur",this));
 
+    m_humiditySensor=m_dht[1].humidity;
+    m_airSensor=m_dht[1].temp;
+
     m_idParameters<<TEMPERATURE_AIR<<HUMIDITY_AIR<<TEMPERATURE_WATER<<WIND_LEVEL<<WIND_ROTATION;
 
 
-    m_humiditySensor->setUnits("%");
-    m_humiditySensor->setRange(0,100);
 
-    m_airSensor->setUnits("°c");
-    m_airSensor->setRange(0,100);
 
     m_humidifier->setIntegralUnits("mL");
     m_humidifier->setRange(0,5);//ml/s
@@ -39,13 +41,13 @@ void TemperatureManager::reactToParamChanged(Parameter *p, float f)
     if(p==temperatureParameter())
     {
         m_airSensor->setCommand(f);
-
         regulateWind();
     }
 
     else if(p==humidityParameter())
     {
         m_humiditySensor->setCommand(f);
+
 
         regulateHumidity();
 
@@ -69,8 +71,6 @@ void TemperatureManager::reactToSensorsChanged()
 
    if(m_airSensor->shouldRegulate())
        regulateWind();
-
-
 }
 
 QList<Actuator *> TemperatureManager::interestingIntegrals()
@@ -80,7 +80,24 @@ QList<Actuator *> TemperatureManager::interestingIntegrals()
 
 AnalogSensor *TemperatureManager::regulatingSensor()
 {
-    return m_humiditySensor;
+    return m_airSensor;
+}
+
+void TemperatureManager::addDHT(int hpin, int tpin)
+{
+    DHT d;
+    d.humidity=new AnalogSensor(hpin,"Température "+QString::number(m_dht.count()+1),this);
+    d.temp=new AnalogSensor(tpin,"Humidité "+QString::number(m_dht.count()+1),this);
+    attachDevice(d.temp);
+    attachDevice(d.humidity);
+
+    d.humidity->setUnits("%");
+    d.humidity->setRange(0,100);
+
+    d.temp->setUnits("°c");
+    d.temp->setRange(0,100);
+
+    m_dht<<d;
 }
 
 void TemperatureManager::regulateHumidity()
@@ -90,8 +107,9 @@ void TemperatureManager::regulateHumidity()
      {
          console("Humidifying "+m_humiditySensor->userValue());
          m_humidifier->impulseHigh(-hExcess*m_humidifier->gain());
-         m_airSensor->setRegulated();
+
      }
+     m_humiditySensor->setRegulated();
 }
 
 void TemperatureManager::regulateWind()
@@ -103,13 +121,12 @@ void TemperatureManager::regulateWind()
     float hExcess=humidityExcess();
     bool extract=(hExcess>0 || co2Excess>0);
 
-    console("Regulating wind "+m_humiditySensor->userValue()+ " "+m_airSensor->userValue());
-    if(extract)
-        m_extractor->userApplyPurcent(100);
-    else
-        m_extractor->userApplyPurcent(0);
 
-    m_humiditySensor->setRegulated();
+    console("Regulating wind "+m_humiditySensor->userValue()+ " "+m_airSensor->userValue());
+    m_extractor->setStateHigh(extract);
+
+    m_airSensor->setRegulated();
+
 }
 
 

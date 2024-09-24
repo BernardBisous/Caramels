@@ -40,6 +40,7 @@ private:
     QDateTime m_lastRegTime;
     QList<float> m_smoothedValues;
     float m_command;
+    int m_consecutiveErrors;
 };
 
 #endif // ANALOGSENSOR_H

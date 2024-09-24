@@ -108,6 +108,7 @@ void SerialTent::write(int pin, float value)
     out.append((char)v);
     out.append('\n');
 
+   // qDebug()<<"writeing"<<pin<<value;
     serialPort.write(out);
 
 }
@@ -138,7 +139,7 @@ void SerialTent::readSerial()
                 int key=data.at(i-1);
                 int val=quint8(data.at(i));
                 m_input.insert(key,val);
-                //qDebug()<<"read values"<<key<<val;
+               // qDebug()<<"read values"<<key<<val;
             }
         }
         emit newValues(data);

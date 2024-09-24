@@ -64,6 +64,8 @@ SOURCES += \
     parametervalueeditor.cpp \
     plantation.cpp \
     regulatorwidget.cpp \
+    statenotifier.cpp \
+    statewidget.cpp \
     tent.cpp \
     tenteditor.cpp \
     tentlistwidget.cpp \
@@ -130,6 +132,8 @@ HEADERS += \
     parametervalueeditor.h \
     plantation.h \
     regulatorwidget.h \
+    statenotifier.h \
+    statewidget.h \
     tent.h \
     tenteditor.h \
     tentlistwidget.h \

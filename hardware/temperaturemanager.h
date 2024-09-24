@@ -8,6 +8,14 @@
 #include "parameter.h"
 #include <QObject>
 
+
+class DHT{
+
+public:
+    AnalogSensor* temp;
+    AnalogSensor* humidity;
+};
+
 class TemperatureManager : public HardwareUnit
 {
     Q_OBJECT
@@ -18,6 +26,8 @@ public:
     virtual QList<Actuator*> interestingIntegrals();
 
 virtual AnalogSensor*regulatingSensor();
+
+    void addDHT(int hpin,int tpin);
     Parameter* temperatureParameter(){return parameterFromId(TEMPERATURE_AIR);}
     Parameter* humidityParameter(){return parameterFromId(HUMIDITY_AIR);}
     Parameter* windParameter(){return parameterFromId(WIND_LEVEL);}
@@ -37,6 +47,8 @@ virtual AnalogSensor*regulatingSensor();
 private:
     AnalogSensor* m_airSensor;
     AnalogSensor* m_humiditySensor;
+    QList<DHT> m_dht;
+
     SwitchedActuator* m_humidifier;
     SwitchedActuator* m_windpower;
     SwitchedActuator* m_rotation;

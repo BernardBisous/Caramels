@@ -15,6 +15,7 @@ public:
     float value;
 };
 
+
 class Device : public QObject
 {
     Q_OBJECT
@@ -26,6 +27,7 @@ public:
     virtual void reactToDataEdited(QString key,QString val);
     virtual void reset();
     virtual float neutralPurcent(){return 0;}
+    virtual QString diagnose(bool*){return "";}
 
     virtual void retreiveLastValue();
     virtual float computeResult(QString){return 0;}
@@ -110,6 +112,8 @@ public slots:
 signals:
     void log(QString s);
     void newValue(float t);
+    void error(QString diagnose, bool warning);
+
 
 protected :
 
@@ -141,7 +145,6 @@ protected :
     Parameter* m_parameter;
 
     bool m_enable;
-
 };
 
 
@@ -206,6 +209,7 @@ protected :
     bool m_integratedInteresting;
     float m_integral;
     float m_nextVal;
+    QString m_lastDiagnosis;
     QTimer* m_impulseTimer;
 };
 
@@ -249,6 +253,8 @@ private:
     int m_pin1;
     int m_pin2;
 };
+
+
 
 
 #endif // DEVICE_H

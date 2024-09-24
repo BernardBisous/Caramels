@@ -52,7 +52,7 @@ void TolLeveler::reactToSensorsChanged()
 
 float TolLeveler::heighValue()
 {
-    return 0.355;
+    return m_sensor->currentValue();
 }
 
 
@@ -62,7 +62,4 @@ TopLifter::TopLifter(int dir, int pwm, QString name, QObject *parent):
 
 }
 
-void TopLifter::liftCm(float t)
-{
 
-}

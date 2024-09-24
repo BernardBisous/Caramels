@@ -148,7 +148,6 @@ QList<RealTimeValue> Device::historic()
         return output;
     }
 
-    QStringList sRes=m_metaResults.keys();
     QDataStream out(&file);
 
     while(!out.atEnd())
@@ -434,11 +433,13 @@ SwitchedActuator::SwitchedActuator(int pin, bool pwm, QString name, QObject *par
 
 float SwitchedActuator::filterInputValue(float v)
 {
+
     if(m_pwmAnalog)
         return v;
 
     if(v>50)
         return 100;
+
     return 0;
 }
 
@@ -448,10 +449,10 @@ void SwitchedActuator::applyPurcent(float v)
 }
 
 Actuator::Actuator(QString name, QObject *parent):
-    Device(name,parent),m_integral(0),m_integratedInteresting(true)
+    Device(name,parent),m_integratedInteresting(true),m_integral(0)
 {
     setResult(INTEGRAL_KEY); // migh be an issues to call virtual functions in contructor
-    m_impulseTimer=new QTimer;
+    m_impulseTimer=new QTimer(this);
     connect(m_impulseTimer,SIGNAL(timeout()),this,SLOT(impulseSlot()));
 }
 
@@ -495,8 +496,7 @@ void Actuator::applyValue(float v)
 
     }
 
-
-    applyPurcent(filterInputValue((v-m_offset)/m_gain));
+    applyPurcent((v-m_offset)/m_gain);
     appendValue(v);
 
    // qDebug()<<"apply value"<<name()<<v<<m_integral<<m_metaResults;
@@ -504,7 +504,7 @@ void Actuator::applyValue(float v)
 
 void Actuator::userApplyPurcent(float v)
 {
-    applyValue(v*m_gain+m_offset);
+   applyValue(filterInputValue(v)*m_gain+m_offset);
 }
 
 void Actuator::reset()
@@ -653,7 +653,7 @@ void Sensor::measure()
 {
     float a=aquire();
 
-        appendValue(a);
+    appendValue(a);
 }
 
 

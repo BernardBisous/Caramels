@@ -7,6 +7,7 @@
 #include "eventmanager.h"
 #include "qlabel.h"
 
+#include "statewidget.h"
 #include "tent.h"
 #include <QWidget>
 #include "webcamoverview.h"
@@ -39,6 +40,8 @@ private:
 
     EventManager* m_event;
     ConfigTop* m_topStart;
+
+    StateWidget* m_state;
 };
 
 #endif // CONFIGOVERVIEW_H

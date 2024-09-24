@@ -15,6 +15,7 @@
 
 #include "hardware/webcam.h"
 #include "qdatetime.h"
+#include "statenotifier.h"
 #include <QObject>
 class Result
 {
@@ -107,6 +108,9 @@ public:
 
     QList<RealTimeValue> injection(int id=0);
 
+    StateNotifier *state() const;
+
+
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
@@ -151,6 +155,8 @@ private:
 
 
     Webcam* m_cam;
+
+    StateNotifier* m_state;
 };
 
 
