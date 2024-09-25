@@ -11,7 +11,8 @@
 #include "parameter.h"
 
 Webcam::Webcam(QObject *parent)
-    : QObject{parent},m_cam(nullptr),m_session(),m_lastPixmap()
+    : QObject{parent},m_cam(nullptr),
+      m_session(),m_lastPixmap(),m_accessible(true)
 {
     m_capture=new QImageCapture;
      connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
@@ -112,6 +113,17 @@ void Webcam::scheduleNext()
 
 }
 
+QString Webcam::diagnose()
+{
+    if(!m_cam)
+        return "Pas de webcam trouvée";
+
+    if(!m_accessible)
+         return "Camera inacessible";
+
+    return "";
+}
+
 
 
 void Webcam::capture()
@@ -203,4 +215,32 @@ void Webcam::capturedSlot(int, QString s)
 
 
     emit saved(f);
+}
+
+bool Webcam::accessible() const
+{
+    return m_accessible;
+}
+
+CamState::CamState(Webcam *c, QObject *parent):
+    DeviceState(nullptr,nullptr,parent),m_cam(c)
+{
+
+}
+
+QString CamState::diagnosis() const
+{
+    return m_cam->diagnose();
+}
+
+QString CamState::name()
+{
+    return m_cam->name();
+}
+
+
+
+void CamState::refresh()
+{
+    clientError(diagnosis(),false);
 }

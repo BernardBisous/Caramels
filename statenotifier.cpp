@@ -41,8 +41,7 @@ void StateNotifier::append(HardwareUnit *u)
         return;
 
     DeviceState* s=new DeviceState(nullptr,u,this);
-    connect(s,SIGNAL(changed()),this,SLOT(errorSlot()));
-    m_list.append(s);
+    append(s);
 
     append(u->devices());
 }
@@ -59,6 +58,14 @@ void StateNotifier::append(Device *d)
         return;
 
     DeviceState* s=new DeviceState(d,nullptr,this);
+    append(s);
+}
+
+void StateNotifier::append(DeviceState *s)
+{
+    if(!s)
+        return;
+
     connect(s,SIGNAL(changed()),this,SLOT(errorSlot()));
     m_list.append(s);
 }
@@ -137,7 +144,7 @@ void StateNotifier::emailErrors()
     }
 
     m_emailTimer->stop();
-    EmailNotifier::error(out.join("/n"));
+    EmailNotifier::error(out.join("\n"));
 }
 
 void StateNotifier::errorSlot()
@@ -163,8 +170,6 @@ DeviceState::DeviceState(Device *d, HardwareUnit *h, QObject *parent):
     if(h)
         connect(h,SIGNAL(error(QString,bool)),this,SLOT(clientError(QString,bool)));
 
-
-    refresh();
 }
 
 void DeviceState::refresh()
@@ -210,13 +215,11 @@ QString DeviceState::fullDiagnosis()
         out+=m_unit->name()+" : ";
 
     out+=diagnosis();
-    return out;
+    return name()+" : "+diagnosis();
 }
 
 void DeviceState::clientError(QString s, bool w)
 {
-
-
     m_diagnosis=s;
     if(s.isEmpty())
         setState(s,Good);
@@ -231,6 +234,17 @@ void DeviceState::clientError(QString s, bool w)
 QString DeviceState::diagnosis() const
 {
     return m_diagnosis;
+}
+
+QString DeviceState::name()
+{
+    if(m_unit)
+        return m_unit->name();
+
+    if(m_device)
+        return m_device->name();
+
+    return "";
 }
 
 DeviceState::Criticity DeviceState::criticity() const

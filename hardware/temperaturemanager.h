@@ -44,6 +44,8 @@ virtual AnalogSensor*regulatingSensor();
 
     void setCo2(CO2Manager *newCo2);
 
+    QList<DHT> dht() const;
+
 private:
     AnalogSensor* m_airSensor;
     AnalogSensor* m_humiditySensor;

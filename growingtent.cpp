@@ -18,9 +18,10 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     m_tent->begin();
 
-
-
     QWidget* bar=new QWidget;
+    bar->setAutoFillBackground(true);
+    bar->setBackgroundRole(QPalette::Base);
+
     bar->setLayout(new QHBoxLayout);
     QLabel* pix;
 
@@ -29,13 +30,14 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     bar->layout()->addWidget(m_nameLab=new QLabel(m_tent->name()));
     bar->layout()->addWidget(m_selector=new DrawerSelector);
-    bar->layout()->setContentsMargins(0,0,0,0);
+   // bar->layout()->setContentsMargins(0,0,0,0);
 
 
 
     QWidget* c=new QWidget;
     c->setLayout(new QVBoxLayout);
     c->layout()->addWidget(bar);
+    c->layout()->setContentsMargins(0,0,0,0);
 
     QWidget* mc=new QWidget;
     mc->setLayout(new QHBoxLayout);

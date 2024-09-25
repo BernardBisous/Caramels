@@ -34,6 +34,7 @@ public:
 
     virtual QString userValue();
 
+    float neutralValue();
     void computeResults();
 
     int possibleParameterId();
@@ -176,6 +177,7 @@ public:
     virtual void applyPurcent(float v);
      virtual void retreiveLastValue();
     virtual QString userValue();
+    virtual void applyIntegral(float v);
     void switchStateUser();
     void setStateHigh(bool s=true);
 
@@ -238,9 +240,12 @@ public:
     virtual void applyValue(float v);
     virtual void applyPurcent(float v);
     virtual float neutralPurcent(){return 50;}
+
     void setMaxSpeed(float v);
     float maxSpeed();
     void move(float t);
+    void moveTo(float t);
+    float position();
 
 public slots:
 

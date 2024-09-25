@@ -13,7 +13,7 @@ class EventManager : public QWidget
 public:
     explicit EventManager(QWidget *parent = nullptr);
     void handle(Events* e,Tent* t);
-    void refresh();
+
     void showAll(bool s);
 
 
@@ -24,6 +24,8 @@ public slots:
     void skip();
     void start();
     void cancel();
+    void refresh();
+
 
 
 

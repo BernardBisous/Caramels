@@ -1,5 +1,6 @@
 #include "tolleveler.h"
 
+#define REGULATE false
 TolLeveler::TolLeveler(QObject *parent)
     : HardwareUnit{parent}
 {
@@ -18,7 +19,9 @@ TolLeveler::TolLeveler(QObject *parent)
     setDescription("Gestion de la hauteur des lampes via un ascenseur");
 
     m_idParameters<<LIGHT_HEIGH;
-    attachCouples(LIGHT_HEIGH,m_sensor);
+
+    if(REGULATE)
+        attachCouples(LIGHT_HEIGH,m_sensor);
 }
 
 
@@ -34,14 +37,21 @@ QList<Actuator *> TolLeveler::interestingIntegrals()
 
 void TolLeveler::reactToParamChanged(Parameter *p, float v)
 {
-    m_sensor->setCommand(v);
-    reactToSensorsChanged();
+    if(p==heigh())
+    {
+        if(REGULATE)
+            m_sensor->setCommand(v);
+        else
+            m_lifter->moveTo(v);
+
+        reactToSensorsChanged();
+    }
+
 }
 
 void TolLeveler::reactToSensorsChanged()
 {
-
-    if(m_sensor->shouldRegulate())
+    if(REGULATE && m_sensor->shouldRegulate())
     {
         float err=m_sensor->errorValue();
         console("Regulating heigh : "+m_sensor->userValue());

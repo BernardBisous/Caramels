@@ -33,7 +33,7 @@ private:
     QLabel* m_name;
     QLabel* m_start;
     Tent* m_client;
-    ToolButton* m_restartButton;
+  //  ToolButton* m_restartButton;
     ConfigProgress* m_progress;
 
     CameraOverview* m_cam;

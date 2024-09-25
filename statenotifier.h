@@ -12,7 +12,9 @@ class DeviceState:  public QObject
 public:
     typedef enum criticityState{Good,Warning,Danger}Criticity;
     explicit DeviceState(Device*d,HardwareUnit*h,QObject*parent);
-    void refresh();
+    virtual void refresh();
+    virtual QString diagnosis() const;
+    virtual QString name();
     void setState(QString d,Criticity s);
     QString fullDiagnosis();
 
@@ -22,13 +24,13 @@ public:
 
     Criticity criticity() const;
 
-    QString diagnosis() const;
+
 
 signals:
     void changed();
 
-private slots:
-    void clientError(QString s, bool w);
+public slots:
+    void clientError(QString s, bool warning);
 
 private:
     HardwareUnit* m_unit;
@@ -37,6 +39,10 @@ private:
     Criticity m_criticity;
     QString m_diagnosis;
 };
+
+
+
+
 
 
 class StateNotifier : public QObject
@@ -50,6 +56,7 @@ public:
     void append(HardwareUnit*u);
     void append(QList<Device*> dl);
     void append(Device* d);
+    void append(DeviceState*s);
     bool isOk();
     DeviceState* worst();
     void removeDevice(Device*d);

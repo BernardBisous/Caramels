@@ -41,8 +41,6 @@ HardwareOverview::HardwareOverview(QWidget *parent)
     m_ph=printTextParameters("PH:",QPointF(20,280));
     m_heigh=printTextParameters("Hauteur:",QPointF(10,20));
     m_CO2=printTextParameters("CO2:",QPointF(10,110));
-    m_humidity=printTextParameters("Humidity:",QPointF(10,160));
-    m_airTemp=printTextParameters("Temperature:",QPointF(10,210));
 
     QRectF rpump(18,320,100,20);
 
@@ -103,6 +101,9 @@ void HardwareOverview::handle(Tent *t)
 
     layout()->addWidget(sp);
 
+    if(t&&t->temperatures())
+        addDhts(t->temperatures()->dht());
+
     showConnect(t->connected());
     update();
 }
@@ -134,6 +135,34 @@ void HardwareOverview::addInjector(ChemicalInjector *t)
     layout()->addWidget(tw);
 }
 
+void HardwareOverview::addDhts(QList<DHT> l)
+{
+    for(int i=0;i<l.count();i++)
+    {
+
+        QGraphicsTextItem *textItemt = new QGraphicsTextItem("temp");
+        textItemt->setPos(100,i*100);
+        QGraphicsTextItem *textItemh = new QGraphicsTextItem("hum");
+        textItemh->setPos(100,i*100+20);
+
+
+        m_scene->addItem(textItemh);
+        m_scene->addItem(textItemt);
+        m_dhtItems<<textItemh<<textItemt;
+
+    }
+    m_dhts<<l;
+}
+
+void HardwareOverview::updateDHTs()
+{
+    for(int i=0;i<m_dhts.count();i++)
+    {
+        m_dhtItems[i*2]->setPlainText(m_dhts[i].temp->userValue());
+        m_dhtItems[i*2+1]->setPlainText(m_dhts[i].humidity->userValue());
+    }
+}
+
 void HardwareOverview::update()
 {
 
@@ -142,11 +171,12 @@ void HardwareOverview::update()
 
 
     m_ph->setPlainText(QString::number(m_tent->PH(),'f',1));
-    m_airTemp->setPlainText(QString::number(m_tent->temperature(0),'f',1)+"°c");
-    m_humidity->setPlainText(QString::number(m_tent->humidity(),'f',1)+"%");
     m_CO2->setPlainText(QString::number(m_tent->CO2(),'f',1)+"ppm");
     m_heigh->setPlainText(QString::number(m_tent->height(),'f',2)+"m");
 
+
+    if(m_tent->temperatures())
+        updateDHTs();
 
     if(m_pumps)
     {

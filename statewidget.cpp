@@ -8,6 +8,7 @@ StateWidget::StateWidget(QWidget *parent)
     layout()->addWidget(new QLabel("Erreur détectée:"));
     layout()->addWidget(m_editor=new ActionWidget);
 
+    layout()->setContentsMargins(0,0,0,0);
     m_editor->setLayout(new QHBoxLayout);
     m_editor->layout()->addWidget(m_icon=new QLabel);
     m_icon->setFixedSize(60,60);
@@ -26,6 +27,8 @@ StateWidget::StateWidget(QWidget *parent)
     m_diagnose->setWordWrap(true);
 
     m_editor->setHoverable(false);
+    m_editor->setIgnoreClick(true);
+
 
     QPen p;
     p.setWidth(3);
@@ -79,6 +82,5 @@ void StateWidget::triggSlot()
 
 void StateWidget::errorSlot()
 {
-    qDebug()<<"error detect"<<m_client->bads().count();
     refresh();
 }

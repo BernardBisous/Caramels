@@ -38,6 +38,8 @@ public:
     void handle(Tent* t);
     void showConnect(bool s);
     void addInjector(ChemicalInjector* t);
+    void addDhts(QList<DHT>l);
+    void updateDHTs();
 
 public slots:
     void update();
@@ -51,8 +53,7 @@ private:
     QGraphicsTextItem * m_heigh;
     QGraphicsTextItem * m_ph;
     QGraphicsTextItem * m_CO2;
-    QGraphicsTextItem * m_humidity;
-    QGraphicsTextItem * m_airTemp;
+
     QGraphicsPixmapItem* m_sun;
     QGraphicsTextItem * m_spectrum;
     QGraphicsRectItem * m_pumps;
@@ -62,6 +63,8 @@ private:
     QGraphicsView* m_view;
 
     QList<ChemicalInjectorWidget*> m_injectors;
+    QList<DHT> m_dhts;
+    QList<QGraphicsTextItem*> m_dhtItems;
 
 };
 

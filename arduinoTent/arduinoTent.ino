@@ -7,6 +7,7 @@
 #define WIND_ROTATION_PIN_2 8
 
 // PWM output
+#define LED_PIN 15 
 #define LIGHTS_SPECTRUM_PIN 3// pas cablé
 
 //12VSwitch
@@ -43,11 +44,9 @@
 #define TEMP_2_PIN 126
 #define TEMP_3_PIN 127
 
-
 #define DHT_1 18
 #define DHT_2 32
 #define DHT_3 34
-
 
 #define NUM_IN_ANALOG_PINS 4
 #define NUM_IN_PULL_PINS 2
@@ -56,6 +55,9 @@
 
 #include <Wire.h>
 #include <VL53L0X.h>
+#include <Adafruit_NeoPixel.h>
+#include "DHT_Async.h"
+
 VL53L0X distance;
 bool distSensorFound;
 int distanceValue;
@@ -63,7 +65,11 @@ int distanceValue;
 
 
 
-#include "DHT_Async.h"
+#define NUMPIXELS 4
+Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+
+
 #define DHT_SENSOR_TYPE DHT_TYPE_11
 DHT_Async dht_1(DHT_1, DHT_SENSOR_TYPE);
 DHT_Async dht_2(DHT_2, DHT_SENSOR_TYPE);
@@ -94,6 +100,21 @@ byte configBytes[NUM_CONFIG];
 unsigned long previousMillis = 0;
 const long interval = 200;
 
+void printColor(int colorId)
+{
+  pixels.clear(); 
+  for(int i=0; i<NUMPIXELS; i++) {
+    switch(colorId)
+    {
+    case 0:pixels.setPixelColor(i, pixels.Color(0,0,0));break;
+    case 1:pixels.setPixelColor(i, pixels.Color(255,0,0));break;
+    case 2:pixels.setPixelColor(i, pixels.Color(0,255,0));break;
+    case 3:pixels.setPixelColor(i, pixels.Color(0,0,255));break;
+    }
+    delay(1); 
+  }
+  pixels.show();
+}
 static bool measure_environment() {
     static unsigned long measurement_timestamp = millis();
     
@@ -166,7 +187,11 @@ void sendValues()
 }
 void processConfig()
 {
-   analogWrite(configBytes[0],configBytes[1]);
+  switch(configBytes[0])
+  {
+    case LED_PIN:printColor(configBytes[1]);break;
+    default:analogWrite(configBytes[0],configBytes[1]);break;
+  }
 }
 
 
@@ -174,6 +199,8 @@ void setup() {
   
   Serial.begin(9600);
   Wire.begin();
+  pixels.begin();
+  printColor(3);
 
 
     

@@ -110,12 +110,15 @@ public:
 
     StateNotifier *state() const;
 
+    void setInternalColorId(int id);
+
 
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
     void serialConnectSlot(bool s);
     void camCaptureSlot(QString);
+    void errorStateSlot();
 
 signals:
     void newValue(int i);

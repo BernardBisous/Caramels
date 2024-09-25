@@ -22,6 +22,6 @@ EmailNotifier::EmailNotifier(QObject *parent)
 
 void EmailNotifier::send(QString text, Topic c, bool del)
 {
-    qDebug()<<"sending email to implement"<<c<<text<<del;
+   // qDebug()<<"sending email to implement"<<c<<text<<del;
     delete this;
 }

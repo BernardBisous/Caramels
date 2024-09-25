@@ -156,3 +156,8 @@ void TemperatureManager::setCo2(CO2Manager *newCo2)
 {
     m_co2 = newCo2;
 }
+
+QList<DHT> TemperatureManager::dht() const
+{
+    return m_dht;
+}

@@ -195,6 +195,14 @@ QString Device::userValue()
     return QString::number(currentValue(),'f',1)+" "+units();
 }
 
+float Device::neutralValue()
+{
+    if(m_gain==0)
+        return 0;
+
+    return neutralPurcent()/m_gain-m_offset;
+}
+
 void Device::setRange(float min, float max)
 {
     setDataValue(MAX_KEY,QString::number(max));
@@ -474,6 +482,14 @@ QString Actuator::userValue()
     return Device::userValue();
 }
 
+void Actuator::applyIntegral(float v)
+{
+    float f=v-integral();
+    float t=f/m_gain;
+
+    impulseHigh(t*1000);
+}
+
 void Actuator::switchStateUser()
 {
     setStateHigh(currentPurcent()==neutralPurcent());
@@ -529,7 +545,7 @@ void Actuator::impulse(float val,int ms, float valEnd)
 
 void Actuator::impulseHigh(int ms)
 {
-    impulse(maxRange(),ms,minRange());
+    impulse(maxRange(),ms,neutralPurcent());
 }
 
 void Actuator::setIntegralUnits(QString s)
@@ -702,6 +718,8 @@ void Motor::applyPurcent(float v)
 
 }
 
+
+
 void Motor::setMaxSpeed(float v)
 {
     setRange(-v,v);
@@ -714,6 +732,7 @@ float Motor::maxSpeed()
 
 void Motor::move(float t)
 {
+    //qDebug()<<"motor moving to "<<t;
     if(t==0)
         return;
 
@@ -727,5 +746,15 @@ void Motor::move(float t)
         float s=t/maxSpeed();
         impulse(maxSpeed(),s*1000,0);
     }
+}
+
+void Motor::moveTo(float t)
+{
+    move(t-position());
+}
+
+float Motor::position()
+{
+    return m_integral;
 }
 

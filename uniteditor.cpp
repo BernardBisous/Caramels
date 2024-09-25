@@ -12,6 +12,7 @@ UnitEditor::UnitEditor(QWidget *parent)
     edit->layout()->setContentsMargins(0,0,0,0);
     edit->layout()->addWidget(m_devices=new DeviceListWidget);
 
+
     edit->layout()->addWidget(m_paramEditor=new ParameterValueEditor);
 
 
@@ -26,7 +27,7 @@ UnitEditor::UnitEditor(QWidget *parent)
 
 
     m_devices->removeMargins();
-    m_devices->setMinimumWidth(200);
+    m_devices->setFixedWidth(250);
 
     connect(m_devices,SIGNAL(edit(int)),this,SLOT(editDevice(int)));
 
@@ -66,6 +67,7 @@ void UnitEditor::editDevice(int i)
     m_devices->setChecked(i);
     m_overview->editDevice(c->devices()[i]);
     m_paramEditor->setHidden(true);
+    m_devices->setHidden(false);
 }
 
 void UnitEditor::editParameter(Parameter *p)
@@ -75,6 +77,7 @@ void UnitEditor::editParameter(Parameter *p)
 
 
 
+    m_devices->setHidden(true);
     m_devices->setChecked(-1);
     m_overview->editParameter(p);
 

@@ -34,10 +34,10 @@ ConfigOverview::ConfigOverview(QWidget *parent)
 
 
     m_event->showAll(false);
-    na->layout()->addWidget(m_restartButton=new ToolButton("Restart"));
-
+  //  na->layout()->addWidget(m_restartButton=new ToolButton("Restart"));
+  //  m_restartButton->setHidden(true);
     m_name->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    m_restartButton->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+  //  m_restartButton->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
     m_progress->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_progress->layout()->setContentsMargins(0,0,0,0);
 
@@ -57,7 +57,7 @@ ConfigOverview::ConfigOverview(QWidget *parent)
 
 
 
-    connect(m_restartButton,SIGNAL(clicked()),this,SLOT(restart()));
+  //  connect(m_restartButton,SIGNAL(clicked()),this,SLOT(restart()));
 }
 
 void ConfigOverview::setTent(Tent *t)
@@ -118,7 +118,7 @@ void ConfigOverview::updateDate()
         if(!m_topStart)
         {
             m_topStart=new ConfigTop(this);
-            m_topStart->setText("Tente inactive","Commencer une nouvelle pentation ou exporter les fichiers de la précédente");
+            m_topStart->setText("Tente inactive","Commencer une nouvelle plantation ou exporter les fichiers de la précédente (les fichiers non exportés seront écrasés)");
             m_topStart->addActions(QStringList()<<"Commencer"<<"Exporter");
             connect(m_topStart,SIGNAL(actionTrigg(QString,ActionWidget*)),this,SLOT(actionTop(QString,ActionWidget*)));
             m_topStart->start();

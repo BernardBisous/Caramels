@@ -20,6 +20,7 @@
 
 // PWM output
 #define LIGHTS_SPECTRUM_PIN 3// pas cablé
+#define INTERNAL_LED_PIN 15
 
 //Relays
 #define MAIN_PUMP_PIN 26

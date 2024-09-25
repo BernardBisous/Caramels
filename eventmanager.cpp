@@ -3,8 +3,8 @@
 #include "qdatetime.h"
 #include <parameter.h>
 EventManager::EventManager(QWidget *parent)
-    : QWidget{parent},m_eventStart(),m_client(nullptr),
-      m_abstracted(true),m_tent(nullptr)
+    : QWidget{parent},m_tent(nullptr),m_abstracted(true),
+      m_eventStart(),m_client(nullptr)
 {
 
     setLayout(new QVBoxLayout);
@@ -56,6 +56,11 @@ EventManager::EventManager(QWidget *parent)
 void EventManager::handle(Events *e, Tent *t)
 {
     m_client=e;
+    if(t)
+    {
+        connect(t,SIGNAL(dateChanged(QDateTime)),this,SLOT(setStartedDate(QDateTime)));
+        connect(t,SIGNAL(newValue(int)),this,SLOT(refresh()));
+    }
     m_tent=t;
     refresh();
 }
@@ -69,25 +74,28 @@ void EventManager::refresh()
     m_editor->setHidden(end);
     m_listLabel->setHidden(end || m_abstracted);
 
-
     if(end)
     {
         m_tent->setEventsDone();
         return;
     }
 
-
-
-
     QString sl;
-    for(int i=0;i<m_client->count();i++)
+    for(int i=0;i<m_client->count();i++) // should find current !
     {
         Event e=m_client->at(i);
         QDateTime t=m_startedDate.addSecs(Parameter::timeMultiplicator()*e.hourIndex);
         if(!i)
         {
             m_dateLabel->setText(t.toString("dd/MM"));
-            m_nameLabel->setText(e.name);
+            m_nameLabel->setText(e.name.remove("\n"));
+
+            if(t>QDateTime::currentDateTime())
+            {
+                 m_editor->setMode(ActionWidget::noBorder);
+            }
+            else
+                 m_editor->setMode(ActionWidget::normal);
         }
 
         else
@@ -122,10 +130,10 @@ QDateTime EventManager::startedDate() const
 
 void EventManager::setStartedDate(QDateTime newStartedDate)
 {
-    m_startedDate = newStartedDate;
-
+    m_startedDate=newStartedDate;
     if(m_client)
-        refresh();
+        m_client->reset();
+    refresh();
 }
 
 void EventManager::skip()
@@ -133,7 +141,6 @@ void EventManager::skip()
 
     cancel();
     m_tent->console("Event skip "+m_client->list().first().name);
-
     m_client->skipNext();
     refresh();
 }
@@ -159,7 +166,8 @@ void EventManager::start()
         m_eventStart=QDateTime::currentDateTime();
         m_skipButton->setText("Cancel");
         m_startButton->setText("Done");
-        qDebug()<<"Start event";
+        m_tent->console("Event skip "+m_client->list().first().name);
+
     }
 
     refresh();

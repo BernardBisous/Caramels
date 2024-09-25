@@ -106,7 +106,7 @@ void AnalogSensor::measure()
         if(m_consecutiveErrors==WATCHDOG_INDEX)
         {
             m_consecutiveErrors++;
-            emit error("Pas de signal, vérifier les branchements ou changer le capteur",false);
+            emit error("Signal nul",false);
         }
         return;
     }

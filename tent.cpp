@@ -16,21 +16,23 @@
 #define RESULTS_FILE "Results"
 Tent::Tent(QObject *parent)
     : QObject{parent},m_config(nullptr),
-      m_temperatures(nullptr),m_ph(nullptr),
-      m_Co2(nullptr),m_leveler(nullptr),
-      m_lights(nullptr),m_pumps(nullptr),
-      m_chemichals(nullptr), m_general(nullptr)
+      m_general(nullptr),m_temperatures(nullptr),
+      m_ph(nullptr),m_Co2(nullptr),
+      m_leveler(nullptr),m_lights(nullptr),
+      m_pumps(nullptr), m_chemichals(nullptr)
 {
 
 
 
-    m_name="Tente Visionaire";
+    m_name="Sublime";
     m_id=3;
 
     m_state=new StateNotifier(this);
+    connect(m_state,SIGNAL(stateChanged()),this,SLOT(errorStateSlot()));
     m_serial=new SerialTent(this);
     m_cam=new Webcam(this);
     initDevices();
+    m_state->append(new CamState(m_cam,this));
 
     m_timer=new QTimer(this);
     m_timer->setInterval(Parameter::timeMultiplicator()*1000);
@@ -79,6 +81,7 @@ void Tent::begin()
 
 
     timerSlot();
+    setInternalColorId(1);
 }
 
 
@@ -428,12 +431,24 @@ void Tent::hardwareSlot(QByteArray &)
 
 void Tent::serialConnectSlot(bool s)
 {
+
+    setInternalColorId(0);
     emit connectedHardware(s);
 }
 
 void Tent::camCaptureSlot(QString s)
 {
     console("Wecamp pix save"+s.right(10));
+}
+
+void Tent::errorStateSlot()
+{
+
+    if(m_state->criticity()==DeviceState::Danger)
+        setInternalColorId(0);
+
+    else
+        setInternalColorId(1);
 }
 
 void Tent::timerSlot()
@@ -476,6 +491,11 @@ void Tent::tankFilledSlot(bool s)
 StateNotifier *Tent::state() const
 {
     return m_state;
+}
+
+void Tent::setInternalColorId(int id)
+{
+    m_serial->write(INTERNAL_LED_PIN,id);
 }
 
 
