@@ -729,7 +729,8 @@ QStringList Tent::availablePorts()
     auto ls=QSerialPortInfo::availablePorts();
     for(int i=0;i<ls.count();i++)
     {
-        out<<ls[i].portName();
+        if(!m_serial->forbiden().contains(ls[i]))
+            out<<ls[i].portName();
     }
     return out;
 }

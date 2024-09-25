@@ -6,6 +6,8 @@ SerialTent::SerialTent(QObject *parent) :
     QObject(parent),
     serialPort(this)
 {
+
+    m_forbiden=QStringList()<<"COM1";
     connect(&serialPort, &QSerialPort::readyRead, this, &SerialTent::readSerial);
     connect(&serialPort,SIGNAL(errorOccurred(QSerialPort::SerialPortError)),this,SLOT(errorSlot(QSerialPort::SerialPortError)));
 }
@@ -84,6 +86,11 @@ void SerialTent::errorSlot(QSerialPort::SerialPortError c)
     }
 
 
+}
+
+QStringList SerialTent::forbiden() const
+{
+    return m_forbiden;
 }
 
 void SerialTent::sendValues()

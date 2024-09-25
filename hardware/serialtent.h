@@ -17,6 +17,8 @@ public:
     void write(int pin, float value);
     float read(int pin);
 
+    QStringList forbiden() const;
+
 public slots:
     bool open(const QString &portName);
     void close();
@@ -35,6 +37,7 @@ private:
     QHash<int,int> m_input;
     QHash<int,int> m_outputPins;
 
+    QStringList m_forbiden;
     void readSerial();
 };
 
