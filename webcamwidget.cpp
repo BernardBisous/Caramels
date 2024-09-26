@@ -9,7 +9,7 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
     setLayout(new QHBoxLayout);
     layout()->addWidget(m_screen=new QVideoWidget);
 
-    layout()->addWidget(m_picLabel=new QLabel);
+    layout()->addWidget(m_picLabel=new CameraOverview);
 
     m_screen->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -21,8 +21,9 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
     m_settings->layout()->addWidget(m_enableSwitch=new SwitchCheckBox("Enable"));
     m_settings->layout()->addWidget(m_modeSwitch=new SwitchCheckBox("Live mode"));
     m_settings->layout()->addWidget(m_timeLaspe=new SwitchCheckBox("Timelapse"));
-
     m_settings->show();
+
+
     layout()->addWidget(m_settings);
 
 
@@ -45,6 +46,7 @@ void WebcamWidget::handle(Webcam *w)
     findCam();
 
 
+    m_picLabel->handle(w);
     m_screen->hide();
 
 
@@ -59,8 +61,8 @@ void WebcamWidget::printPicture(QString s)
 
 void WebcamWidget::printPicture(QPixmap p)
 {
-    if(!p.isNull())
-        m_picLabel->setPixmap(p.scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
+  //  if(!p.isNull())
+  //      m_picLabel->setPixmap(p.scaled(m_picLabel->size()-QSize(30,30),Qt::KeepAspectRatio,Qt::SmoothTransformation));
 }
 
 void WebcamWidget::setLiveMode(bool s)

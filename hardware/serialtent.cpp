@@ -115,7 +115,6 @@ void SerialTent::write(int pin, float value)
     out.append((char)v);
     out.append('\n');
 
-   // qDebug()<<"writeing"<<pin<<value;
     serialPort.write(out);
 
 }

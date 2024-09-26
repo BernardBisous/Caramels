@@ -49,7 +49,7 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     center->layout()->addWidget(sp);
 
-    center->layout()->addWidget(m_cam=new CameraOverview);
+    center->layout()->addWidget(m_cam=new WebcamWidget);
 
     QFont f=font();
     f.setPointSize(36);

@@ -16,6 +16,8 @@
 #include <QDateTime>
 #include <QDir>
 #include <QMediaDevices>
+#include <webcamoverview.h>
+
 class WebcamWidget : public QWidget
 {
     Q_OBJECT
@@ -41,7 +43,7 @@ private slots:
 private:
     QWidget* m_settings;
     MenuButton* m_selectMenu;
-    QLabel* m_picLabel;
+     CameraOverview* m_picLabel;
     QVideoWidget* m_screen;
 
     SwitchCheckBox* m_modeSwitch;
@@ -57,8 +59,6 @@ private:
 
     QList<QPixmap> m_lapsFrames;
     Webcam* m_client;
-
-
 
 };
 

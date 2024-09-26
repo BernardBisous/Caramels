@@ -14,7 +14,7 @@
 #define CO2_INJECTOR_PIN 39
 #define MAIN_VALVE_PIN 41
 #define HUMIDIFIER_PIN 43
-#define INTERNAL_FAN_PIN 19
+#define INTERNAL_FAN_PIN 3
 
 
 //Relay
@@ -100,19 +100,23 @@ byte configBytes[NUM_CONFIG];
 unsigned long previousMillis = 0;
 const long interval = 200;
 
-void printColor(int colorId)
+void printColor(byte colorId, bool s)
 {
   pixels.clear(); 
-  for(int i=0; i<NUMPIXELS; i++) {
-    switch(colorId)
+  for(int i=0; i<NUMPIXELS; i++) 
+  {
+    if(s)
     {
-    case 0:pixels.setPixelColor(i, pixels.Color(0,0,0));break;
-    case 1:pixels.setPixelColor(i, pixels.Color(255,0,0));break;
-    case 2:pixels.setPixelColor(i, pixels.Color(0,255,0));break;
-    case 3:pixels.setPixelColor(i, pixels.Color(0,0,255));break;
+       if(colorId)
+      pixels.setPixelColor(i, pixels.Color(255,0,0));
+    else
+      pixels.setPixelColor(i, pixels.Color(0,255,0));
     }
+    else
+    pixels.setPixelColor(i, pixels.Color(0,0,255));
+   }
     delay(1); 
-  }
+  
   pixels.show();
 }
 static bool measure_environment() {
@@ -189,7 +193,7 @@ void processConfig()
 {
   switch(configBytes[0])
   {
-    case LED_PIN:printColor(configBytes[1]);break;
+    case LED_PIN:printColor(configBytes[1],true);break;
     default:analogWrite(configBytes[0],configBytes[1]);break;
   }
 }
@@ -200,7 +204,7 @@ void setup() {
   Serial.begin(9600);
   Wire.begin();
   pixels.begin();
-  printColor(3);
+  printColor(0,false);
 
 
     

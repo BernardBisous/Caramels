@@ -81,7 +81,7 @@ void Tent::begin()
 
 
     timerSlot();
-    setInternalColorId(1);
+
 }
 
 
@@ -432,7 +432,7 @@ void Tent::hardwareSlot(QByteArray &)
 void Tent::serialConnectSlot(bool s)
 {
 
-    setInternalColorId(0);
+  //  updateInternalColor();
     emit connectedHardware(s);
 }
 
@@ -443,12 +443,7 @@ void Tent::camCaptureSlot(QString s)
 
 void Tent::errorStateSlot()
 {
-
-    if(m_state->criticity()==DeviceState::Danger)
-        setInternalColorId(0);
-
-    else
-        setInternalColorId(1);
+    updateInternalColor();
 }
 
 void Tent::timerSlot()
@@ -496,6 +491,15 @@ StateNotifier *Tent::state() const
 void Tent::setInternalColorId(int id)
 {
     m_serial->write(INTERNAL_LED_PIN,id);
+}
+
+void Tent::updateInternalColor()
+{
+    if(m_state->criticity()==DeviceState::Danger)
+        setInternalColorId(1);
+
+    else
+        setInternalColorId(0);
 }
 
 
@@ -729,7 +733,7 @@ QStringList Tent::availablePorts()
     auto ls=QSerialPortInfo::availablePorts();
     for(int i=0;i<ls.count();i++)
     {
-        if(!m_serial->forbiden().contains(ls[i]))
+        if(!m_serial->forbiden().contains(ls[i].portName()))
             out<<ls[i].portName();
     }
     return out;

@@ -94,14 +94,16 @@ void StateNotifier::updateCriticity()
     }
     DeviceState::Criticity st=worst()->criticity();
 
-    if(st!=m_criticity)
+    bool diff=st!=m_criticity;
+     m_criticity=st;
+    if(diff)
     {
         emit stateChanged();
-
+        qDebug()<<"sate chahfe"<<st;
         if(st==DeviceState::Danger && SEND_MAILS)
             m_emailTimer->start();
     }
-    m_criticity=st;
+
 }
 
 DeviceState *StateNotifier::unitState(HardwareUnit *u)

@@ -111,7 +111,7 @@ public:
     StateNotifier *state() const;
 
     void setInternalColorId(int id);
-
+    void updateInternalColor();
 
 public slots:
     void console(QString s);

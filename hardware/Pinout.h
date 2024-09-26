@@ -30,7 +30,7 @@
 #define RELAY_5 28
 
 //12VSwitch
-#define INTERNAL_FAN_PIN 19
+#define INTERNAL_FAN_PIN 5
 #define CO2_INJECTOR_PIN 39
 #define MAIN_VALVE_PIN 41
 #define HUMIDIFIER_PIN 43
