@@ -42,6 +42,6 @@ int main(int argc, char *argv[])
         qInstallMessageHandler(myMessageHandler);
     }
 
-    w.show();
+    w.showFullScreen();
     return a.exec();
 }

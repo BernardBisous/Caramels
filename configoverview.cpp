@@ -31,8 +31,6 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     na->layout()->addWidget(nw);
     na->layout()->addWidget(m_event=new EventManager);
 
-
-
     m_event->showAll(false);
     m_name->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_progress->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);

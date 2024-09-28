@@ -119,6 +119,7 @@ void DevicePlot::updatePlot()
 
     auto lh=m_device->historic();
 
+    float lastVal=0;
 
     QDateTime minDate;
     if(!lh.isEmpty())
@@ -138,6 +139,7 @@ void DevicePlot::updatePlot()
             m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i-1].value);
 
         m_series->append(lh[i].time.toMSecsSinceEpoch(),lh[i].value);
+        lastVal=lh[i].value;
     }
 
 
@@ -151,15 +153,20 @@ void DevicePlot::updatePlot()
                  m_series->append(l[i].time.toMSecsSinceEpoch(),l[i-1].value);
 
              m_series->append(l[i].time.toMSecsSinceEpoch(),l[i].value);
-
+            lastVal=l[i].value;
          }
+
     }
 
     if(m_series->count()<=1)
     {
        m_series->append(minDate.toMSecsSinceEpoch(),m_device->currentValue());
     }
+
+    m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),lastVal);
     m_series->append(QDateTime::currentDateTime().toMSecsSinceEpoch(),m_device->currentValue());
+
+
     m_chart->addSeries(m_series);
     m_series->selectPoint(m_series->count()-1);
     m_yAxis->setRange(m_device->minRange()*1.1,m_device->maxRange()*1.1);
@@ -175,7 +182,7 @@ void DevicePlot::sliderChanged(int val)
     QDateTime now=QDateTime::currentDateTime();
     int max=m_minDate.secsTo(now);
 
-    float r=100-val;
+    float r=101-val;
     r=r/100;
 
     float range=max*r;

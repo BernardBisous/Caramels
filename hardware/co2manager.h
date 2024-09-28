@@ -3,6 +3,7 @@
 
 #include "hardware/Pinout.h"
 #include "hardware/analogsensor.h"
+#include "hardware/chemicalinjector.h"
 #include "hardware/hardwareunit.h"
 #include <QObject>
 
@@ -15,15 +16,20 @@ public:
     explicit CO2Manager(QObject *parent = nullptr);
     virtual void reactToParamChanged(Parameter*, float );
     virtual void reactToSensorsChanged();
+    virtual QList<Device*> interestingDevices();
+
     float CO2();
     float excess();
     Parameter* parameterCO2(){return parameterFromId(CO2_LEVEL);}
+
+    ChemicalInjector *injector() const;
 
 signals:
 
 private:
 
-    SwitchedActuator*m_injector;
+    ChemicalInjector* m_injector;
+    SwitchedActuator* m_valve;
     AnalogSensor* m_sensor;
 };
 

@@ -93,6 +93,9 @@ void HardwareOverview::handle(Tent *t)
     connect(t,SIGNAL(connectedHardware(bool)),this,SLOT(connectedChanged(bool)));
 
 
+    if(t->co2Manager())
+        addInjector(t->co2Manager()->injector());
+
     auto l=t->injectors();
     for(int i=0;i<l.count();i++)
         addInjector(l[i]);

@@ -218,7 +218,7 @@ bool Webcam::accessible() const
 CamState::CamState(Webcam *c, QObject *parent):
     DeviceState(nullptr,nullptr,parent),m_cam(c)
 {
-
+    refresh();
 }
 
 QString CamState::diagnosis() const
@@ -228,7 +228,7 @@ QString CamState::diagnosis() const
 
 QString CamState::name()
 {
-    return m_cam->name();
+    return "Webcam";
 }
 
 

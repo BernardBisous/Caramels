@@ -40,6 +40,9 @@ public:
     ToolButton* helpButton(){return m_help;}
 
 
+
+    ToolButton *settings() const;
+
 signals:
     void triggered( int i);
     void changed( int i);
@@ -48,11 +51,14 @@ signals:
 private slots:
     void clickedSlot();
     void helpSlot();
+    void quitSlot();
 
 private:
     void clear();
     QStringList m_list;
     ToolButton* m_help;
+    ToolButton* m_quit;
+    ToolButton* m_settings;
     QWidget* m_actionWidget;
 };
 

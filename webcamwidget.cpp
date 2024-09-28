@@ -45,6 +45,7 @@ WebcamWidget::WebcamWidget(QWidget *parent):QWidget(parent),m_client(nullptr)
 
 
     m_enableSwitch->setChecked(true);
+    m_enableSwitch->setHidden(true);
 
     setAutoFillBackground(true);
     setBackgroundRole(QPalette::Base);

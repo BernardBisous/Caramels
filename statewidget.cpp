@@ -53,11 +53,7 @@ void StateWidget::setCurrent(DeviceState *s)
         return;
     }
 
-    if(s->device())
-        m_nameLabel->setText(s->device()->name());
-    else if(s->unit())
-        m_nameLabel->setText(s->unit()->name());
-
+    m_nameLabel->setText(s->name());
     m_diagnose->setText(s->diagnosis());
     m_current=s;
 

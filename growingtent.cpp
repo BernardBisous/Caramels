@@ -43,6 +43,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     mc->setLayout(new QHBoxLayout);
     mc->layout()->addWidget(m_stack=new QStackedWidget);
     mc->layout()->addWidget(m_console=new ConsoleWidget);
+    mc->layout()->addWidget(m_devices=new DeviceListWidget);
     c->layout()->addWidget(mc);
     m_console->setTent(m_tent);
     m_console->setEnableConsole(false);
@@ -62,6 +63,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_nameLab->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     connect(m_selector,SIGNAL(triggered(int)),this,SLOT(goToIndex(int)));
     connect(m_selector,SIGNAL(help()),this,SLOT(help()));
+
 
 
     connect(m_overview,SIGNAL(editOne(HardwareUnit*)),this,SLOT(editUnit(HardwareUnit*)));

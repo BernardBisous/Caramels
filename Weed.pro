@@ -35,6 +35,7 @@ SOURCES += \
     consolewidget.cpp \
     deviceeditor.cpp \
     deviceplot.cpp \
+    devicestate.cpp \
     eventmanager.cpp \
     growconfig.cpp \
     growingtent.cpp \
@@ -103,6 +104,7 @@ HEADERS += \
     consolewidget.h \
     deviceeditor.h \
     deviceplot.h \
+    devicestate.h \
     eventmanager.h \
     growconfig.h \
     growingtent.h \

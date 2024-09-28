@@ -51,7 +51,9 @@ DeviceEditor::DeviceEditor(QWidget *parent)
     m_nameLabel->setFont(f);
 
     connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
+
     m_valueSlider->setOrientation(Qt::Horizontal);
+     m_valueSlider->setFixedHeight(30);
 
 }
 

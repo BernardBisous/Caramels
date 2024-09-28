@@ -12,6 +12,7 @@ AnalogSensor::AnalogSensor(int pin, QString n, QObject *parent):
     setSmoothing(5);
     setRegulationDelay(Parameter::timeMultiplicator());
     setRecordDelay(Parameter::timeMultiplicator());
+
     m_continousStreaming=true;
 }
 
@@ -32,6 +33,7 @@ int AnalogSensor::regulationDelay()
 
 void AnalogSensor::setRegulationDelay(int seconds)
 {
+
     setDataValue(REG_KEY,QString::number(seconds));
 }
 
@@ -56,8 +58,9 @@ QDateTime AnalogSensor::nextRegulation()
     if(!m_lastRegTime.isValid() || n<=0 )
         return QDateTime();
 
-    QDateTime t=m_lastRegTime;
-    return t.addSecs(n);
+
+    QDateTime t=m_lastRegTime.addSecs(n);
+    return t;
 }
 
 float AnalogSensor::smoothedValue() const

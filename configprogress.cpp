@@ -20,7 +20,7 @@ void ConfigProgress::refresh(GrowConfig *c, QDateTime startDate)
 
     int totalSec=c->maxHours()*Parameter::timeMultiplicator();
 
-    m_start->setText(startDate.toString("dd.MM - hh:mm"));
+    m_start->setText(startDate.toString("dd.MM"));
     m_end->setText(startDate.addSecs(totalSec).toString("dd.MM - hh:mm"));
 
     int elapsed=startDate.secsTo(QDateTime::currentDateTime());

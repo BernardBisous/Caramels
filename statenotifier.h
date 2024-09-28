@@ -3,46 +3,9 @@
 
 
 
-#include "hardware/hardwareunit.h"
+
+#include "devicestate.h"
 #include <QObject>
-
-class DeviceState:  public QObject
-{
-    Q_OBJECT
-public:
-    typedef enum criticityState{Good,Warning,Danger}Criticity;
-    explicit DeviceState(Device*d,HardwareUnit*h,QObject*parent);
-    virtual void refresh();
-    virtual QString diagnosis() const;
-    virtual QString name();
-    void setState(QString d,Criticity s);
-    QString fullDiagnosis();
-
-    HardwareUnit *unit() const;
-
-    Device *device() const;
-
-    Criticity criticity() const;
-
-
-
-signals:
-    void changed();
-
-public slots:
-    void clientError(QString s, bool warning);
-
-private:
-    HardwareUnit* m_unit;
-    Device* m_device;
-
-    Criticity m_criticity;
-    QString m_diagnosis;
-};
-
-
-
-
 
 
 class StateNotifier : public QObject

@@ -28,12 +28,13 @@ public:
     virtual void reactToSensorsChanged();
     virtual void reactToParamChanged(Parameter*, float );
     virtual void attachParameter(Parameter* p);
+    virtual QList<Actuator*> interestingIntegrals();
     void fillTank();
     ChemicalInjector::State currentState();
     QList<ChemicalInjector *> injectors() const;
 
     QList<RealTimeValue> injection(int id);
-virtual QList<Actuator*> interestingIntegrals();
+
 public slots:
     void fillTankSlot(bool l);
 private slots:

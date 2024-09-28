@@ -29,12 +29,15 @@ Tent::Tent(QObject *parent)
 
     m_state=new StateNotifier(this);
     connect(m_state,SIGNAL(stateChanged()),this,SLOT(errorStateSlot()));
+
     m_serial=new SerialTent(this);
+    m_state->append(new SerialState(m_serial,this));
+
     m_cam=new Webcam(this);
     m_cam->setEnabled(true);
-    initDevices();
-    m_state->append(new CamState(m_cam,this));
+   // m_state->append(new CamState(m_cam,this));
 
+    initDevices();
     m_timer=new QTimer(this);
     m_timer->setInterval(Parameter::timeMultiplicator()*1000);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));

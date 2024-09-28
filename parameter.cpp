@@ -1,7 +1,7 @@
 #include "parameter.h"
 
-#define TIME_FACTOR 1
-
+#define TIME_FACTOR 3600
+//#define TIME_FACTOR 1
 
 Parameter::Parameter(QString name, QString units, int id):
     m_id(id),m_name(name),m_units(units)

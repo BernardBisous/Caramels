@@ -28,6 +28,7 @@ signals:
 
 private:
 
+    DeviceListWidget* m_devices;
     TentEditor* m_tentEdit;
     GrowConfig* m_currentConfig;
     Tent* m_tent;

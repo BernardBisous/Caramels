@@ -39,7 +39,7 @@ QList<Actuator *> GeneralManager::interestingIntegrals()
 
 QList<Device *> GeneralManager::interestingDevices()
 {
-    return m_devices;
+    return QList<Device *> ()<<m_sensor<<m_sensor12;
 }
 
 void GeneralManager::begin()

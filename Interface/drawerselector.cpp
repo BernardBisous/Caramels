@@ -1,4 +1,5 @@
 #include "drawerselector.h"
+#include "qapplication.h"
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QBrush>
@@ -9,15 +10,19 @@ DrawerSelector::DrawerSelector(QWidget *parent)
 {
     setLayout(new QHBoxLayout);
     setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    layout()->setSpacing(30);
 
     layout()->setContentsMargins(0,0,0,0);
     layout()->addWidget(m_actionWidget=new QWidget);
     m_actionWidget->setLayout(new QHBoxLayout);
     m_actionWidget->setContentsMargins(0,0,0,0);
-    layout()->addWidget(m_help=new ToolButton("Help",":/icons/help"));
+    layout()->addWidget(m_settings=new ToolButton("Settings",":/icons/settings"));
+    layout()->addWidget(m_help=new ToolButton("Console",":/icons/logs"));
+    layout()->addWidget(m_quit=new ToolButton("Quit",":/icons/delete"));
+    m_settings->setRound(40);
     m_help->setRound(40);
+    m_quit->setRound(50);
     connect(m_help,SIGNAL(clicked()),this,SLOT(helpSlot()));
+    connect(m_quit,SIGNAL(clicked()),this,SLOT(quitSlot()));
     m_help->setCheckable(true);
 
 }
@@ -164,6 +169,11 @@ void DrawerSelector::helpSlot()
     emit help();
 }
 
+void DrawerSelector::quitSlot()
+{
+    QApplication::quit();
+}
+
 void DrawerSelector::clear()
 {
     if(!layout())
@@ -182,6 +192,11 @@ void DrawerSelector::clear()
         }
 
     }while(t);
+}
+
+ToolButton *DrawerSelector::settings() const
+{
+    return m_settings;
 }
 
 

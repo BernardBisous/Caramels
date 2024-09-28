@@ -1,5 +1,6 @@
 #ifndef SERIALTENT_H
 #define SERIALTENT_H
+
 #include <QObject>
 #include <QSerialPort>
 #include <QSerialPortInfo>
@@ -40,5 +41,8 @@ private:
     QStringList m_forbiden;
     void readSerial();
 };
+
+
+
 
 #endif // SERIALTENT_H
