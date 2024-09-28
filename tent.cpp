@@ -31,6 +31,7 @@ Tent::Tent(QObject *parent)
     connect(m_state,SIGNAL(stateChanged()),this,SLOT(errorStateSlot()));
     m_serial=new SerialTent(this);
     m_cam=new Webcam(this);
+    m_cam->setEnabled(true);
     initDevices();
     m_state->append(new CamState(m_cam,this));
 
@@ -81,7 +82,7 @@ void Tent::begin()
 
 
     timerSlot();
-
+    m_cam->start();
 }
 
 

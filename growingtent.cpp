@@ -50,14 +50,12 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     m_stack->addWidget(m_overview=new Overview);
     m_stack->addWidget(m_tentEdit=new TentEditor(this));
-    m_stack->addWidget(m_cam=new WebcamWidget);
-    m_cam->handle(m_tent->cam());
 
     QFont f=font();
     f.setPointSize(f.pointSize()+15);
     m_nameLab->setFont(f);
 
-    m_selector->setActions(QStringList()<<"Général"<<"Hardware"<<"Webcam"); // dirty
+    m_selector->setActions(QStringList()<<"Général"<<"Hardware"); // dirty
 
     setCentralWidget(c);
 

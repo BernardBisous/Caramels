@@ -8,6 +8,7 @@
 
 #define DATA_DIR "pics"
 #define CAPTURE_DELAY_HOURS 3
+#define STARTUP_DELAY 1500
 #include "parameter.h"
 
 Webcam::Webcam(QObject *parent)
@@ -15,13 +16,9 @@ Webcam::Webcam(QObject *parent)
       m_session(),m_lastPixmap(),m_accessible(true)
 {
     m_capture=new QImageCapture;
-     connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
-
-
-
-
+    connect(m_capture,SIGNAL(imageSaved(int,QString)),this,SLOT(capturedSlot(int,QString)));
     createDataDir();
-     findCam();
+    findCam();
 }
 
 bool Webcam::shouldCapture()
@@ -110,6 +107,7 @@ void Webcam::exportAll(QString dir)
 void Webcam::scheduleNext()
 {
     m_nextDate=QDateTime::currentDateTime().addSecs(CAPTURE_DELAY_HOURS*Parameter::timeMultiplicator());
+    m_nextDate=QDateTime::currentDateTime().addSecs(5);
 
 }
 
@@ -132,7 +130,7 @@ void Webcam::capture()
         return;
 
     m_cam->start();
-    QTimer::singleShot(1000,this,SLOT(capturingSlot()));
+    QTimer::singleShot(STARTUP_DELAY,this,SLOT(capturingSlot()));
 
 }
 
@@ -167,6 +165,7 @@ QString Webcam::nextName()
 
 void Webcam::capturingSlot()
 {
+
     QString s=nextName();
     m_lastPixmap=s;
     m_capture->captureToFile(s);
@@ -208,13 +207,7 @@ QStringList Webcam::availables()
 
 void Webcam::capturedSlot(int, QString s)
 {
-
-
-    QString f=QString(DATA_DIR)+"/"+s;
-
-
-
-    emit saved(f);
+    emit saved(s);
 }
 
 bool Webcam::accessible() const

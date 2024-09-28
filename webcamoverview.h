@@ -21,20 +21,21 @@ public:
     int frameDelay() const;
     void setFrameDelay(int newFrameDelay);
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
+    void resizeEvent(QResizeEvent *event) override;
+    void printPixmap();
+
 
 public slots:
      void updatePixmap();
      void pixSlot(QString);
+
 private:
-
-
     int m_counter;
     int m_frameDelay;
     Webcam* m_client;
-    QList<QPixmap> m_pixmaps;
     QTimer *m_timer;
+    QPixmap m_pix;
+    QStringList m_pixNames;
 };
 
 #endif // WEBCAMOVERVIEW_H

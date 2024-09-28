@@ -37,7 +37,7 @@ private:
     QLabel*m_nameLab;
     Overview* m_overview;
     ConsoleWidget* m_console;
-    WebcamWidget* m_cam;
+
 };
 
 #endif // GROWINGTENT_H

@@ -34,30 +34,16 @@ ConfigOverview::ConfigOverview(QWidget *parent)
 
 
     m_event->showAll(false);
-  //  na->layout()->addWidget(m_restartButton=new ToolButton("Restart"));
-  //  m_restartButton->setHidden(true);
     m_name->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-  //  m_restartButton->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
     m_progress->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     m_progress->layout()->setContentsMargins(0,0,0,0);
 
     center->layout()->addWidget(na);
-
-
-
-    QWidget* sp=new QWidget;
-    sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    center->layout()->addWidget(sp);
-
     center->layout()->addWidget(m_cam=new WebcamWidget);
 
     QFont f=font();
     f.setPointSize(36);
     m_name->setFont(f);
-
-
-
-  //  connect(m_restartButton,SIGNAL(clicked()),this,SLOT(restart()));
 }
 
 void ConfigOverview::setTent(Tent *t)
@@ -67,7 +53,6 @@ void ConfigOverview::setTent(Tent *t)
     if(!t)
         return;
 
-   // m_cam->handle(t->cam());
     connect(t,SIGNAL(newValue(int)),this,SLOT(valueSlot(int)));
     connect(t,SIGNAL(dateChanged(QDateTime)),this,SLOT(updateDate()));
     connect(t,SIGNAL(dateChanged(QDateTime)),m_event,SLOT(setStartedDate(QDateTime)));
