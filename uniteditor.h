@@ -22,6 +22,13 @@ public:
 
     ParameterValueEditor *paramEditor() const;
 
+    UnitOverview *overview() const;
+
+signals:
+    void editDeviceRequest(Device*d);
+    void editParameterRequest(Parameter*p);
+
+
 public slots:
     void editDevice(int i);
     void editParameter(Parameter*p);

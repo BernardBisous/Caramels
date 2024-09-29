@@ -42,7 +42,10 @@ void TolLeveler::reactToParamChanged(Parameter *p, float v)
         if(REGULATE)
             m_sensor->setCommand(v);
         else
+        {
+
             m_lifter->moveTo(v);
+        }
 
         reactToSensorsChanged();
     }

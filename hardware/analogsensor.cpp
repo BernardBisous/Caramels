@@ -38,7 +38,10 @@ void AnalogSensor::setRegulationDelay(int seconds)
 }
 
 bool AnalogSensor::shouldRegulate()
-{    
+{
+    if(!isOk())
+        return false;
+
     if(!m_lastRegTime.isValid() || !nextRegulation().isValid())
         return true;
 
@@ -103,7 +106,6 @@ void AnalogSensor::measure()
 
     if(a<=0)
     {
-
         m_consecutiveErrors++;
 
         if(m_consecutiveErrors==WATCHDOG_INDEX)
@@ -143,6 +145,11 @@ void AnalogSensor::setCommand(float newCommand)
 float AnalogSensor::errorValue()
 {
     return currentValue()-m_command;
+}
+
+bool AnalogSensor::isOk()
+{
+    return m_consecutiveErrors;
 }
 
 QString AnalogSensor::userValue()

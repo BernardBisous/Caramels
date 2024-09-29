@@ -101,6 +101,7 @@ void UnitOverview::handle(HardwareUnit *u)
 
     connect(m_client,SIGNAL(newParameters()),this,SLOT(updateParamSelection()));
     showCentral();
+
     refresh();
 }
 
@@ -178,7 +179,32 @@ void UnitOverview::printButtons(QStringList l)
 
 void UnitOverview::computeLayout()
 {
-    m_overviewWidget->setStretchFactor(0,2);
+    int ow=m_overviewWidget->height()/3;
+    if(m_devices.count())
+    {
+        m_overviewWidget->setSizes(QList<int>()<<ow*2<<ow);
+        m_overviewWidget->setHandleWidth(10);
+    }
+    else
+    {
+        m_overviewWidget->setHandleWidth(0);
+         m_overviewWidget->setSizes(QList<int>()<<ow*3<<0);
+    }
+
+    int oh=m_paramSplitter->width()/3;
+
+    if(m_parameters.count())
+    {
+        m_paramSplitter->setSizes(QList<int>()<<oh*2<<oh);
+         m_paramSplitter->setHandleWidth(10);
+    }
+    else
+    {
+        m_paramSplitter->setHandleWidth(0);
+        m_paramSplitter->setSizes(QList<int>()<<oh*3<<0);
+    }
+    /*
+    m_overviewWidget->setStretchFactor(0,1);
     m_paramSplitter->setStretchFactor(0,1);
 
     m_overviewWidget->setStretchFactor(1,1);
@@ -186,6 +212,9 @@ void UnitOverview::computeLayout()
 
     m_parametersWidget->setHidden(m_parameters.isEmpty());
     m_devicesWidget->setHidden(m_devices.isEmpty());
+    */
+
+
             /*
     if(m_devices.isEmpty())
         m_overviewWidget->setStretchFactor(1,-1);

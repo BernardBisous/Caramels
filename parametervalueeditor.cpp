@@ -12,6 +12,18 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     setLayout(new QVBoxLayout);
 
     layout()->addWidget(m_name=new QLabel);
+    layout()->addWidget(m_description=new QLabel);
+    m_description->setWordWrap(true);
+
+    QWidget* le=new QWidget();
+    le->setLayout(new QHBoxLayout);
+    le->layout()->setContentsMargins(0,0,0,0);
+    le->layout()->addWidget(m_valueEdit=new QLineEdit);
+    le->layout()->addWidget(m_units=new QLabel);
+    le->layout()->addWidget(m_up=new ToolButton("Up",":/icons/plus"));
+    le->layout()->addWidget(m_down=new ToolButton("Down",":/icons/less"));
+    layout()->addWidget(le);
+    connect(m_valueEdit,SIGNAL(editingFinished()),this,SLOT(valueTyped()));
 
     layout()->setContentsMargins(0,0,0,0);
   //  layout()->setContentsMargins(0,0,0,0);
@@ -32,6 +44,8 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
     QFont f=font();
     f.setPixelSize(16);
     m_value->setFont(f);
+    f.setPixelSize(18);
+    m_name->setFont(f);
 
     layout()->addWidget(modeWidget);
 
@@ -39,8 +53,7 @@ ParameterValueEditor::ParameterValueEditor(QWidget *parent)
      QWidget*b=new QWidget;
      QHBoxLayout* gr=new QHBoxLayout;
      gr->setContentsMargins(0,0,0,0);
-     gr->addWidget(m_up=new ToolButton("Up",":/icons/plus"));
-     gr->addWidget(m_down=new ToolButton("Down",":/icons/less"));
+
      gr->addWidget(m_left=new ToolButton("Left",":/icons/left"));
      gr->addWidget(m_right=new ToolButton("Right",":/icons/right"));
 
@@ -72,7 +85,7 @@ void ParameterValueEditor::setClient(Parameter *newClient)
 {
 
     m_client = newClient;
-    refreshValue();
+    refresh();
 }
 
 void ParameterValueEditor::refreshPlot()
@@ -85,6 +98,11 @@ void ParameterValueEditor::refreshPlot()
 
 void ParameterValueEditor::refresh()
 {
+
+
+    refreshPlot();
+    refreshValue();
+
     refreshMode();
 }
 
@@ -126,7 +144,7 @@ void ParameterValueEditor::move(int inc)
     if(!m_client)
         return;
 
-    qDebug()<<"move point";
+    //qDebug()<<"move point";
     float val=(inc*m_gain)+100;
     val=val/100;
     if(m_mode!=modeGain)
@@ -135,14 +153,18 @@ void ParameterValueEditor::move(int inc)
         val=inc*e*m_gain/100;
     }
 
+    move(val);
+}
+
+void ParameterValueEditor::move(float val)
+{
     if(m_mode!=modeAlone)
         m_client->movePoints(QList<int>(),val,m_mode==modeOffset);
 
     else
         m_client->movePoints(m_indexes,val,m_mode==modeOffset);
 
-    refreshValue();
-    refreshPlot();
+    refresh();
 
 
     emit changed();
@@ -152,6 +174,7 @@ void ParameterValueEditor::edit(QList<int> indexes)
 {
     m_indexes=indexes;
 
+    qDebug()<<"editinged"<<indexes;
     refreshValue();
 }
 
@@ -191,26 +214,37 @@ void ParameterValueEditor::refreshValue()
     if(!m_client)
         return;
 
+    int n=lastSelected();
+
     m_name->setText(m_client->name());
+    m_description->setText(m_client->description());
+    m_units->setText(m_client->units());
+
+    if(m_plot)
+        m_plot->refreshTitle();
 
     QString s;
-    int n=lastSelected();
+
+    qDebug()<<"lastSelected"<<m_client->name()<<n;
     if(n<0)
     {
         float max,min;
         m_client->rangeY(&max,&min);
-         m_value->setText(QString::number(min)+"->"+QString::number(max)+m_client->units());
+        m_value->setText(QString::number(min)+"->"+QString::number(max)+m_client->units());
         return;
     }
 
-    bool ok;
-   float a=m_client->valueAtTime(n,&ok);
+   bool ok;
+   float a=currentValue(&ok);
    if(!ok)
    {
        m_value->clear();
        return;
    }
+
+
     m_value->setText(QString::number(a)+m_client->units());
+    m_valueEdit->setText(QString::number(a));
 }
 
 int ParameterValueEditor::lastSelected()
@@ -219,6 +253,34 @@ int ParameterValueEditor::lastSelected()
         return -1;
 
     return m_plot->series()->selectedPoints().last();
+}
+
+float ParameterValueEditor::currentValue(bool *ok)
+{
+    if(!m_client)
+    {
+        *ok=false;
+        return 0;
+    }
+
+    int n=lastSelected();
+    if(n<0)
+    {
+        *ok=false;
+        return 0;
+    }
+
+    bool sok;
+    float a=m_client->valueAtTime(n,&sok);
+
+    if(!ok)
+    {
+        *ok=false;
+        return 0;
+    }
+    *ok=true;
+    return a;
+
 }
 
 void ParameterValueEditor::setGain(float newGain)
@@ -237,23 +299,34 @@ void ParameterValueEditor::selectOffset(int inc)
 
     if(a.isEmpty())
     {
+        qDebug()<<"Nou points Selected"<<(inc<0);
+
         if(inc<0)
             sl->selectPoint(sl->count()-1);
         else
             sl->selectPoint(0);
         return;
     }
+
+
     for(int i=0;i<a.count();i++)
     {
         int ia=a[i]+inc;
 
         if(ia<sl->count() && ia>0)
+        {
+
+
             v<<ia;
+        }
     }
     sl->deselectAllPoints();
+
+    qDebug()<<"Seledd"<<a.count()<<v.count();
     sl->selectPoints(v);
-     connect(sl,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
-     seriesSelected();
+
+    connect(sl,SIGNAL(selectedPointsChanged()),this,SLOT(seriesSelected()));
+    seriesSelected();
 
 }
 
@@ -296,6 +369,24 @@ void ParameterValueEditor::modeEdited()
 
 void ParameterValueEditor::seriesSelected()
 {
+    qDebug()<<"series selected";
     if(m_plot&&m_plot->series())
-    edit(m_plot->series()->selectedPoints());
+        edit(m_plot->series()->selectedPoints());
+}
+
+void ParameterValueEditor::valueTyped()
+{
+    bool ok;
+    float f=m_valueEdit->text().toFloat(&ok);
+    if(ok)
+    {
+        bool sr;
+        float v=currentValue(&sr);
+
+        if(sr)
+        {
+            move(f-v);
+        }
+    }
+
 }

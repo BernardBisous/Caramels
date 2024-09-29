@@ -35,8 +35,6 @@ ParameterEditor::ParameterEditor(QWidget *parent)
 
 void ParameterEditor::handle(Parameter *p)
 {
-
-
     m_client=p;
 
     if(!p)
@@ -45,10 +43,6 @@ void ParameterEditor::handle(Parameter *p)
     m_editor->setClient(p);
     m_plot->setParameter(p);
     refresh();
-
-
-
-
 }
 
 void ParameterEditor::setXRange(int t)
@@ -74,15 +68,7 @@ void ParameterEditor::edit(int i)
     m_plot->select(i);
 }
 
-void ParameterEditor::deviceSlot()
-{
 
-    auto a=dynamic_cast<DeviceEditor*>(sender());
-    if(a && a->client())
-    {
-        emit editDevice(a->client());
-    }
-}
 
 void ParameterEditor::nameChangedSlot(QString s)
 {

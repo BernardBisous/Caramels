@@ -1,15 +1,15 @@
 ﻿GrappGazzzz,name,unit,id,Description,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160
 Lights,Temps d'éveil,h,0,Temps de jour,6,6,6,6,6,6,6,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,10,10,10,10,10
-Lights,Temps de sommeil,h,1,Temps de nuit,6,,,,,,,,8,,,,,,,,,,,,4,,,,,,,,,,,,4
-Lights,Spectre lumineux,nm,2,Spectre lumineux des lights,400,400,420,,,,,,440,440,440,440,450,460,470,480,490,500,510,520,530,540,550,560,570,580,590,700,700,700,700,700,700
-Temperature,Temperature,°c,3,Temperature Air,30,32,34,36,38,40,42,44,46,48,50,30,32,34,36,38,40,42,44,46,48,50,30,32,34,36,38,40,42,44,46,48,50
+Lights,Temps de sommeil,h,1,Temps de nuit,6,,,,,,,,8,,,,,,,,,,,,4,,,,,4,,,,,,,4
+Lights,Puissance,%,2,Puissance des lights,50,,,,,,,,75,,80,,,,,,,,,,,,,,,80,590,700,700,700,700,700,700
+Temperature,Temperature,°c,3,Temperature Air,30,,,,,,,,,,,,,,36,,,,,,,,,,34,,,,,,,,
 Temperature,Humidité ,%,4,Humidité relative ,30,30,30,30,30,35,35,35,35,35,35,30,30,30,30,30,35,35,35,35,35,35,30,30,30,30,30,35,35,35,35,35,35
-Heigh,Hauteur des plants,m,6,Hauteur des lights par rapport à la canopée,50,60,70,80,90,100,110,120,130,140,150,50,60,70,80,90,100,110,120,130,140,150,50,60,70,80,90,100,110,120,130,140,150
+Heigh,Hauteur des lampes,m,6,Hauteur des lights par à la position initiale,0,,,0.05,,,,,,,,,,,,,,,,,,0.1,,,,,,,,,,,0.1
 CO2,Concentration de CO2,ppm,7,CO2 dans l'air,400,400,400,400,400,400,400,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600
-Wind,Force du vent,%,9,Quantité de mouvement du vent,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60,90,90,90,80,80,80,80,60,60,60,60
+Wind,Force du vent,%,9,Quantité de mouvement du vent,20,,,,,,,40,,,60,,100,,,80,,,60,,,20,,,,,,,,,,,20
 PH,PH,ph,10,Acidité de l'eau,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6
-Dosage,Mélasse,mL/L,13,Concentration de produit 1,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7
-Dosage,Boost,ml/L,14,Concentration de produit 2,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6,2,2,2,4,4,4,4,6,6,6,6
+Dosage,Mélasse,mL/L,13,Concentration de produit 1,2,,,,,4.5,,,,,,,,,,4,,,,,,,,,3,,,,,3,6,6.5,7
+Dosage,Boost,ml/L,14,Concentration de produit 2,4,,,,,,,,,,,,,,,,,,6,,,,,,,,,,,6,6,6,6
 Events,Taillages,,20,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure
 Water ,Temps sec,s,11,Longueur du séchage en S,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
 Water ,Temps imergé,h,12,Temps entre les séchages en h,6,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8

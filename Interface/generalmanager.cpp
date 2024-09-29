@@ -22,8 +22,6 @@ GeneralManager::GeneralManager(QObject *parent)
     m_sensor12->setRange(0,SENSOR_MAX12);
 
     m_relay->setIntegralUnits("kWs");
-
-    setTimeRegulated(m_relay);
 }
 
 void GeneralManager::reactToSensorsChanged()

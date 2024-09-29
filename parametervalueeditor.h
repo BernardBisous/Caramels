@@ -5,6 +5,7 @@
 #include "parameter.h"
 #include "parameterplot.h"
 #include "qlabel.h"
+#include "qlineedit.h"
 #include "qlineseries.h"
 #include <QWidget>
 
@@ -26,6 +27,7 @@ public:
     void setMode(Mode newMode);
     void refreshMode();
     void move(int inc);
+    void move (float val);
     void edit(QList<int>indexes );
     void edit(int i);
 
@@ -39,6 +41,8 @@ public:
     void refreshValue();
     int lastSelected();
 
+    float currentValue(bool *ok);
+
 signals:
     void changed();
 
@@ -47,7 +51,7 @@ signals:
 public slots:
     void modeEdited();
     void seriesSelected();
-
+    void valueTyped();
     void up();
     void down();
     void left();
@@ -64,9 +68,13 @@ private:
     ToolButton* m_left;
     ToolButton* m_right;
 
+    QLineEdit*m_valueEdit;
+
     QList<int>m_indexes;
     QLabel* m_value;
     QLabel*m_name;
+    QLabel*m_description;
+    QLabel*m_units;
 
 
 

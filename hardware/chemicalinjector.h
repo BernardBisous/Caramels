@@ -46,6 +46,9 @@ public:
 
     QList<RealTimeValue> injectionHistoric();
 
+    void setVolumeMl(float newVolumeMl);
+    void setFlow(float f);
+
 signals:
     void injection(int purcent);
     void console(QString s);
@@ -65,6 +68,7 @@ private:
     float m_injectingValue;
     bool m_enable;
     QString m_name;
+    float m_volumeMl;
 };
 
 #endif // CHEMICALINJECTOR_H

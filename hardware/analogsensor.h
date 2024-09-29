@@ -15,10 +15,11 @@ public:
     void setRegulationDelay(int seconds);
     bool shouldRegulate();
     virtual void begin();
+    virtual void reset();
+    virtual QString userValue();
 
     QDateTime nextRegulation();
     float smoothedValue()const;
-    virtual void reset();
 
     void regulateNow();
     void setRegulated();
@@ -26,9 +27,7 @@ public:
     float command() const;
     void setCommand(float newCommand);
     float errorValue();
-    virtual QString userValue();
-
-
+    bool isOk();
 
 signals:
     void regulated();
@@ -41,6 +40,7 @@ private:
     QList<float> m_smoothedValues;
     float m_command;
     int m_consecutiveErrors;
+;
 };
 
 #endif // ANALOGSENSOR_H

@@ -1,7 +1,6 @@
 #ifndef CONFIGOVERVIEW_H
 #define CONFIGOVERVIEW_H
 
-#include "Interface/toolbutton.h"
 #include "configprogress.h"
 #include "configtop.h"
 #include "eventmanager.h"

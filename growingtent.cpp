@@ -5,7 +5,7 @@
 #include <QDesktopServices>
 #include <QApplication>
 #include <QStyleFactory>
-enum {General=0,Hardware,Configs,Webcam};
+enum {General=0,Hardware};
 GrowingTent::GrowingTent(QWidget* parent)
     : QMainWindow(parent)
 
@@ -28,10 +28,27 @@ GrowingTent::GrowingTent(QWidget* parent)
     bar->layout()->addWidget(pix=new QLabel);
     pix->setPixmap(QPixmap(":/icons/logo").scaled(40,40,Qt::KeepAspectRatio,Qt::SmoothTransformation));
 
-    bar->layout()->addWidget(m_nameLab=new QLabel(m_tent->name()));
-    bar->layout()->addWidget(m_selector=new DrawerSelector);
-   // bar->layout()->setContentsMargins(0,0,0,0);
 
+
+    QWidget* spd=new QWidget;
+    spd->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    bar->layout()->addWidget(spd);
+
+    bar->layout()->addWidget(m_selector=new DrawerSelector);
+
+    QWidget* sps=new QWidget;
+    sps->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    bar->layout()->addWidget(sps);
+    bar->layout()->addWidget(m_settings=new ToolButton("Settings",":/icons/settings"));
+    bar->layout()->addWidget(m_help=new ToolButton("Console",":/icons/logs"));
+    bar->layout()->addWidget(m_quit=new ToolButton("Quit",":/icons/delete"));
+    bar->layout()->setSpacing(20);
+    m_settings->setRound(40);
+    m_help->setRound(40);
+    m_quit->setRound(50);
+    connect(m_help,SIGNAL(clicked()),this,SLOT(help()));
+    connect(m_quit,SIGNAL(clicked()),this,SLOT(quitSlot()));
+    connect(m_settings,SIGNAL(clicked()),this,SLOT(settingsSlot()));
 
 
     QWidget* c=new QWidget;
@@ -41,35 +58,53 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     QWidget* mc=new QWidget;
     mc->setLayout(new QHBoxLayout);
+
+
+    mc->layout()->addWidget(m_tentOverview=new HardwareOverview);
+    m_tentOverview->handle(m_tent);
+    m_tentOverview->setFixedWidth(200);
+
     mc->layout()->addWidget(m_stack=new QStackedWidget);
+
+    m_settingsWidget=new QWidget;
+    m_settingsWidget->setLayout(new QVBoxLayout);
+    m_settingsWidget->layout()->addWidget(m_devices=new DeviceListWidget);
+   // m_settingsWidget->layout()->addWidget(m_parameter=new ParameterValueEditor);
+    m_settingsWidget->setFixedWidth(250);
+    m_settingsWidget->hide();
+    m_settingsWidget->layout()->setContentsMargins(0,0,0,0);
+
+    mc->layout()->addWidget(m_settingsWidget);
     mc->layout()->addWidget(m_console=new ConsoleWidget);
-    mc->layout()->addWidget(m_devices=new DeviceListWidget);
+
     c->layout()->addWidget(mc);
     m_console->setTent(m_tent);
     m_console->setEnableConsole(false);
 
 
-    m_stack->addWidget(m_overview=new Overview);
-    m_stack->addWidget(m_tentEdit=new TentEditor(this));
+    m_stack->addWidget(m_overview=new ConfigOverview);
+    m_overview->setTent(m_tent);
 
+
+    m_stack->addWidget(m_tentEdit=new UnitEditor(this));
+    connect(m_tentEdit,SIGNAL(editDeviceRequest(Device*)),this,SLOT(editDevice(Device*)));
+    connect(m_tentEdit,SIGNAL(editParameterRequest(Parameter*)),this,SLOT(editParam(Parameter*)));
+
+    /*
     QFont f=font();
     f.setPointSize(f.pointSize()+15);
     m_nameLab->setFont(f);
+    */
 
-    m_selector->setActions(QStringList()<<"Général"<<"Hardware"); // dirty
 
+    prepareSelector();
+
+
+    connect(m_devices,SIGNAL(edit(int)),this,SLOT(deviceTrigSlot(int)));
     setCentralWidget(c);
 
-    m_nameLab->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+   // m_nameLab->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
     connect(m_selector,SIGNAL(triggered(int)),this,SLOT(goToIndex(int)));
-    connect(m_selector,SIGNAL(help()),this,SLOT(help()));
-
-
-
-    connect(m_overview,SIGNAL(editOne(HardwareUnit*)),this,SLOT(editUnit(HardwareUnit*)));
-
-    m_tentEdit->handle(m_tent);
-    m_overview->loadHardware(m_tent);
 
     goToIndex(General);
 }
@@ -117,12 +152,75 @@ void GrowingTent::loadStyle()
     qApp->setPalette(darkPalette);
 }
 
+HardwareUnit *GrowingTent::currentUnit()
+{
+    int i=m_selector->currentIndex();
+    if(i>=Hardware)
+    {
+        HardwareUnit* u=m_tent->units()[i-Hardware];
+        qDebug()<<"currentUnit"<<u->name();
+        return u;
+    }
+
+    return nullptr;
+}
+
+void GrowingTent::prepareSelector()
+{
+    QStringList ls;
+    ls<<"Général";
+
+    auto ld=m_tent->units();
+    for(int i=0;i<ld.count();i++)
+    {
+        ls<<ld[i]->name();
+    }
+    m_selector->setActions(ls);
+}
+
+void GrowingTent::showSettings(bool s)
+{
+    m_settingsWidget->setHidden(!s);
+    m_settings->setChecked(s);
+    if(s)
+    {
+        if(currentUnit())
+            m_devices->fillList(currentUnit());
+        else
+            m_devices->fillList(m_tent->devices());
+    }
+    else
+    {
+        m_devices->clear();
+    }
+
+   // m_parameter->setHidden(true);
+   // m_parameter->setPlot(nullptr);
+}
+
 void GrowingTent::goToIndex(int i)
 {
-    if(i==Hardware)
-        m_tentEdit->edit(0);
 
-    m_stack->setCurrentIndex(i);
+    if(i>=Hardware)
+    {
+        HardwareUnit*s=m_tent->units()[i-Hardware];
+        m_stack->setCurrentIndex(Hardware);
+        m_tentEdit->handle(s);
+
+        if(m_settings->checked())
+            m_devices->fillList(s);
+    }
+    else
+    {
+        m_stack->setCurrentIndex(General);
+
+        if(m_settings->checked())
+            m_devices->fillList(m_tent->devices());
+    }
+
+  //  m_parameter->hide();
+  //  m_parameter->setPlot(nullptr);
+
     m_selector->setActive(i);
 }
 
@@ -130,7 +228,7 @@ void GrowingTent::help()
 {
     bool b=m_console->enabledConsole();
     m_console->setEnableConsole(!b);
-    m_selector->helpButton()->setChecked(!b);
+    m_help->setChecked(!b);
  /*
     QUrl fileUrl = QUrl::fromLocalFile(HELP_FILE);
 
@@ -145,19 +243,59 @@ void GrowingTent::help()
 
 void GrowingTent::editUnit(HardwareUnit *s)
 {
-    goToIndex(Hardware);
-    m_tentEdit->edit(s);
+
+    if(s)
+    {
+        goToIndex(m_tent->units().indexOf(s));
+    }
+
+    else
+    {
+        goToIndex(General);
+    }
 }
 
 
 
-void GrowingTent::editParam(Parameter *p)
+void GrowingTent::editParam(Parameter *)
+{
+    /*
+    m_settingsWidget->setHidden(false);
+    m_settings->setChecked(true);
+    m_parameter->setHidden(false);
+    m_parameter->setClient(p);
+    m_parameter->setPlot(m_tentEdit->overview()->paramPlot(p));
+    */
+
+ //   auto l=m_tent->unitsForParameter(p);
+  //  if(l.isEmpty())
+  //      return;
+  //  goToIndex(Hardware);
+
+
+    // m_tentEdit->editParameter(p);
+}
+
+void GrowingTent::editDevice(Device *d)
+{
+    showSettings(true);
+    m_devices->setChecked(d);    
+}
+
+
+void GrowingTent::quitSlot()
+{
+    QApplication::quit();
+}
+
+void GrowingTent::settingsSlot()
+{
+    bool s=m_settings->checked();
+    showSettings(!s);
+}
+
+void GrowingTent::deviceTrigSlot(int )
 {
 
-    auto l=m_tent->unitsForParameter(p);
-    if(l.isEmpty())
-        return;
-    goToIndex(Hardware);
-    m_tentEdit->edit(l.first());
-
+    //react to device clicked in the list
 }

@@ -60,18 +60,29 @@ void UnitEditor::showDevices()
 
 void UnitEditor::editDevice(int i)
 {
+
     auto c=m_client;
     if(i<0 || !c || i>=c->devices().count())
         return;
 
+    Device*d=c->devices()[i];
+    emit editDeviceRequest(d);
+    return;
+
+
     m_devices->setChecked(i);
-    m_overview->editDevice(c->devices()[i]);
+    m_overview->editDevice(d);
     m_paramEditor->setHidden(true);
     m_devices->setHidden(false);
+
 }
 
 void UnitEditor::editParameter(Parameter *p)
 {
+
+    emit editParameterRequest(p);
+    return;
+
     m_paramEditor->setClient(p);
     m_paramEditor->setHidden(!p);
 
@@ -94,6 +105,11 @@ void UnitEditor::editDevice(Device *d)
     int i=m_client->devices().indexOf(d);
     if(i>=0)
         editDevice(i);
+}
+
+UnitOverview *UnitEditor::overview() const
+{
+    return m_overview;
 }
 
 ParameterValueEditor *UnitEditor::paramEditor() const

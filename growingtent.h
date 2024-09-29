@@ -1,11 +1,12 @@
 #ifndef GROWINGTENT_H
 #define GROWINGTENT_H
 
+#include "Interface/devicelistwidget.h"
 #include "Interface/drawerselector.h"
 #include "Interface/overview.h"
 #include "configeditor.h"
 #include "tent.h"
-#include "tenteditor.h"
+#include "uniteditor.h"
 #include "webcamwidget.h"
 #include <QMainWindow>
 #include <QWidget>
@@ -17,27 +18,40 @@ class GrowingTent : public QMainWindow
 public:
     explicit GrowingTent(QWidget* parent=nullptr);
     void loadStyle();
+    HardwareUnit* currentUnit();
+    void prepareSelector();
+    void showSettings(bool s);
 
 public slots:
     void goToIndex(int i);
     void help();
     void editUnit(HardwareUnit*s);
     void editParam(Parameter*p);
+    void editDevice(Device*d);
+    void quitSlot();
+    void settingsSlot();
+    void deviceTrigSlot(int i);
 
 signals:
 
 private:
 
     DeviceListWidget* m_devices;
-    TentEditor* m_tentEdit;
+    UnitEditor* m_tentEdit;
     GrowConfig* m_currentConfig;
     Tent* m_tent;
     QStackedWidget* m_stack;
     DrawerSelector* m_selector;
     WebcamWidget* m_webcam;
     QLabel*m_nameLab;
-    Overview* m_overview;
+    ConfigOverview* m_overview;
     ConsoleWidget* m_console;
+    HardwareOverview* m_tentOverview;
+    ToolButton* m_help;
+    ToolButton* m_quit;
+    ToolButton* m_settings;
+    QWidget* m_settingsWidget;
+  //  ParameterValueEditor* m_parameter;
 
 };
 

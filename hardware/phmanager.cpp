@@ -7,7 +7,7 @@
 PHManager::PHManager(QObject *parent)
     : HardwareUnit{parent},m_activ(false)
 {
-    m_name="Gestion du PH";
+    m_name="PH";
     attachDevice(m_sensor=new AnalogSensor(PH_SENSOR_PIN,"Capteur de PH",this));
     attachInjector(m_phPlus=new ChemicalInjector(CHEM_PUMP_PH_PLUS_PIN,CHEM_MIX_PH_PLUS_PIN,NO_PIN,-1,this));
     attachInjector(m_phMinus=new ChemicalInjector(CHEM_PUMP_PH_MINUS_PIN,CHEM_MIX_PH_MINUS_PIN,NO_PIN,-1,this));

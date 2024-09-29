@@ -88,7 +88,7 @@ protected:
     QList<ParameterPlot*> m_parameters;
     QList<DevicePlot*> m_devices;
 
-   QList<ToolButton*>m_buttonList;
+    QList<ToolButton*>m_buttonList;
 
     RegulatorWidget* m_regulator;
 

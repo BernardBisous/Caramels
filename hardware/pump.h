@@ -2,7 +2,6 @@
 #define PUMP_H
 
 #include "hardware/device.h"
-#include "qelapsedtimer.h"
 #include <QObject>
 
 class Pump : public SwitchedActuator
@@ -13,6 +12,7 @@ public:
     void inject(float volumeML);
     void startInjecting(bool s);
     void setFlow(float mLPerSec);
+
 
 signals:
 

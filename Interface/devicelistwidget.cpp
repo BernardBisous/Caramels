@@ -37,7 +37,7 @@ void DeviceListWidget::setChecked(int index)
         if(wa)
         {
 
-            if(i==index && index>0)
+            if(i==index && index>=0)
                 wa->setMode(ActionWidget::normal);
 
             else
@@ -50,14 +50,25 @@ void DeviceListWidget::setChecked(int index)
     emit checked(index);
 }
 
+void DeviceListWidget::setChecked(Device *d)
+{
+     auto l=widgets();
+     for(int i=0;i<l.count();i++)
+     {
+         DeviceEditor* wa=dynamic_cast<DeviceEditor*>(l[i]);
+         if(wa &&  wa->client()==d)
+         {
+            setChecked(i);
+         }
+     }
+}
+
 
 
 void DeviceListWidget::listSlot(int i, QWidget *)
 {
-    if(m_current==i)
-        edit(-1);
 
-    else emit edit(i);
+    setChecked(i);
 }
 
 int DeviceListWidget::current() const

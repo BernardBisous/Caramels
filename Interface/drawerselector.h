@@ -37,28 +37,17 @@ public:
     bool nextIsHidden();
     void setHelpHidden(bool s);
     void disable(int i,bool s=true);
-    ToolButton* helpButton(){return m_help;}
-
-
-
-    ToolButton *settings() const;
 
 signals:
     void triggered( int i);
     void changed( int i);
-    void help();
 
 private slots:
     void clickedSlot();
-    void helpSlot();
-    void quitSlot();
 
 private:
     void clear();
     QStringList m_list;
-    ToolButton* m_help;
-    ToolButton* m_quit;
-    ToolButton* m_settings;
     QWidget* m_actionWidget;
 };
 

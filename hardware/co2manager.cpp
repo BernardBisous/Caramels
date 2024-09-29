@@ -1,23 +1,32 @@
 #include "co2manager.h"
 #include "hardware/Pinout.h"
 
+#define CO2_TANK_ML 2000
+#define CO2_FLOW 100//mL/s
 CO2Manager::CO2Manager(QObject *parent)
     : HardwareUnit{parent}
 {
-    m_name="Gestion du CO2";
+    m_name="CO2";
 
     m_injector=new ChemicalInjector(NO_PIN,CO2_INJECTOR_PIN,NO_PIN,CO2_LEVEL,this);
     m_valve=m_injector->pump();
+    m_injector->enable(true);
+    m_injector->setName("CO2");
+
+    //Should not erease settings !
+    m_injector->setVolumeMl(CO2_TANK_ML);
+    m_injector->setFlow(CO2_FLOW);
+
+    m_valve->setName("Injecteur CO2");
+
     attachDevice(m_valve);
     attachDevice(m_sensor=new AnalogSensor(CO2_SENSOR_PIN,"Capteur de CO2",this));
 
     m_idParameters<<CO2_LEVEL;
-
     attachCouples(CO2_LEVEL,m_sensor);
 
     m_sensor->setRange(100,1000);
     m_sensor->setUnits("ppm");
-
 
     m_valve->setIntegralUnits("m3");
     m_valve->setRange(0,50);

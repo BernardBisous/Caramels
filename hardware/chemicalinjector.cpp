@@ -5,8 +5,8 @@
 #define MIXER_POWER_W 40
 #define PUMP_FLOW 10 //mL/s
 ChemicalInjector::ChemicalInjector(int mixPin, int pumpPin, int LevelPin , int ID, QObject*parent )
-    : QObject(parent),m_mixer(nullptr),
-      m_levelSensor(nullptr),m_state(ready),m_id(ID),m_enable(false)
+    : QObject(parent),m_mixer(nullptr),m_levelSensor(nullptr),
+      m_state(ready),m_id(ID),m_enable(false),m_volumeMl(VOLUME_ML)
 {
 
     m_pump=new Pump(pumpPin,"Pompe engrais ",this);
@@ -152,7 +152,7 @@ bool ChemicalInjector::isEnabled()
 
 float ChemicalInjector::remainingPurcent()
 {
-    return (VOLUME_ML-totalInjected())/VOLUME_ML;
+    return (m_volumeMl-totalInjected())/m_volumeMl;
 }
 
 float ChemicalInjector::totalInjected()
@@ -168,6 +168,16 @@ void ChemicalInjector::setState(State newState)
     m_state = newState;
 }
 
+void ChemicalInjector::setVolumeMl(float newVolumeMl)
+{
+    m_volumeMl = newVolumeMl;
+}
+
+void ChemicalInjector::setFlow(float f)
+{
+    m_pump->setFlow(f);
+}
+
 QString ChemicalInjector::name() const
 {
     return m_name;
@@ -175,7 +185,7 @@ QString ChemicalInjector::name() const
 
 QList<RealTimeValue> ChemicalInjector::injectionHistoric()
 {
-
+    return m_pump->integralHistoric();
 }
 
 

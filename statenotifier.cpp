@@ -99,7 +99,6 @@ void StateNotifier::updateCriticity()
     if(diff)
     {
         emit stateChanged();
-        qDebug()<<"sate chahfe"<<st;
         if(st==DeviceState::Danger && SEND_MAILS)
             m_emailTimer->start();
     }

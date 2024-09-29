@@ -54,7 +54,7 @@ void Tent::initDevices()
     addUnit(m_pumps=new WaterLevelManager(this));
     addUnit(m_chemichals=new ChemicalManager(this));
     addUnit(m_lights=new LightsUnit(this));
-    addUnit(m_leveler=new TolLeveler(this));
+  //  addUnit(m_leveler=new TolLeveler(this));
     addUnit(m_temperatures=new TemperatureManager(this));
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
