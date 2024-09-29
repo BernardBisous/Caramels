@@ -27,6 +27,23 @@ SOURCES += \
     Interface/slider.cpp \
     Interface/switchcheckbox.cpp \
     Interface/toolbutton.cpp \
+    SMTP/emailaddress.cpp \
+    SMTP/mimebase64encoder.cpp \
+    SMTP/mimebase64formatter.cpp \
+    SMTP/mimebytearrayattachment.cpp \
+    SMTP/mimecontentencoder.cpp \
+    SMTP/mimecontentformatter.cpp \
+    SMTP/mimefile.cpp \
+    SMTP/mimehtml.cpp \
+    SMTP/mimeinlinefile.cpp \
+    SMTP/mimemessage.cpp \
+    SMTP/mimemultipart.cpp \
+    SMTP/mimepart.cpp \
+    SMTP/mimeqpencoder.cpp \
+    SMTP/mimeqpformatter.cpp \
+    SMTP/mimetext.cpp \
+    SMTP/quotedprintable.cpp \
+    SMTP/smtpclient.cpp \
     chemicalmanager.cpp \
     configeditor.cpp \
     configoverview.cpp \
@@ -96,6 +113,25 @@ HEADERS += \
     Interface/slider.h \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \
+    SMTP/SmtpMime \
+    SMTP/emailaddress.h \
+    SMTP/mimebase64encoder.h \
+    SMTP/mimebase64formatter.h \
+    SMTP/mimebytearrayattachment.h \
+    SMTP/mimecontentencoder.h \
+    SMTP/mimecontentformatter.h \
+    SMTP/mimefile.h \
+    SMTP/mimehtml.h \
+    SMTP/mimeinlinefile.h \
+    SMTP/mimemessage.h \
+    SMTP/mimemultipart.h \
+    SMTP/mimepart.h \
+    SMTP/mimeqpencoder.h \
+    SMTP/mimeqpformatter.h \
+    SMTP/mimetext.h \
+    SMTP/quotedprintable.h \
+    SMTP/smtpclient.h \
+    SMTP/smtpmime_global.h \
     chemicalmanager.h \
     configeditor.h \
     configoverview.h \
@@ -155,6 +191,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Config.qrc \
+    emails.qrc \
     icons.qrc
 
 DISTFILES += \

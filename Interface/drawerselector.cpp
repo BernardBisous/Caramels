@@ -19,7 +19,7 @@ DrawerSelector::DrawerSelector(QWidget *parent)
 
 void DrawerSelector::setActions(QStringList s)
 {
-   // qDebug()<<"Drawer selector refresh"<<s;
+
     clear();
     for(int i=0;i<s.count();i++)
     {

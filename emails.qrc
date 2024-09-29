@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/mails">
+        <file alias="status">lib/status.html</file>
+        <file alias="error">lib/error.html</file>
+    </qresource>
+</RCC>

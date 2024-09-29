@@ -5,6 +5,7 @@
 
 #define CONFIG_PATH "config2.weed"
 #define COMFIG_CSV_PATH "://config"
+#define COMFIG_CSV_FILE_PATH "Config.csv"
 #define SUFIX_BINARY ".weed"
 #define SUFIX_CSV ".csv"
 #define SUFFIX_TXT ".txt"
@@ -15,7 +16,7 @@ GrowConfig::GrowConfig():m_parameters(),m_name("Grape Gazz 🥵")
     m_events=new Events;
 
     if(!openDefault())
-        defaultSetup();
+        loadCsv(COMFIG_CSV_PATH);
 
     computeMaxHours();
 }
@@ -299,20 +300,32 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
 
 
-bool GrowConfig::openDefault() {
+bool GrowConfig::openDefault()
+{
 
 
 
-    if(open(CONFIG_PATH))
+    if(!loadCsv(COMFIG_CSV_FILE_PATH))
     {
+        qDebug()<<"dfgergwssss";
 
-        return true;
+        if(QFile::exists(COMFIG_CSV_FILE_PATH))
+            QFile::remove(COMFIG_CSV_FILE_PATH);
+
+        QFile fe(COMFIG_CSV_PATH);
+        fe.open(QIODevice::ReadOnly);
+
+        QFile ft(COMFIG_CSV_FILE_PATH);
+        ft.open(QIODevice::WriteOnly | QIODevice::Truncate);
+
+        ft.write(fe.readAll());
+        ft.close();
+        fe.close();
+
+        qDebug()<<"dfgergwer";
     }
 
-    return loadCsv(COMFIG_CSV_PATH);
-
-
-
+    return loadCsv(COMFIG_CSV_FILE_PATH);
 
 }
 bool GrowConfig::loadCsv(QString filename) {

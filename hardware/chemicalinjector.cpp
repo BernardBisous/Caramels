@@ -58,9 +58,21 @@ void ChemicalInjector::injectMl(float v)
     }
 
 
-    m_mixer->impulseHigh(m_mixer->gain()*1000);
 
-    setState(mixing);
+    if(m_mixer)
+    {
+        m_mixer->impulseHigh(m_mixer->gain()*1000);
+        setState(mixing);
+    }
+    else
+    {
+
+        m_pump->inject(m_injectingValue);
+        setState(injecting);
+    }
+
+
+
 
 }
 

@@ -267,7 +267,7 @@ void ActionWidget::setHighlightText(bool s)
         }
     }
     /*
-    qDebug()<<"toggledd"<<s;
+
     QPalette p=QApplication::palette();
 
     if(s)

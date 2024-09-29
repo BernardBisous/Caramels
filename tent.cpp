@@ -14,6 +14,12 @@
 
 #define LOGS_FILE "Logs"
 #define RESULTS_FILE "Results"
+
+#define SEND_EMAILS false
+#define EMAIL_DELAYMS 20000
+
+#include "Interface/emailnotifier.h" //TODO spagetti ???
+
 Tent::Tent(QObject *parent)
     : QObject{parent},m_config(nullptr),
       m_general(nullptr),m_temperatures(nullptr),
@@ -83,9 +89,11 @@ void Tent::begin()
         m_timer->start();
     }
 
-
     timerSlot();
     m_cam->start();
+
+    if(SEND_EMAILS)
+        QTimer::singleShot(EMAIL_DELAYMS, this,SLOT(sendStartupEmail()));
 }
 
 
@@ -108,13 +116,10 @@ void Tent::exportAll(QString dir)
     QDir dc(root.absolutePath()+"/Camera");
     m_cam->exportAll(dc.absolutePath());
 
-
     QFile::copy(LOGS_FILE,dir+"/ReadMe.txt");
 
     if(m_config)
         m_config->saveCsv(dir+"/ConfigDone.csv");
-
-
 
     QDesktopServices::openUrl(root.absolutePath());
 }
@@ -448,6 +453,13 @@ void Tent::camCaptureSlot(QString s)
 void Tent::errorStateSlot()
 {
     updateInternalColor();
+}
+
+void Tent::sendStartupEmail()
+{
+    QString ps="Ps: Est-ce que ces emails sont trop fréquents ? 🤩";
+    EmailNotifier::starts(m_state,ps);
+    console("Sent startup email");
 }
 
 void Tent::timerSlot()

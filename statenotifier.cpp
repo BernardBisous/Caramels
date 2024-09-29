@@ -1,14 +1,9 @@
 #include "statenotifier.h"
-#include "Interface/emailnotifier.h"
 
-#define SEND_MAILS true
-#define EMAIL_DELAY_MS 1000
 StateNotifier::StateNotifier(QObject *parent)
     : QObject{parent},m_criticity(DeviceState::Good)
 {
-    m_emailTimer=new QTimer(this);
-    m_emailTimer->setInterval(EMAIL_DELAY_MS);
-    connect(m_emailTimer,SIGNAL(timeout()),this,SLOT(emailErrors()));
+
 }
 
 void StateNotifier::hide(Device *d)
@@ -99,8 +94,6 @@ void StateNotifier::updateCriticity()
     if(diff)
     {
         emit stateChanged();
-        if(st==DeviceState::Danger && SEND_MAILS)
-            m_emailTimer->start();
     }
 
 }
@@ -134,7 +127,7 @@ QList<DeviceState *> StateNotifier::bads()
     return out;
 
 }
-
+/*
 void StateNotifier::emailErrors()
 {
     auto l=bads();
@@ -147,7 +140,7 @@ void StateNotifier::emailErrors()
     m_emailTimer->stop();
     EmailNotifier::error(out.join("\n"));
 }
-
+*/
 void StateNotifier::errorSlot()
 {
     updateCriticity();

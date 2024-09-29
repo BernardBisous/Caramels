@@ -35,7 +35,7 @@ public:
 
 private slots:
     void errorSlot();
-    void emailErrors();
+   // void emailErrors();
 
 signals:
     void changed();
@@ -45,7 +45,7 @@ private:
     QList<DeviceState*> m_list;
     QList<Device*> m_hiddenStates;
     DeviceState::Criticity m_criticity;
-    QTimer* m_emailTimer;
+    //QTimer* m_emailTimer;
 };
 
 #endif // STATENOTIFIER_H

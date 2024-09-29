@@ -5,7 +5,7 @@
 #define NO_PIN -1
 
 
-#define SMTP_PASS "xrmn qizc gqap ncay"
+
 
 //Cablage arduino
 //#define DHT_1 18

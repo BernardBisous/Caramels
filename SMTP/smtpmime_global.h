@@ -1,0 +1,6 @@
+#ifndef SMTPMIME_GLOBAL_H
+#define SMTPMIME_GLOBAL_H
+
+
+
+#endif // SMTPMIME_GLOBAL_H

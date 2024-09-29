@@ -149,15 +149,21 @@ float AnalogSensor::errorValue()
 
 bool AnalogSensor::isOk()
 {
-    return m_consecutiveErrors;
+    return m_consecutiveErrors==0;
 }
 
 QString AnalogSensor::userValue()
 {
-    if(m_consecutiveErrors)
+    if(!isOk())
           return "No signal";
 
-    QString err=" ("+QString::number(errorValue(),'f',1)+")";
+    float v=errorValue();
+    QString err=" (";
+    if(v>0)
+        err+="+";
+
+    err+=QString::number(errorValue(),'f',1)+")";
+
     return Sensor::userValue()+err;
 }
 

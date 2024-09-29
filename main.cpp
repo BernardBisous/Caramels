@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
         qInstallMessageHandler(myMessageHandler);
     }
 
-    w.show();
+    w.showFullScreen();
+    w.setFixedSize(w.size());
     return a.exec();
 }

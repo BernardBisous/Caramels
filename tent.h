@@ -113,12 +113,16 @@ public:
     void setInternalColorId(int id);
     void updateInternalColor();
 
+
+
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
     void serialConnectSlot(bool s);
     void camCaptureSlot(QString);
     void errorStateSlot();
+    void sendStartupEmail();
+
 
 signals:
     void newValue(int i);
@@ -158,8 +162,9 @@ private:
 
 
     Webcam* m_cam;
-
     StateNotifier* m_state;
+
+
 };
 
 

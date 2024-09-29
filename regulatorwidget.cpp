@@ -98,32 +98,29 @@ void RegulatorWidget::setRegulator(RegulatingTimer *newRegulator)
 
 void RegulatorWidget::refresh()
 {
-
-    setHidden(!m_client && !m_regulator);
-
-    if(m_client)
+    if(m_client && m_client->isOk())
     {
         QDateTime t=m_client->nextRegulation();
         if(t.isValid())
         {
             m_regLabel->setText(t.toString("hh:mm"));
+            m_valueLabel->setText(m_client->userValue());
+            m_button->setText("Regulate");
+            setHidden(false);
+            return;
         }
-        else
-            m_regLabel->setText("Soudain");
-
-
-        m_valueLabel->setText(m_client->userValue());
-
-        m_button->setText("Regulate");
-        return ;
     }
 
     if(m_regulator)
     {
         m_valueLabel->setText(m_regulator->currentString());
         m_regLabel->setText(m_regulator->nextSwitch().toString("hh:mm"));
+        m_button->setText("Switch");
+        setHidden(false);
+        return;
     }
-    m_button->setText("Switch");
+
+    setHidden(true);
 }
 
 void RegulatorWidget::valueSlot(float )
