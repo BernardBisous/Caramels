@@ -8,8 +8,8 @@ Heigh,Hauteur des lampes,m,6,Hauteur des lights par à la position initiale,0,,,
 CO2,Concentration de CO2,ppm,7,CO2 dans l'air,400,400,400,400,400,400,400,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600,600
 Wind,Force du vent,%,9,Quantité de mouvement du vent,20,,,,,,,40,,,60,,100,,,80,,,60,,,20,,,,,,,,,,,20
 PH,PH,ph,10,Acidité de l'eau,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6
-Dosage,Mélasse,mL/L,13,Concentration de produit 1,2,,,,,4.5,,,,,,,,,,4,,,,,,,,,3,,,,,3,6,6.5,7
-Dosage,Boost,ml/L,14,Concentration de produit 2,4,,,,,,,,,,,,,,,,,,6,,,,,,,,,,,6,6,6,6
-Events,Taillages,,20,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure
 Water ,Temps sec,s,11,Longueur du séchage en S,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
 Water ,Temps imergé,h,12,Temps entre les séchages en h,6,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
+Events,Taillages,,19,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure
+Dosage,Mélasse,mL/L,20,Concentration de produit 1,2,,,,,4.5,,,,,,,,,,4,,,,,,,,,3,,,,,3,6,6.5,7
+Dosage,Boost,ml/L,21,Concentration de produit 2,4,,,,,,,,,,,,,,,,,,6,,,,,,,,,,,6,6,6,6

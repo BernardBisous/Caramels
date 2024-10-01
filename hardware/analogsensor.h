@@ -40,6 +40,7 @@ private:
     QList<float> m_smoothedValues;
     float m_command;
     int m_consecutiveErrors;
+
 ;
 };
 

@@ -25,6 +25,11 @@ PHManager::PHManager(QObject *parent)
 
     setDescription("En charge de la gestion de l'acidité de l'eau via deux injecteurs dans la cuve");
     attachCouples(PH_LEVEL,m_sensor);
+
+
+
+
+    m_sensor->enable(false);
 }
 
 void PHManager::reactToParamChanged(Parameter *p, float f)
@@ -40,6 +45,7 @@ void PHManager::reactToParamChanged(Parameter *p, float f)
 
 void PHManager::reactToSensorsChanged()
 {
+
     if(m_sensor->shouldRegulate())
     {
         regulate();

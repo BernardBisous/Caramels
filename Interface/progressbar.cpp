@@ -18,6 +18,7 @@ void ProgressBar::setCountDown(int ms, float val)
 
     if(!m_timer)
     {
+        qDebug()<<"timererr";
         m_timer=new QTimer(this);
         connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
     }

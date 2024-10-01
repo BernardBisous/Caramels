@@ -108,15 +108,15 @@ void AnalogSensor::measure()
     {
         m_consecutiveErrors++;
 
-        if(m_consecutiveErrors==WATCHDOG_INDEX)
+        if(enabled() && m_consecutiveErrors==WATCHDOG_INDEX)
         {
             m_consecutiveErrors++;
             emit error("Signal nul",false);
         }
-        return;
+
     }
 
-    if(m_consecutiveErrors)
+    else if(enabled() && m_consecutiveErrors)
     {
         emit error("",false);
         m_consecutiveErrors=0;

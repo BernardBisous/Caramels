@@ -35,11 +35,6 @@ DeviceEditor::DeviceEditor(QWidget *parent)
 
     m_resultWidget=new QWidget;
     m_resultWidget->setLayout(m_resultLayout=new QFormLayout);
-  //  m_resultWidget->layout()->setContentsMargins(0,0,0,0);
- //   m_resultWidget->layout()->addWidget(new QLabel("Results:"));
- //   QWidget* rw=new QWidget;
- //   rw->setLayout(m_resultLayout=new QFormLayout);
-//    m_resultWidget->layout()->addWidget(rw);
     m_resultLayout->setContentsMargins(0,0,0,0);
 
 
@@ -51,10 +46,6 @@ DeviceEditor::DeviceEditor(QWidget *parent)
     m_nameLabel->setFont(f);
 
     connect(m_valueSlider,SIGNAL(valueChanged(int)),this,SLOT(sliderEdited(int)));
-
-    m_valueSlider->setOrientation(Qt::Horizontal);
-     m_valueSlider->setFixedHeight(30);
-
 }
 
 void DeviceEditor::handle(Device *c)

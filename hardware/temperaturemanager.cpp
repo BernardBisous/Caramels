@@ -7,16 +7,16 @@ TemperatureManager::TemperatureManager(QObject *parent)
     m_name="Climat";
 
     addDHT(HUMIDTY_PIN_1,TEMP_1_PIN);
-    addDHT(HUMIDTY_PIN_2,TEMP_2_PIN);
-    addDHT(HUMIDTY_PIN_3,TEMP_3_PIN);
+  //  addDHT(HUMIDTY_PIN_2,TEMP_2_PIN);
+  //  addDHT(HUMIDTY_PIN_3,TEMP_3_PIN);
 
     attachDevice(m_humidifier=new SwitchedActuator(HUMIDIFIER_PIN,false,"Humidificateur"));
     attachDevice(m_windpower=new SwitchedActuator(WIND_POWER_PIN,10,"Ventilateur",this));
     attachDevice(m_rotation=new SwitchedActuator(WIND_ROTATION_PIN,10,"Orienteur du vent",this));
     attachDevice(m_extractor=new SwitchedActuator(EXTRACTOR_PIN,10,"Extracteur",this));
 
-    m_humiditySensor=m_dht[1].humidity;
-    m_airSensor=m_dht[1].temp;
+    m_humiditySensor=m_dht[0].humidity;
+    m_airSensor=m_dht[0].temp;
 
     m_idParameters<<TEMPERATURE_AIR<<HUMIDITY_AIR<<TEMPERATURE_WATER<<WIND_LEVEL<<WIND_ROTATION;
 
@@ -76,6 +76,13 @@ void TemperatureManager::reactToSensorsChanged()
 QList<Actuator *> TemperatureManager::interestingIntegrals()
 {
     return QList<Actuator *> ()<<m_humidifier;
+}
+
+QList<Device *> TemperatureManager::interestingDevices()
+{
+    if(m_dht.isEmpty())
+        return m_devices;
+    return QList<Device *>()<<m_dht[0].humidity<<m_dht[0].temp;
 }
 
 AnalogSensor *TemperatureManager::regulatingSensor()

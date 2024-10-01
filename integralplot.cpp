@@ -47,8 +47,6 @@ void IntegralPlot::handle(Actuator *c)
 
     m_chart->legend()->hide();
     updatePlot();
-
-
 }
 
 void IntegralPlot::handle(QList<Actuator *> s)

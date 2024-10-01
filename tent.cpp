@@ -16,7 +16,7 @@
 #define RESULTS_FILE "Results"
 
 #define SEND_EMAILS false
-#define EMAIL_DELAYMS 20000
+#define EMAIL_DELAYMS 30000
 
 #include "Interface/emailnotifier.h" //TODO spagetti ???
 
@@ -44,6 +44,7 @@ Tent::Tent(QObject *parent)
    // m_state->append(new CamState(m_cam,this));
 
     initDevices();
+
     m_timer=new QTimer(this);
     m_timer->setInterval(Parameter::timeMultiplicator()*1000);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
@@ -60,7 +61,7 @@ void Tent::initDevices()
     addUnit(m_pumps=new WaterLevelManager(this));
     addUnit(m_chemichals=new ChemicalManager(this));
     addUnit(m_lights=new LightsUnit(this));
-  //  addUnit(m_leveler=new TolLeveler(this));
+    addUnit(m_leveler=new TolLeveler(this));
     addUnit(m_temperatures=new TemperatureManager(this));
     addUnit(m_Co2=new CO2Manager(this));
     addUnit(m_ph=new PHManager(this));
@@ -332,7 +333,7 @@ QList<HardwareUnit *> Tent::unitsForParameter(Parameter *p)
 float Tent::PH()
 {
     if(m_ph)
-    return m_ph->ph();
+        return m_ph->ph();
 
     return -1;
 }
@@ -452,6 +453,7 @@ void Tent::camCaptureSlot(QString s)
 
 void Tent::errorStateSlot()
 {
+
     updateInternalColor();
 }
 
@@ -511,11 +513,12 @@ void Tent::setInternalColorId(int id)
 
 void Tent::updateInternalColor()
 {
+
     if(m_state->criticity()==DeviceState::Danger)
         setInternalColorId(1);
 
     else
-        setInternalColorId(0);
+        setInternalColorId(2);
 }
 
 

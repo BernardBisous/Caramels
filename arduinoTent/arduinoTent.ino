@@ -7,15 +7,20 @@
 #define WIND_ROTATION_PIN_2 8
 
 // PWM output
-#define LED_PIN 15 
-#define LIGHTS_SPECTRUM_PIN 3// pas cablé
+#define LIGHTS_SPECTRUM_PIN 3
+#define LIGHTS_POT_PIN 7
+#define INTERNAL_FAN_PIN 5
+
+//LED
+#define INTERNAL_LED_PIN 15
+#define LED_ID_GREEN 0
+#define LED_ID_RED 2
+#define LED_ID_BLUE 5
 
 //12VSwitch
 #define CO2_INJECTOR_PIN 39
 #define MAIN_VALVE_PIN 41
 #define HUMIDIFIER_PIN 43
-#define INTERNAL_FAN_PIN 3
-
 
 //Relay
 #define MAIN_PUMP_PIN 26
@@ -30,28 +35,37 @@
 
 
 //Analog input pins
-#define PH_SENSOR_PIN 97
-#define POWER_SENSE2 98
-#define POWER_SENSE 99 // pas cablé
-#define CO2_SENSOR_PIN 100
+#define PH_SENSOR_PIN 54
+#define POWER_SENSE2 55
+#define POWER_SENSE 56 
+#define CO2_SENSOR_PIN 57
 
 //virtual pins
 #define HEIGH_SENSE 120
-#define HUMIDTY_PIN_1 121
-#define HUMIDTY_PIN_2 122
-#define HUMIDTY_PIN_3 123
-#define TEMP_1_PIN 125
-#define TEMP_2_PIN 126
-#define TEMP_3_PIN 127
+#define HUMIDTY_PIN_1 110
+#define HUMIDTY_PIN_2 111
+#define HUMIDTY_PIN_3 112
+#define TEMP_1_PIN 113
+#define TEMP_2_PIN 114
+#define TEMP_3_PIN 115
 
 #define DHT_1 18
 #define DHT_2 32
 #define DHT_3 34
 
-#define NUM_IN_ANALOG_PINS 4
+#define NUM_IN_ANALOG_PINS 3
 #define NUM_IN_PULL_PINS 2
 #define NUM_OUT_PINS 13
 #define NUM_CONFIG 3
+
+
+
+
+
+
+
+
+
 
 #include <Wire.h>
 #include <VL53L0X.h>
@@ -59,16 +73,11 @@
 #include "DHT_Async.h"
 
 VL53L0X distance;
-bool distSensorFound;
-int distanceValue;
-
-
-
+bool distSensorFound=false;
+int distanceValue=0;
 
 #define NUMPIXELS 4
-Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
-
-
+Adafruit_NeoPixel pixels(NUMPIXELS, INTERNAL_LED_PIN, NEO_GRB + NEO_KHZ800);
 
 #define DHT_SENSOR_TYPE DHT_TYPE_11
 DHT_Async dht_1(DHT_1, DHT_SENSOR_TYPE);
@@ -80,10 +89,10 @@ int humidity[3];
 bool dhtState[3]{true,true,true};
 int DHT_pins[3]={DHT_1,DHT_2,DHT_3};
 int DHT_humiditypins[3]={HUMIDTY_PIN_1,HUMIDTY_PIN_2,HUMIDTY_PIN_3};
-int DHT_temperaturepins[3]={TEMP_2_PIN,TEMP_2_PIN,TEMP_2_PIN};
+int DHT_temperaturepins[3]={TEMP_1_PIN,TEMP_2_PIN,TEMP_3_PIN};
 
 
-const int inputAnalogPins[NUM_IN_ANALOG_PINS]={PH_SENSOR_PIN,POWER_SENSE2,POWER_SENSE,CO2_SENSOR_PIN};
+const int inputAnalogPins[NUM_IN_ANALOG_PINS]={PH_SENSOR_PIN,POWER_SENSE2,POWER_SENSE};
 const int inputPinsPull[NUM_IN_PULL_PINS]= {WATER_LEVEL_PIN_1,WATER_LEVEL_PIN_2};
 const int outputPins[NUM_OUT_PINS] = 
 {HEIGH_LIFTER_UP,HEIGH_LIFTER_DOWN,
@@ -99,49 +108,90 @@ boolean configReceived = false;
 byte configBytes[NUM_CONFIG];
 unsigned long previousMillis = 0;
 const long interval = 200;
+byte CO2=0;
 
+
+
+
+
+
+
+
+
+void readCO2()
+{
+ unsigned long pwmtime = pulseIn(CO2_SENSOR_PIN, HIGH, 400000) / 1000;
+ float pulsepercent = pwmtime / 1004.0;
+
+ if(pulsepercent>0)
+    CO2 = 255 * pulsepercent;
+}
+void readDistance()
+{
+  if(distSensorFound)
+    distanceValue=distance.readRangeSingleMillimeters();
+    
+  else
+  {
+    distSensorFound = (distance.init());
+    distanceValue=0;
+    return;
+  }
+    
+  if(distanceValue>8000)
+    distanceValue=0;
+}
 void printColor(byte colorId, bool s)
 {
   pixels.clear(); 
   for(int i=0; i<NUMPIXELS; i++) 
   {
-    if(s)
+    switch(colorId)
     {
-       if(colorId)
-      pixels.setPixelColor(i, pixels.Color(255,0,0));
-    else
-      pixels.setPixelColor(i, pixels.Color(0,255,0));
+      case LED_ID_RED: pixels.setPixelColor(i, pixels.Color(255,0,0)); break;
+      case LED_ID_GREEN: pixels.setPixelColor(i, pixels.Color(0,0,255)); break;
+      case LED_ID_BLUE: pixels.setPixelColor(i, pixels.Color(0,255,0)); break;
+      default: pixels.setPixelColor(i, pixels.Color(255,0,255)); break;
     }
-    else
-    pixels.setPixelColor(i, pixels.Color(0,0,255));
-   }
-    delay(1); 
-  
-  pixels.show();
+
+    delay(5); 
+    pixels.show();
+  }
 }
 static bool measure_environment() {
     static unsigned long measurement_timestamp = millis();
-    
     if (millis() - measurement_timestamp > 4000ul) {
       for(int i=0;i<3;i++)
       {
-
         float t;
         float h;
-        int res;
 
         
-        if(i==0 && dhtState[0])
+        if(i==0)
+        {
           dhtState[0]=dht_1.measure(&t, &h);
+          temperature[i]=t;
+          humidity[i]=h;
+        }
 
         else if(i==1 && dhtState[1])
+        {
           dhtState[1]=dht_2.measure(&t, &h);
+          temperature[i]=t;
+          humidity[i]=h;
+        }
 
+        
          else if(i==2 && dhtState[2])
-          dhtState[2]=dht_3.measure(&t, &h);
+         {
+            dhtState[2]=dht_3.measure(&t, &h);
+            temperature[i]=t;
+            humidity[i]=h;
+         }
+        
   
-        temperature[i]=t;
-        humidity[i]=h;
+
+            
         }
         measurement_timestamp = millis(); 
         return true;
@@ -164,15 +214,19 @@ void sendValues()
      Serial.write(ht);
    }
 
+    Serial.write(CO2_SENSOR_PIN);
+    Serial.write(CO2);
     
     byte c=map(distanceValue,0,2000,0,255);
     Serial.write(HEIGH_SENSE);
     Serial.write(c);
+    
      
     for (int i = 0; i < NUM_IN_ANALOG_PINS; i++) 
     {  
       byte a=map(analogRead(inputAnalogPins[i]),0,1023,0,255);
       Serial.write(inputAnalogPins[i]);
+     // Serial.write(50);
       Serial.write(a);
     }
     
@@ -193,49 +247,13 @@ void processConfig()
 {
   switch(configBytes[0])
   {
-    case LED_PIN:printColor(configBytes[1],true);break;
+    case INTERNAL_LED_PIN:printColor(configBytes[1],true);break;
     default:analogWrite(configBytes[0],configBytes[1]);break;
   }
 }
-
-
-void setup() {
-  
-  Serial.begin(9600);
-  Wire.begin();
-  pixels.begin();
-  printColor(0,false);
-
-
-    
-  if(distance.init())
-  {
-      distSensorFound=true;
-      distance.setTimeout(100);
-      distance.startContinuous();
-  }
-  else
-  {
-    distSensorFound=false;
-  }
- 
-  for (int i = 0; i < NUM_IN_PULL_PINS; i++) {
-    pinMode(inputPinsPull[i], INPUT_PULLUP);
-  }
-
-   for (int i = 0; i < NUM_IN_ANALOG_PINS; i++) {
-    pinMode(inputAnalogPins[i], INPUT);
-  }
-
-  for (int i = 0; i < NUM_OUT_PINS; i++) {
-    pinMode(outputPins[i], OUTPUT);
-  }
-}
-
-void loop() {
-
-  
-  if (Serial.available() >= NUM_CONFIG) 
+void readConfig()
+{
+   if (Serial.available() >= NUM_CONFIG) 
   {
     for (int i = 0; i < NUM_CONFIG; i++) 
     {
@@ -244,19 +262,42 @@ void loop() {
     if (configBytes[NUM_CONFIG-1] == '\n') 
       processConfig();
   }
+}
+
+void setup() {
+  
+  Serial.begin(9600);
+  Wire.begin();
+  pixels.begin();
+  printColor(5,false);
 
 
+  pinMode(CO2_SENSOR_PIN, INPUT);
+  distance.setTimeout(500);
+  if(distance.init())
+  {
+      distSensorFound=true;
+      distance.startContinuous();
+  }
 
-  if(distSensorFound)
-    distanceValue=distance.readRangeSingleMillimeters();
-  else
-    distanceValue=0;
-    
-  if(distanceValue>2000)
-    distanceValue=0;
+ 
+  for (int i = 0; i < NUM_IN_PULL_PINS; i++)
+    pinMode(inputPinsPull[i], INPUT_PULLUP);
+  
+   for (int i = 0; i < NUM_IN_ANALOG_PINS; i++) 
+    pinMode(inputAnalogPins[i], INPUT);
+  
+  for (int i = 0; i < NUM_OUT_PINS; i++) 
+    pinMode(outputPins[i], OUTPUT);
+  
+}
 
-    
+void loop() {
+  readConfig();
+
+  readDistance();
   measure_environment();
+  readCO2();
 
    
    
@@ -265,8 +306,5 @@ void loop() {
   {
     previousMillis = currentMillis;
     sendValues();
-  }
-
-  
-      
+  }  
 }

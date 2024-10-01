@@ -30,6 +30,7 @@ private:
     QLabel* m_nameLabel;
     QLabel* m_diagnose;
     QLabel* m_icon;
+    QLabel* m_label;
 
    ActionWidget* m_editor;
     DeviceState* m_current;

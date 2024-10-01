@@ -25,7 +25,7 @@ CO2Manager::CO2Manager(QObject *parent)
     m_idParameters<<CO2_LEVEL;
     attachCouples(CO2_LEVEL,m_sensor);
 
-    m_sensor->setRange(100,1000);
+    m_sensor->setRange(0,5000);
     m_sensor->setUnits("ppm");
 
     m_valve->setIntegralUnits("m3");

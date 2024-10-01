@@ -89,22 +89,7 @@ public:
     ChemicalManager *chemichals() const;
     QList<ChemicalInjector*> injectors();
 
-
     void setEventsDone();
-    /*
-    void storeResults();
-    void storeResult(Result r);
-    Result currentResult();
-    QList<Result>results();
-    QStringList resultKeys();
-    float computeResult(QString key);
-    float resultAt(QString key);
-    QList<RealTimeValue> resultsFor(QString key);
-    void clearResults();
-
-
-    void saveResultsCsv();
-    */
 
     QList<RealTimeValue> injection(int id=0);
 
@@ -113,8 +98,6 @@ public:
     void setInternalColorId(int id);
     void updateInternalColor();
 
-
-
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
@@ -122,7 +105,6 @@ public slots:
     void camCaptureSlot(QString);
     void errorStateSlot();
     void sendStartupEmail();
-
 
 signals:
     void newValue(int i);
@@ -136,7 +118,6 @@ private slots:
     void timerSlot();
     void tankFilledSlot(bool s);
 
-
 private:
     QList<Device*> m_devices;
     QList<HardwareUnit*> m_units;
@@ -146,9 +127,7 @@ private:
     QString m_name;
     int m_id;
     QString m_serialPort;
-
     QTimer* m_timer;
-
     GeneralManager* m_general;
     TemperatureManager* m_temperatures;
     PHManager*m_ph;
@@ -158,13 +137,8 @@ private:
     WaterLevelManager* m_pumps;
     ChemicalManager* m_chemichals;
     SerialTent* m_serial;
-
-
-
     Webcam* m_cam;
     StateNotifier* m_state;
-
-
 };
 
 

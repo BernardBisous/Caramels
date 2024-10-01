@@ -5,6 +5,7 @@ UnitPlot::UnitPlot(QWidget *parent): QWidget(parent),m_client(nullptr),m_xRangeM
   ,m_highlightedDevice(nullptr),m_highlightedParameter(nullptr)
 {
 
+    qDebug()<<"timererreeeeww";
     m_timer=new QTimer(this);
     m_timer->setInterval(300);
     connect(m_timer,SIGNAL(timeout()),this,SLOT(updateSensors()));

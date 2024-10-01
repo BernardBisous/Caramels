@@ -19,8 +19,15 @@
 #define WIND_ROTATION_PIN_2 8
 
 // PWM output
-#define LIGHTS_SPECTRUM_PIN 3// pas cablé
+#define LIGHTS_SPECTRUM_PIN 3
+#define LIGHTS_POT_PIN 7
+#define INTERNAL_FAN_PIN 5
+
+//LED
 #define INTERNAL_LED_PIN 15
+#define LED_ID_GREEN 0
+#define LED_ID_RED 2
+#define LED_ID_BLUE 5
 
 //Relays
 #define MAIN_PUMP_PIN 26
@@ -30,7 +37,7 @@
 #define RELAY_5 28
 
 //12VSwitch
-#define INTERNAL_FAN_PIN 5
+
 #define CO2_INJECTOR_PIN 39
 #define MAIN_VALVE_PIN 41
 #define HUMIDIFIER_PIN 43
@@ -40,19 +47,19 @@
 #define WATER_LEVEL_PIN_2 16
 
 //Analog input pins
-#define PH_SENSOR_PIN 97
-#define POWER_SENSE2 98
-#define POWER_SENSE 99 // pas cablé
-#define CO2_SENSOR_PIN 100
+#define PH_SENSOR_PIN 54
+#define POWER_SENSE2 55
+#define POWER_SENSE 56
+#define CO2_SENSOR_PIN 57
 
 //virtual pins
 #define HEIGH_SENSE 120
-#define HUMIDTY_PIN_1 121
-#define HUMIDTY_PIN_2 122
-#define HUMIDTY_PIN_3 123
-#define TEMP_1_PIN 125
-#define TEMP_2_PIN 126
-#define TEMP_3_PIN 127
+#define HUMIDTY_PIN_1 110
+#define HUMIDTY_PIN_2 111
+#define HUMIDTY_PIN_3 112
+#define TEMP_1_PIN 113
+#define TEMP_2_PIN 114
+#define TEMP_3_PIN 115
 
 
 //Injectors
@@ -77,10 +84,9 @@
 
 
 enum {LIGHTS_DAY=0,
-
       LIGHTS_SLEEP=1,
-      LIGHTS_SPECTRUM=2,
-      TEMPERATURE_AIR=3,
+      LIGHTS_POWER=2,
+      TEMPERATURE_AIR=4,
       HUMIDITY_AIR=4,
       TEMPERATURE_WATER=5,
       LIGHT_HEIGH=6,
@@ -90,13 +96,15 @@ enum {LIGHTS_DAY=0,
       PH_LEVEL=10,
       DRY_DELAY=11,
       WET_DELAY=12,
-      CHEMICAL_1=13,
+      LIGHTS_SPECTRUM=13,
+      EVENTS=19,
+      CHEMICAL_1=20,
       CHEMICAL_2,
       CHEMICAL_3,
       CHEMICAL_4,
       CHEMICAL_5,
       CHEMICAL_6,
-      EVENTS=20
+
 
 };
 

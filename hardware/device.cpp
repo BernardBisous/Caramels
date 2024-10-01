@@ -453,7 +453,9 @@ float SwitchedActuator::filterInputValue(float v)
 
 void SwitchedActuator::applyPurcent(float v)
 {
-    m_serial->write(m_pin,v);
+    if(m_serial)
+
+        m_serial->write(m_pin,v);
 }
 
 Actuator::Actuator(QString name, QObject *parent):

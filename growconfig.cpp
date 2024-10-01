@@ -240,7 +240,7 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
      Parameter* parameter=nullptr;
 
-     bool event=id>=EVENTS;
+    bool event=id==EVENTS;
     if(event)
     {
         m_events->clear();

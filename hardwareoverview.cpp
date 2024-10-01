@@ -8,39 +8,30 @@
 
 HardwareOverview::HardwareOverview(QWidget *parent)
     : QWidget(parent),
-
       m_scene(new QGraphicsScene()),
       m_tent(nullptr),
-      m_timer(new QTimer(this)),m_connect(nullptr)
+      m_timer(new QTimer(this)),
+      m_heigh(nullptr),
+      m_ph(nullptr),
+      m_CO2(nullptr),
+      m_spectrum(nullptr),m_connect(nullptr)
 {
 
     setLayout(new QVBoxLayout);
     layout()->addWidget(m_view=new QGraphicsView);
 
-
     m_view->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
     m_view->setBackgroundRole(QPalette::Window);
-
     m_view->setScene(m_scene);
     m_view->setRenderHint(QPainter::Antialiasing);
-
     m_view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-            // Load plant image as background
+
     QPixmap plantPixmap(":/icons/plant");
     m_scene->addPixmap(plantPixmap.scaledToHeight(400,Qt::SmoothTransformation));
     m_tank=m_scene->addPixmap(QPixmap(":/icons/right").scaledToWidth(50,Qt::SmoothTransformation));
     m_tank->setPos(0,340);
     connect(m_timer, &QTimer::timeout, this, &HardwareOverview::update);
-
-
-
-
-
-    m_ph=printTextParameters("PH:",QPointF(20,280));
-    m_heigh=printTextParameters("Hauteur:",QPointF(10,20));
-    m_CO2=printTextParameters("CO2:",QPointF(10,110));
 
     QRectF rpump(18,320,100,20);
 
@@ -48,11 +39,11 @@ HardwareOverview::HardwareOverview(QWidget *parent)
     m_pumps->setBrush(palette().highlight());
     m_scene->addItem(m_pumps);
 
-   // m_pumps=m_scene->addRect(rpump,QPen(),palette().highlight());
-
     m_sun=m_scene->addPixmap(QPixmap(":/icons/sun").scaled(60,60,Qt::KeepAspectRatio,Qt::SmoothTransformation));
     m_sun->setPos(QPointF(10,-80));
-    m_spectrum=printTextParameters("Color:",QPointF(70,-60));
+
+    m_lightsPower=printTextParameters("Lampes",QPointF(70,-60));
+    //m_spectrum=printTextParameters("Color:",QPointF(70,-60));
 
     QWidget*sp=new QWidget;
     sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -106,6 +97,17 @@ void HardwareOverview::handle(Tent *t)
 
     if(t&&t->temperatures())
         addDhts(t->temperatures()->dht());
+
+
+    if(t->phManager())
+        m_ph=printTextParameters("PH:",QPointF(20,280));
+
+    if(t->leveler())
+        m_heigh=printTextParameters("Hauteur:",QPointF(10,20));
+
+    if(t->co2Manager())
+        m_CO2=printTextParameters("CO2:",QPointF(10,110));
+
 
     showConnect(t->connected());
     update();
@@ -173,8 +175,13 @@ void HardwareOverview::update()
         return;
 
 
+    if(m_ph)
     m_ph->setPlainText(QString::number(m_tent->PH(),'f',1));
-    m_CO2->setPlainText(QString::number(m_tent->CO2(),'f',1)+"ppm");
+
+     if(m_CO2)
+    m_CO2->setPlainText(QString::number(m_tent->CO2(),'f',0)+"ppm");
+
+    if(m_heigh)
     m_heigh->setPlainText(QString::number(m_tent->height(),'f',2)+"m");
 
 
@@ -208,15 +215,23 @@ void HardwareOverview::update()
     if(m_tent->lightPower()==0)
     {
         m_sun->hide();
-        m_spectrum->hide();
+
+        if(m_spectrum)
+            m_spectrum->hide();
+        m_lightsPower->hide();
     }
 
     else {
 
         m_sun->show();
-        m_spectrum->show();
+        if(m_spectrum)
+        {
+            m_spectrum->setPlainText(QString::number(m_tent->lightSpectrum(),'f',1)+"nm");
 
-        m_spectrum->setPlainText(QString::number(m_tent->lightSpectrum(),'f',1)+"nm");
+            m_spectrum->show();
+        }
+        m_lightsPower->show();
+        m_lightsPower->setPlainText(QString::number(m_tent->lightPower(),'f',0)+"W");
     }
 
 

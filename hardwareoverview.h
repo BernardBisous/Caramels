@@ -56,6 +56,7 @@ private:
 
     QGraphicsPixmapItem* m_sun;
     QGraphicsTextItem * m_spectrum;
+    QGraphicsTextItem * m_lightsPower;
     QGraphicsRectItem * m_pumps;
     QGraphicsPixmapItem * m_tank;
     TopConnect* m_connect;

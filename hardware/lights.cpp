@@ -1,17 +1,19 @@
 #include "lights.h"
 #include "hardware/Pinout.h"
 
-
-
-
-Lights::Lights(int pin, QObject* parent):SwitchedActuator(pin,false,"Lighs 400W_XE",parent)
+#define lIGHT_POWER 720
+Lights::Lights(int pinSwitch, int pinPot, QObject* parent)
+    :SwitchedActuator(pinPot,true,"Lighs power",parent)
 {
     setUnits("W");
-    setRange(0,300);//Total lights power
+    setRange(0,lIGHT_POWER);//Total lights power
     setIntegralUnits("Ws");
 
 
+    m_relay=new SwitchedActuator(pinSwitch,false,"Lights relay",parent);
+
 }
+
 
 float Lights::computeResult(QString s)
 {
@@ -20,8 +22,26 @@ float Lights::computeResult(QString s)
     return 1;
 }
 
+void Lights::userApplyPurcent(float v)
+{
+    m_relay->setSerial(serial());
+
+
+    SwitchedActuator::userApplyPurcent(v);
+    m_relay->setStateHigh(v>0);
+}
+
+SwitchedActuator *Lights::relay() const
+{
+    return m_relay;
+}
+
+
+
+
+
 LightsSpectrum::LightsSpectrum(int pwmPin, QObject *parent):
-    SwitchedActuator(pwmPin,true,"Spectrum Potentiometer",parent)
+    SwitchedActuator(pwmPin,true,"Couleur",parent)
 {
     setRange(400,700);//Total lights power
     setUnits("Nm");
@@ -33,12 +53,14 @@ LightsUnit::LightsUnit(QObject *parent):HardwareUnit{parent}
 {
     m_name="Lampes";
     setDescription("Gestion de la puissance et du spectre de la lumière");
-
-    attachDevice(m_power=new Lights(LIGHTS_POWER_PIN,this));
+    attachDevice(m_power=new Lights(LIGHTS_POWER_PIN,LIGHTS_POT_PIN,this));
     attachDevice(m_spectrum=new LightsSpectrum(LIGHTS_SPECTRUM_PIN,this));
 
     m_idParameters<<LIGHTS_DAY<<LIGHTS_SLEEP<<LIGHTS_SPECTRUM;
-    setTimeRegulated(m_power);
+
+    m_switch=m_power->relay();
+    attachDevice(m_switch);
+    setTimeRegulated(m_switch);
 }
 
 void LightsUnit::begin()
@@ -59,6 +81,10 @@ void LightsUnit::regulatorSlot(bool s)
 
 void LightsUnit::reactToParamChanged(Parameter *p, float f)
 {
+    if(p==power())
+    {
+        m_power->applyValue(f);
+    }
     if(p==spectrum())
     {
         updateSpectrum(f);

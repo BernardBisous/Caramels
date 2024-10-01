@@ -9,6 +9,7 @@ Plantation::Plantation(QObject *parent)
         connect(m_timer,SIGNAL(timeout()),this,SLOT(timerSlot()));
         m_timer->setInterval(Parameter::timeMultiplicator());
 
+        qDebug()<<"timererrsssawwwee";
         load(DEFAULT_PATH);
 
 }

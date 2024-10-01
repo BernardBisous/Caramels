@@ -24,8 +24,9 @@ public:
     virtual void reactToParamChanged(Parameter*, float );
     virtual void reactToSensorsChanged();
     virtual QList<Actuator*> interestingIntegrals();
+    virtual QList<Device*> interestingDevices();
 
-virtual AnalogSensor*regulatingSensor();
+    virtual AnalogSensor*regulatingSensor();
 
     void addDHT(int hpin,int tpin);
     Parameter* temperatureParameter(){return parameterFromId(TEMPERATURE_AIR);}

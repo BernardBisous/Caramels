@@ -182,7 +182,7 @@ public:
     void setStateHigh(bool s=true);
 
     void applyValue(float);
-    void userApplyPurcent(float);
+    virtual void userApplyPurcent(float);
     virtual void reset();
     void stop();
     void impulse(float val, int ms, float valEnd);

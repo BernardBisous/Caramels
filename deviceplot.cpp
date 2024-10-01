@@ -32,7 +32,7 @@ DevicePlot::DevicePlot(QWidget *parent):
     setRenderHint(QPainter::Antialiasing);
 
     m_slider=new Slider(this);
-    m_slider->setOrientation(Qt::Horizontal);
+
     QRect re;
     re.setHeight(20);
     re.setWidth(100);
@@ -185,7 +185,7 @@ void DevicePlot::sliderChanged(int val)
     float r=101-val;
     r=r/100;
 
-    float range=max*r;
+    float range=max*r*r;//quadratic
     setXRangeSecs(range);
 }
 

@@ -7,6 +7,8 @@ Slider::Slider(QWidget *parent)
 {
     setMaximum(100);
     setMinimum(0);
+    setOrientation(Qt::Horizontal);
+    setFixedHeight(20);
 }
 
 void Slider::paintEvent(QPaintEvent *event)

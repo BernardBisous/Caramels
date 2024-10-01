@@ -5,7 +5,7 @@ StateWidget::StateWidget(QWidget *parent)
     : QWidget{parent},m_current(nullptr)
 {
     setLayout(new QVBoxLayout);
-    layout()->addWidget(new QLabel("Erreur détectée:"));
+    layout()->addWidget(m_label=new QLabel("Erreur détectée:"));
     layout()->addWidget(m_editor=new ActionWidget);
 
     layout()->setContentsMargins(0,0,0,0);
@@ -69,6 +69,8 @@ void StateWidget::refresh()
         setCurrent(l.first());
     else
         setCurrent(nullptr);
+
+    m_label->setText("Erreurs détectées: "+QString::number(l.count()));
 }
 
 void StateWidget::triggSlot()

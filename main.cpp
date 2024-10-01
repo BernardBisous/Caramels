@@ -43,6 +43,7 @@ int main(int argc, char *argv[])
     }
 
     w.showFullScreen();
+    //w.show();
     w.setFixedSize(w.size());
     return a.exec();
 }

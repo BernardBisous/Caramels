@@ -10,9 +10,14 @@ class Lights: public SwitchedActuator
 {
     Q_OBJECT
 public:
-    explicit Lights(int pint,QObject *parent = nullptr);
-
+    explicit Lights(int pinSwitch,int pinPot,QObject *parent = nullptr);
     virtual float computeResult(QString s);
+    virtual void userApplyPurcent(float);
+    SwitchedActuator *relay() const;
+
+private:
+    SwitchedActuator* m_relay;
+    float powerValue;
 };
 
 class LightsSpectrum: public SwitchedActuator
@@ -44,6 +49,7 @@ public:
     Parameter* night(){return parameterFromId(LIGHTS_SLEEP);}
     Parameter* day(){return parameterFromId(LIGHTS_DAY);}
     Parameter* spectrum(){return parameterFromId(LIGHTS_SPECTRUM);}
+    Parameter* power(){return parameterFromId(LIGHTS_POWER);}
 
 public slots:
     void regulatorSlot(bool s);
@@ -51,5 +57,6 @@ public slots:
 private:
     Lights* m_power;
     LightsSpectrum* m_spectrum;
+    SwitchedActuator *m_switch;
 };
 #endif // LIGHTS_H
