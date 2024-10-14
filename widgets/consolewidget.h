@@ -1,11 +1,12 @@
 #ifndef CONSOLEWIDGET_H
 #define CONSOLEWIDGET_H
 
-
-#include "Interface/scrollarea.h"
-#include "tent.h"
 #include <QWidget>
 #include <QLabel>
+
+#include "Interface/scrollarea.h"
+#include "hardware/tent.h"
+
 class ConsoleWidget : public QWidget
 {
     Q_OBJECT

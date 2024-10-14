@@ -4,7 +4,7 @@
 #include "Interface/progresswidget.h"
 #include "Interface/serialeditor.h"
 #include "qgraphicsview.h"
-#include "tent.h"
+#include "hardware/tent.h"
 #include <QWidget>
 
 class ChemicalInjectorWidget: public QWidget

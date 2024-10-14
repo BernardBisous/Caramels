@@ -1,15 +1,18 @@
 #ifndef CONFIGOVERVIEW_H
 #define CONFIGOVERVIEW_H
 
-#include "configprogress.h"
-#include "configtop.h"
-#include "eventmanager.h"
+#include <QWidget>
 #include "qlabel.h"
 
-#include "statewidget.h"
-#include "tent.h"
-#include <QWidget>
-#include "webcamwidget.h"
+#include "widgets/configprogress.h"
+#include "widgets/configtop.h"
+
+#include "widgets/webcamwidget.h"
+
+#include "widgets/statewidget.h"
+#include "hardware/tent.h"
+#include "config/eventmanager.h"
+
 
 class ConfigOverview : public QWidget
 {
@@ -38,7 +41,7 @@ private:
     WebcamWidget* m_cam;
 
     EventManager* m_event;
-    ConfigTop* m_topStart;
+    ProgressWidget* m_topStart;
 
     StateWidget* m_state;
 };

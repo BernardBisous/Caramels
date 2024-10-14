@@ -13,7 +13,6 @@
 #include <QDateTimeAxis>
 #include <QGridLayout>
 
-#include <growconfig.h>
 class UnitPlot  : public QWidget
 {
      Q_OBJECT

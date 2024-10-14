@@ -1,12 +1,12 @@
 #ifndef TENTEDITOR_H
 #define TENTEDITOR_H
 
-#include "Interface/scrollarea.h"
-#include "Interface/serialeditor.h"
-#include "parameterlistwidget.h"
-#include "tent.h"
-#include "uniteditor.h"
 #include <QWidget>
+
+#include "Interface/scrollarea.h"
+#include "hardware/tent.h"
+#include "widgets/uniteditor.h"
+
 
 class TentEditor : public QWidget
 {

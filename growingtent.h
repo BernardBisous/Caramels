@@ -4,10 +4,9 @@
 #include "Interface/devicelistwidget.h"
 #include "Interface/drawerselector.h"
 #include "Interface/overview.h"
-#include "configeditor.h"
-#include "tent.h"
-#include "uniteditor.h"
-#include "webcamwidget.h"
+#include "hardware/tent.h"
+#include "widgets/uniteditor.h"
+#include "widgets/webcamwidget.h"
 #include <QMainWindow>
 #include <QWidget>
 #include <QStackedWidget>

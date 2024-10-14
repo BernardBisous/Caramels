@@ -1,5 +1,5 @@
 #include "devicelistwidget.h"
-#include "deviceeditor.h"
+#include "widgets/deviceeditor.h"
 
 DeviceListWidget::DeviceListWidget(QWidget *parent)
     : ScrollArea{false,parent},m_current(-1)

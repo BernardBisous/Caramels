@@ -1,9 +1,9 @@
 #ifndef CONFIGEDITOR_H
 #define CONFIGEDITOR_H
 
-#include "parametereditor.h"
-#include "parameterlistwidget.h"
-#include "tent.h"
+#include "hardware/device.h"
+#include "widgets/parametereditor.h"
+#include "widgets/parameterlistwidget.h"
 #include <QWidget>
 
 class ConfigEditor : public QWidget

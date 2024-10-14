@@ -3,7 +3,7 @@
 
 #include "hardware/booleansensor.h"
 #include "hardware/pump.h"
-#include "parameter.h"
+#include "config/parameter.h"
 #include <QObject>
 
 class ChemicalInjector :public QObject

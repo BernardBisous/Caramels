@@ -100,7 +100,7 @@ void ConfigOverview::updateDate()
     {
         if(!m_topStart)
         {
-            m_topStart=new ConfigTop(this);
+            m_topStart=new ProgressWidget(this);
             m_topStart->setText("Tente inactive","Commencer une nouvelle plantation ou exporter les fichiers de la précédente (les fichiers non exportés seront écrasés)");
             m_topStart->addActions(QStringList()<<"Commencer"<<"Exporter");
             connect(m_topStart,SIGNAL(actionTrigg(QString,ActionWidget*)),this,SLOT(actionTop(QString,ActionWidget*)));

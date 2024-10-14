@@ -1,7 +1,7 @@
 #include "eventmanager.h"
 #include "qboxlayout.h"
 #include "qdatetime.h"
-#include <parameter.h>
+#include "config/parameter.h"
 EventManager::EventManager(QWidget *parent)
     : QWidget{parent},m_tent(nullptr),m_abstracted(true),
       m_eventStart(),m_client(nullptr)

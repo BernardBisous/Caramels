@@ -2,7 +2,7 @@
 #define DEVICE_H
 
 #include "hardware/serialtent.h"
-#include "parameter.h"
+#include "config/parameter.h"
 #include "qdatetime.h"
 #include "qtimer.h"
 #include <QObject>

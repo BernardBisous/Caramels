@@ -10,7 +10,7 @@
 #include <QDateTimeAxis>
 #include <QGridLayout>
 
-#include <growconfig.h>
+#include <config/growconfig.h>
 
 
 

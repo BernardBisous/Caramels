@@ -1,9 +1,10 @@
 #ifndef STATEWIDGET_H
 #define STATEWIDGET_H
 
-#include "Interface/actionwidget.h"
 #include "qlabel.h"
-#include "statenotifier.h"
+
+#include "Interface/actionwidget.h"
+#include "hardware/statenotifier.h"
 
 
 class StateWidget : public QWidget

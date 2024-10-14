@@ -1,8 +1,8 @@
 #ifndef TENT_H
 #define TENT_H
 
-#include "chemicalmanager.h"
-#include "growconfig.h"
+
+#include "config/growconfig.h"
 #include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
 #include "hardware/lights.h"
@@ -10,8 +10,8 @@
 #include "hardware/temperaturemanager.h"
 #include "hardware/tolleveler.h"
 #include "hardware/waterlevelmanager.h"
-
-#include "Interface/generalmanager.h"
+#include "hardware/chemicalmanager.h"
+#include "hardware/generalmanager.h"
 
 #include "hardware/webcam.h"
 #include "qdatetime.h"

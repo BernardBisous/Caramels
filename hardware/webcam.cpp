@@ -6,10 +6,12 @@
 #include <QDir>
 #include <QFile>
 
+#include "config/parameter.h"
+
 #define DATA_DIR "pics"
 #define CAPTURE_DELAY_HOURS 3
 #define STARTUP_DELAY 1500
-#include "parameter.h"
+
 
 Webcam::Webcam(QObject *parent)
     : QObject{parent},m_cam(nullptr),

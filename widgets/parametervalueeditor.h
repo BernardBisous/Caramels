@@ -1,13 +1,14 @@
 #ifndef PARAMETERVALUEEDITOR_H
 #define PARAMETERVALUEEDITOR_H
 
-#include "Interface/toolbutton.h"
-#include "parameter.h"
-#include "parameterplot.h"
 #include "qlabel.h"
 #include "qlineedit.h"
-#include "qlineseries.h"
 #include <QWidget>
+
+#include "Interface/toolbutton.h"
+#include "config/parameter.h"
+#include "widgets/parameterplot.h"
+
 
 class ParameterValueEditor : public QWidget
 {

@@ -1,12 +1,12 @@
 #ifndef OVERVIEW_H
 #define OVERVIEW_H
 
-#include "Interface/plantationeditor.h"
+
 #include "Interface/progresswidget.h"
-#include "configoverview.h"
-#include "consolewidget.h"
-#include "hardwareoverview.h"
-#include "tent.h"
+#include "widgets/configoverview.h"
+#include "widgets/consolewidget.h"
+#include "widgets/hardwareoverview.h"
+#include "hardware/tent.h"
 #include <QWidget>
 
 class Overview : public QWidget
@@ -28,7 +28,6 @@ private:
     TopWidget* m_emptyWidget;
     HardwareOverview* m_hardware;
     ConfigOverview* m_config;
-    PlantationEditor* m_plantation;
 
 
 

@@ -2,9 +2,9 @@
 #define CONFIGPROGRESS_H
 
 #include "Interface/progressbar.h"
-#include "growconfig.h"
+#include "config/growconfig.h"
 #include "qlabel.h"
-#include "tent.h"
+#include "hardware/tent.h"
 #include <QWidget>
 
 class ConfigProgress : public QWidget

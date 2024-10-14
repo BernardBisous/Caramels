@@ -14,11 +14,10 @@ SOURCES += \
     Interface/drawerselector.cpp \
     Interface/emailnotifier.cpp \
     Interface/events.cpp \
-    Interface/generalmanager.cpp \
+    hardware/generalmanager.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
     Interface/overview.cpp \
-    Interface/plantationeditor.cpp \
     Interface/progressbar.cpp \
     Interface/progresswidget.cpp \
     Interface/roundedpicture.cpp \
@@ -44,19 +43,18 @@ SOURCES += \
     SMTP/mimetext.cpp \
     SMTP/quotedprintable.cpp \
     SMTP/smtpclient.cpp \
-    chemicalmanager.cpp \
-    configeditor.cpp \
-    configoverview.cpp \
-    configprogress.cpp \
-    configtop.cpp \
-    consolewidget.cpp \
-    deviceeditor.cpp \
-    deviceplot.cpp \
-    devicestate.cpp \
-    eventmanager.cpp \
-    growconfig.cpp \
+    widgets/configeditor.cpp \
+    widgets/configoverview.cpp \
+    widgets/configprogress.cpp \
+    widgets/consolewidget.cpp \
+    widgets/deviceeditor.cpp \
+    widgets/deviceplot.cpp \
+    hardware/devicestate.cpp \
+    config/eventmanager.cpp \
+    config/growconfig.cpp \
     growingtent.cpp \
     hardware/analogsensor.cpp \
+    hardware/chemicalmanager.cpp \
     hardware/booleansensor.cpp \
     hardware/chemicalinjector.cpp \
     hardware/co2manager.cpp \
@@ -72,27 +70,24 @@ SOURCES += \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
     hardware/webcam.cpp \
-    hardwareoverview.cpp \
-    integralplot.cpp \
+    widgets/hardwareoverview.cpp \
+    widgets/integralplot.cpp \
     main.cpp \
-    parameter.cpp \
-    parametereditor.cpp \
-    parameterlistwidget.cpp \
-    parameterplot.cpp \
-    parametervalueeditor.cpp \
-    plantation.cpp \
-    regulatorwidget.cpp \
-    statenotifier.cpp \
-    statewidget.cpp \
-    tent.cpp \
-    tenteditor.cpp \
-    tentlistwidget.cpp \
-    uniteditor.cpp \
-    unitoverview.cpp \
-    unitoverviews.cpp \
-    unitplot.cpp \
-    webcamoverview.cpp \
-    webcamwidget.cpp
+    config/parameter.cpp \
+    widgets/parametereditor.cpp \
+    widgets/parameterlistwidget.cpp \
+    widgets/parameterplot.cpp \
+    widgets/parametervalueeditor.cpp \
+    widgets/regulatorwidget.cpp \
+    hardware/statenotifier.cpp \
+    widgets/statewidget.cpp \
+    hardware/tent.cpp \
+    widgets/tenteditor.cpp \
+    widgets/uniteditor.cpp \
+    widgets/unitoverview.cpp \
+    widgets/unitplot.cpp \
+    widgets/webcamoverview.cpp \
+    widgets/webcamwidget.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
@@ -100,11 +95,9 @@ HEADERS += \
     Interface/drawerselector.h \
     Interface/emailnotifier.h \
     Interface/events.h \
-    Interface/generalmanager.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
     Interface/overview.h \
-    Interface/plantationeditor.h \
     Interface/progressbar.h \
     Interface/progresswidget.h \
     Interface/roundedpicture.h \
@@ -132,19 +125,19 @@ HEADERS += \
     SMTP/quotedprintable.h \
     SMTP/smtpclient.h \
     SMTP/smtpmime_global.h \
-    chemicalmanager.h \
-    configeditor.h \
-    configoverview.h \
-    configprogress.h \
-    configtop.h \
-    consolewidget.h \
-    deviceeditor.h \
-    deviceplot.h \
-    devicestate.h \
-    eventmanager.h \
-    growconfig.h \
+    widgets/configeditor.h \
+    widgets/configoverview.h \
+    widgets/configprogress.h \
+    widgets/consolewidget.h \
+    widgets/deviceeditor.h \
+    widgets/deviceplot.h \
+    hardware/devicestate.h \
+    config/eventmanager.h \
+    config/growconfig.h \
     growingtent.h \
     hardware/Pinout.h \
+    hardware/generalmanager.h \
+    hardware/chemicalmanager.h \
     hardware/analogsensor.h \
     hardware/booleansensor.h \
     hardware/chemicalinjector.h \
@@ -161,26 +154,23 @@ HEADERS += \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
     hardware/webcam.h \
-    hardwareoverview.h \
-    integralplot.h \
-    parameter.h \
-    parametereditor.h \
-    parameterlistwidget.h \
-    parameterplot.h \
-    parametervalueeditor.h \
-    plantation.h \
-    regulatorwidget.h \
-    statenotifier.h \
-    statewidget.h \
-    tent.h \
-    tenteditor.h \
-    tentlistwidget.h \
-    uniteditor.h \
-    unitoverview.h \
-    unitoverviews.h \
-    unitplot.h \
-    webcamoverview.h \
-    webcamwidget.h
+    widgets/hardwareoverview.h \
+    widgets/integralplot.h \
+    config/parameter.h \
+    widgets/parametereditor.h \
+    widgets/parameterlistwidget.h \
+    widgets/parameterplot.h \
+    widgets/parametervalueeditor.h \
+    widgets/regulatorwidget.h \
+    hardware/statenotifier.h \
+    widgets/statewidget.h \
+    hardware/tent.h \
+    widgets/tenteditor.h \
+    widgets/uniteditor.h \
+    widgets/unitoverview.h \
+    widgets/unitplot.h \
+    widgets/webcamoverview.h \
+    widgets/webcamwidget.h
 
 FORMS +=
 

@@ -2,7 +2,7 @@
 #define EMAILNOTIFIER_H
 
 #include "SMTP/smtpclient.h"
-#include "statenotifier.h"
+#include "hardware/statenotifier.h"
 #include <QObject>
 
 class EmailNotifier : public QObject

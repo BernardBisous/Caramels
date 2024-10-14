@@ -5,7 +5,7 @@
 #include "hardware/analogsensor.h"
 #include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
-#include "parameter.h"
+#include "config/parameter.h"
 #include <QObject>
 
 

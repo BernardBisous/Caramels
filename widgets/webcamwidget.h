@@ -13,11 +13,11 @@
 #include <QPixmap>
 #include <QCamera>
 #include <QVideoWidget>
-
 #include <QDateTime>
 #include <QDir>
 #include <QMediaDevices>
-#include <webcamoverview.h>
+
+#include "widgets/webcamoverview.h"
 
 class WebcamWidget : public QWidget
 {

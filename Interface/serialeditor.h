@@ -2,7 +2,7 @@
 #define SERIALEDITOR_H
 
 #include "Interface/menubutton.h"
-#include "tent.h"
+#include "hardware/tent.h"
 #include <QWidget>
 
 class SerialEditor : public QWidget

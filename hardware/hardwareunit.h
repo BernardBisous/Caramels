@@ -4,7 +4,7 @@
 #include "hardware/analogsensor.h"
 #include "hardware/device.h"
 #include "hardware/regulatingtimer.h"
-#include "parameter.h"
+#include "config/parameter.h"
 #include <QObject>
 
 

@@ -1,12 +1,13 @@
 #ifndef EVENTMANAGER_H
 #define EVENTMANAGER_H
 
-#include "Interface/events.h"
-#include "Interface/toolbutton.h"
 #include "qdatetime.h"
 #include "qlabel.h"
 #include <QWidget>
-#include "tent.h"
+
+#include "Interface/events.h"
+#include "Interface/toolbutton.h"
+#include "hardware/tent.h"
 class EventManager : public QWidget
 {
     Q_OBJECT

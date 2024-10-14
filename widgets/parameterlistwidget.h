@@ -3,7 +3,7 @@
 
 #include "Interface/actionwidget.h"
 #include "Interface/scrollarea.h"
-#include "growconfig.h"
+#include "config/growconfig.h"
 #include "hardware/hardwareunit.h"
 #include <QWidget>
 #include <QScrollArea>
