@@ -9,6 +9,7 @@ class Event
 public:
     QString name;
     int hourIndex;
+    int type;
 };
 
 class Events
@@ -21,6 +22,7 @@ public:
     void add(QString name, int h);
     void reset();
     Event next();
+    Event* nextAddr();
     Event at(int i);
     int count();
     QList<Event> list() const;

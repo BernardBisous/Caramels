@@ -211,3 +211,15 @@ void DevicePlot::updateScale()
 
     m_chart->update();
 }
+
+void DevicePlot::setSliderValue(int i)
+{
+    m_slider->setValue(i);
+}
+
+void DevicePlot::setRealTime(bool s)
+{
+    if(s)
+        setSliderValue(100);
+    else setSliderValue(0);
+}

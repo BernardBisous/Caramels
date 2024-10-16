@@ -269,6 +269,7 @@ TopWidget::TopWidget(QWidget *parent):
     b->layout()->addWidget(m_central=new QWidget);
     b->layout()->addWidget(m_bottomSpacer= new QWidget);
     layout()->addWidget(b);
+    m_middleWidget=b;
     layout()->addWidget(m_rightSpacer=new QWidget);
     layout()->setContentsMargins(0,0,0,0);
     layout()->setSpacing(0);
@@ -377,7 +378,12 @@ bool TopWidget::eventFilter(QObject *obj, QEvent *event)
         resetSize();
     }
     return QObject::eventFilter(obj, event);
-   }
+}
+
+QWidget *TopWidget::middleWidget() const
+{
+    return m_middleWidget;
+}
 
 void TopWidget::setDeleteAtEnd(bool newDeleteAtEnd)
 {

@@ -79,6 +79,8 @@ void LightsUnit::regulatorSlot(bool s)
 
 }
 
+
+
 void LightsUnit::reactToParamChanged(Parameter *p, float f)
 {
     if(p==power())
@@ -141,6 +143,11 @@ float LightsUnit::lightPower()
 float LightsUnit::spectrumValue()
 {
     return m_spectrum->currentValue();
+}
+
+SwitchedActuator *LightsUnit::switchPower() const
+{
+    return m_switch;
 }
 
 

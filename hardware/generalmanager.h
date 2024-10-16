@@ -14,6 +14,10 @@ public:
     virtual QList<Device*> interestingDevices();
     virtual void begin();
 
+    AnalogSensor *sensor() const;
+
+    AnalogSensor *sensor12() const;
+
 signals:
 
 private:

@@ -114,6 +114,16 @@ void WaterLevelManager::switchDry()
     regulator()->userSwitch();
 }
 
+SwitchedActuator *WaterLevelManager::pump() const
+{
+    return m_pump;
+}
+
+Pump *WaterLevelManager::entryValve() const
+{
+    return m_entryValve;
+}
+
 
 
 

@@ -5,6 +5,7 @@
 #include "Interface/drawerselector.h"
 #include "Interface/overview.h"
 #include "hardware/tent.h"
+#include "widgets/archivewidget.h"
 #include "widgets/uniteditor.h"
 #include "widgets/webcamwidget.h"
 #include <QMainWindow>
@@ -21,6 +22,9 @@ public:
     void prepareSelector();
     void showSettings(bool s);
 
+
+
+
 public slots:
     void goToIndex(int i);
     void help();
@@ -30,6 +34,7 @@ public slots:
     void quitSlot();
     void settingsSlot();
     void deviceTrigSlot(int i);
+    void settings();
 
 signals:
 
@@ -50,6 +55,7 @@ private:
     ToolButton* m_quit;
     ToolButton* m_settings;
     QWidget* m_settingsWidget;
+    ArchiveWidget* m_archives;
   //  ParameterValueEditor* m_parameter;
 
 };

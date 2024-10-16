@@ -40,6 +40,8 @@ public:
     void clear();
     void removeMargins();
     void fillList(QStringList s);
+    void setCurrent(int i);
+
     void addWidget(QWidget *w);
     void addActionText(QString s);
     void addActionWidget(ActionWidget*a);
@@ -48,8 +50,10 @@ public:
     void resizeEvent(QResizeEvent *event) override;
     QWidget* at(int i);
     int indexOf(QWidget*w);
+    QList<ActionWidget*> actionWidgets();
     QList<QWidget*> widgets();
     void scrollDown();
+    ActionWidget* currentAction();
 
 signals:
     void trigger(int i, QWidget*);

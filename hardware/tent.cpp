@@ -304,6 +304,18 @@ QList<Device *> Tent::devices() const
     return m_devices;
 }
 
+QList<Actuator *> Tent::externalDevices()
+{
+    QList<Actuator *> out;
+
+    out<<m_pumps->pump();
+    out<<m_pumps->entryValve();
+    out<<m_lights->switchPower();
+
+
+    return out;
+}
+
 int Tent::indexOfDevice(Device *s)
 {
 
@@ -501,6 +513,11 @@ void Tent::tankFilledSlot(bool s)
     //storeResults();
 }
 
+GeneralManager *Tent::general() const
+{
+    return m_general;
+}
+
 StateNotifier *Tent::state() const
 {
     return m_state;
@@ -519,6 +536,46 @@ void Tent::updateInternalColor()
 
     else
         setInternalColorId(2);
+}
+
+bool Tent::needsInstall()
+{
+    return currentGrowingMode()==undefined_mode;
+}
+
+Tent::GrowingMode Tent::currentGrowingMode()
+{
+    QSettings settings("YourOrganization", "TentSettings"); // Replace with your organization and application names
+
+    if(!settings.contains("Growing"))
+        return undefined_mode;
+    return GrowingMode(settings.value("Growing").toInt());
+}
+
+
+
+void Tent::setGrowingMode(GrowingMode m)
+{
+    int v=m;
+    QSettings settings("YourOrganization", "TentSettings"); // Replace with your organization and application names
+    settings.setValue("Growing", v);
+}
+
+Tent::ChemicalMode Tent::currentChemical()
+{
+    QSettings settings("YourOrganization", "TentSettings"); // Replace with your organization and application names
+
+    if(!settings.contains("Chemical"))
+        return undefined_chemichals;
+
+    return ChemicalMode(settings.value("Chemical").toInt());
+}
+
+void Tent::setChemicalMode( Tent::ChemicalMode m)
+{
+    int v=m;
+    QSettings settings("YourOrganization", "TentSettings"); // Replace with your organization and application names
+    settings.setValue("Chemical", v);
 }
 
 

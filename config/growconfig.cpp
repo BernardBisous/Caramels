@@ -11,7 +11,7 @@
 #define SUFFIX_TXT ".txt"
 #define CSV_SEPARATOR ","
 
-GrowConfig::GrowConfig():m_parameters(),m_name("Grape Gazz 🥵")
+GrowConfig::GrowConfig():m_parameters(),m_name("Grape Gazz 🥵"),m_result(0)
 {
     m_events=new Events;
 
@@ -57,6 +57,11 @@ void GrowConfig::save(QDataStream &c)
 int GrowConfig::countParameters()
 {
     return m_parameters.count();
+}
+
+void GrowConfig::loadArchive(QString dir)
+{
+
 }
 
 
@@ -157,6 +162,16 @@ void GrowConfig::saveCsv(QString file)
         s<<line+m_parameters[i]->csvLine(sep);
     }
     f.close();
+}
+
+float GrowConfig::getResult() const
+{
+    return m_result;
+}
+
+void GrowConfig::setResult(float newResult)
+{
+    m_result = newResult;
 }
 
 

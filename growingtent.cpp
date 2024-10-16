@@ -1,11 +1,13 @@
 #include "growingtent.h"
+#include "widgets/archivewidget.h"
+#include "widgets/setupwizzard.h"
 
 
 #define HELP_FILE "help.pdf"
 #include <QDesktopServices>
 #include <QApplication>
 #include <QStyleFactory>
-enum {General=0,Hardware};
+enum {General=0,Hardware,Archive=50};
 GrowingTent::GrowingTent(QWidget* parent)
     : QMainWindow(parent)
 
@@ -15,20 +17,15 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_currentConfig=new GrowConfig;
     m_tent=new Tent;
     m_tent->setConfig(m_currentConfig);
-
     m_tent->begin();
 
     QWidget* bar=new QWidget;
     bar->setAutoFillBackground(true);
     bar->setBackgroundRole(QPalette::Base);
-
     bar->setLayout(new QHBoxLayout);
     QLabel* pix;
-
     bar->layout()->addWidget(pix=new QLabel);
     pix->setPixmap(QPixmap(":/icons/logo").scaled(40,40,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-
-
 
     QWidget* spd=new QWidget;
     spd->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
@@ -58,25 +55,20 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     QWidget* mc=new QWidget;
     mc->setLayout(new QHBoxLayout);
-
-
     mc->layout()->addWidget(m_tentOverview=new HardwareOverview);
     m_tentOverview->handle(m_tent);
     m_tentOverview->setFixedWidth(200);
-
     mc->layout()->addWidget(m_stack=new QStackedWidget);
 
     m_settingsWidget=new QWidget;
     m_settingsWidget->setLayout(new QVBoxLayout);
     m_settingsWidget->layout()->addWidget(m_devices=new DeviceListWidget);
-   // m_settingsWidget->layout()->addWidget(m_parameter=new ParameterValueEditor);
     m_settingsWidget->setFixedWidth(250);
     m_settingsWidget->hide();
     m_settingsWidget->layout()->setContentsMargins(0,0,0,0);
 
     mc->layout()->addWidget(m_settingsWidget);
     mc->layout()->addWidget(m_console=new ConsoleWidget);
-
     c->layout()->addWidget(mc);
     m_console->setTent(m_tent);
     m_console->setEnableConsole(false);
@@ -84,29 +76,24 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     m_stack->addWidget(m_overview=new ConfigOverview);
     m_overview->setTent(m_tent);
-
-
     m_stack->addWidget(m_tentEdit=new UnitEditor(this));
-    connect(m_tentEdit,SIGNAL(editDeviceRequest(Device*)),this,SLOT(editDevice(Device*)));
-    connect(m_tentEdit,SIGNAL(editParameterRequest(Parameter*)),this,SLOT(editParam(Parameter*)));
-
-    /*
-    QFont f=font();
-    f.setPointSize(f.pointSize()+15);
-    m_nameLab->setFont(f);
-    */
-
-
+    m_stack->addWidget(m_archives=new ArchiveWidget);
     prepareSelector();
-
-
-    connect(m_devices,SIGNAL(edit(int)),this,SLOT(deviceTrigSlot(int)));
     setCentralWidget(c);
 
-   // m_nameLab->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    connect(m_tentEdit,SIGNAL(editDeviceRequest(Device*)),this,SLOT(editDevice(Device*)));
+    connect(m_tentEdit,SIGNAL(editParameterRequest(Parameter*)),this,SLOT(editParam(Parameter*)));
+    connect(m_devices,SIGNAL(edit(int)),this,SLOT(deviceTrigSlot(int)));
     connect(m_selector,SIGNAL(triggered(int)),this,SLOT(goToIndex(int)));
 
     goToIndex(General);
+
+
+
+   // settings();
+
+
+
 }
 
 void GrowingTent::loadStyle()
@@ -175,6 +162,7 @@ void GrowingTent::prepareSelector()
     {
         ls<<ld[i]->name();
     }
+    ls<<"Récoltes";
     m_selector->setActions(ls);
 }
 
@@ -201,7 +189,13 @@ void GrowingTent::showSettings(bool s)
 void GrowingTent::goToIndex(int i)
 {
 
-    if(i>=Hardware)
+    if(i==m_selector->list().count()-1)
+    {
+        m_stack->setCurrentIndex(m_stack->count()-1);
+        m_selector->setActive(m_selector->list().count()-1);
+        return;
+    }
+    else if(i>=Hardware)
     {
         HardwareUnit*s=m_tent->units()[i-Hardware];
         m_stack->setCurrentIndex(Hardware);
@@ -218,8 +212,7 @@ void GrowingTent::goToIndex(int i)
             m_devices->fillList(m_tent->devices());
     }
 
-  //  m_parameter->hide();
-  //  m_parameter->setPlot(nullptr);
+
 
     m_selector->setActive(i);
 }
@@ -298,4 +291,10 @@ void GrowingTent::deviceTrigSlot(int )
 {
 
     //react to device clicked in the list
+}
+
+void GrowingTent::settings()
+{
+    SetupWizzard* setup=new SetupWizzard(m_tent,this);
+    setup->start();
 }

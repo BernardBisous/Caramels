@@ -32,6 +32,10 @@ public:
     QList<RealTimeValue> injectedHitstoric();
 
 
+    Pump *entryValve() const;
+
+    SwitchedActuator *pump() const;
+
 signals:
     void fillingTank(bool s);
 

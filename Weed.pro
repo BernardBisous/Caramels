@@ -13,7 +13,9 @@ SOURCES += \
     Interface/devicelistwidget.cpp \
     Interface/drawerselector.cpp \
     Interface/emailnotifier.cpp \
-    Interface/events.cpp \
+    config/archive.cpp \
+    config/events.cpp \
+    hardware/devicetester.cpp \
     hardware/generalmanager.cpp \
     Interface/menubutton.cpp \
     Interface/namelabel.cpp \
@@ -43,6 +45,7 @@ SOURCES += \
     SMTP/mimetext.cpp \
     SMTP/quotedprintable.cpp \
     SMTP/smtpclient.cpp \
+    widgets/archivewidget.cpp \
     widgets/configeditor.cpp \
     widgets/configoverview.cpp \
     widgets/configprogress.cpp \
@@ -70,6 +73,7 @@ SOURCES += \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
     hardware/webcam.cpp \
+    widgets/eventwizzard.cpp \
     widgets/hardwareoverview.cpp \
     widgets/integralplot.cpp \
     main.cpp \
@@ -80,6 +84,7 @@ SOURCES += \
     widgets/parametervalueeditor.cpp \
     widgets/regulatorwidget.cpp \
     hardware/statenotifier.cpp \
+    widgets/setupwizzard.cpp \
     widgets/statewidget.cpp \
     hardware/tent.cpp \
     widgets/tenteditor.cpp \
@@ -87,14 +92,14 @@ SOURCES += \
     widgets/unitoverview.cpp \
     widgets/unitplot.cpp \
     widgets/webcamoverview.cpp \
-    widgets/webcamwidget.cpp
+    widgets/webcamwidget.cpp \
+    widgets/wizzard.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
     Interface/devicelistwidget.h \
     Interface/drawerselector.h \
     Interface/emailnotifier.h \
-    Interface/events.h \
     Interface/menubutton.h \
     Interface/namelabel.h \
     Interface/overview.h \
@@ -125,6 +130,10 @@ HEADERS += \
     SMTP/quotedprintable.h \
     SMTP/smtpclient.h \
     SMTP/smtpmime_global.h \
+    config/archive.h \
+    config/events.h \
+    hardware/devicetester.h \
+    widgets/archivewidget.h \
     widgets/configeditor.h \
     widgets/configoverview.h \
     widgets/configprogress.h \
@@ -154,6 +163,7 @@ HEADERS += \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
     hardware/webcam.h \
+    widgets/eventwizzard.h \
     widgets/hardwareoverview.h \
     widgets/integralplot.h \
     config/parameter.h \
@@ -163,6 +173,7 @@ HEADERS += \
     widgets/parametervalueeditor.h \
     widgets/regulatorwidget.h \
     hardware/statenotifier.h \
+    widgets/setupwizzard.h \
     widgets/statewidget.h \
     hardware/tent.h \
     widgets/tenteditor.h \
@@ -170,7 +181,8 @@ HEADERS += \
     widgets/unitoverview.h \
     widgets/unitplot.h \
     widgets/webcamoverview.h \
-    widgets/webcamwidget.h
+    widgets/webcamwidget.h \
+    widgets/wizzard.h
 
 FORMS +=
 
@@ -181,6 +193,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Config.qrc \
+    Images.qrc \
     emails.qrc \
     icons.qrc
 

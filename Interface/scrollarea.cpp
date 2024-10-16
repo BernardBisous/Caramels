@@ -111,6 +111,15 @@ void ScrollArea::fillList(QStringList s)
     addSpacer();
 }
 
+void ScrollArea::setCurrent(int index)
+{
+    auto ls=actionWidgets();
+    for(int i=0;i<ls.count();i++)
+    {
+        ls[i]->setChecked(i==index);
+    }
+}
+
 void ScrollArea::addWidget(QWidget*w)
 {
     if(!widget())
@@ -164,6 +173,23 @@ int ScrollArea::indexOf(QWidget *w)
     return widgets().indexOf(w);
 }
 
+QList<ActionWidget *> ScrollArea::actionWidgets()
+{
+    QList<ActionWidget *> out;
+    for(int i=0;i<widget()->layout()->count();i++)
+    {
+        auto it=widget()->layout()->itemAt(i);
+                  if(it && it->widget())
+                  {
+                      ActionWidget* a=dynamic_cast<ActionWidget*>(it->widget());
+                      if(a)
+                        out<<a;
+                  }
+
+    }
+    return out;
+}
+
 QList<QWidget *> ScrollArea::widgets()
 {
     QList<QWidget *> out;
@@ -179,6 +205,18 @@ QList<QWidget *> ScrollArea::widgets()
 void ScrollArea::scrollDown()
 {
     verticalScrollBar()->setValue(verticalScrollBar()->maximum());
+}
+
+ActionWidget *ScrollArea::currentAction()
+{
+    auto ls=actionWidgets();
+    for(int i=0;i<ls.count();i++)
+    {
+        if(ls[i]->checked())
+            return ls[i];
+    }
+    return nullptr;
+
 }
 
 void ScrollArea::trigSlot()

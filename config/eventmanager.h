@@ -5,7 +5,7 @@
 #include "qlabel.h"
 #include <QWidget>
 
-#include "Interface/events.h"
+#include "config/events.h"
 #include "Interface/toolbutton.h"
 #include "hardware/tent.h"
 class EventManager : public QWidget
@@ -14,8 +14,9 @@ class EventManager : public QWidget
 public:
     explicit EventManager(QWidget *parent = nullptr);
     void handle(Events* e,Tent* t);
-
+    void startNext();
     void showAll(bool s);
+
 
 
     QDateTime startedDate() const;
@@ -26,6 +27,8 @@ public slots:
     void start();
     void cancel();
     void refresh();
+    void wizzardFinished();
+    void wizzardCanceled();
 
 
 

@@ -1,7 +1,7 @@
 #ifndef GROWCONFIG_H
 #define GROWCONFIG_H
 
-#include "Interface/events.h"
+#include "config/events.h"
 #include "qdatetime.h"
 #include <QList>
 #include <QString>
@@ -17,6 +17,7 @@ public:
     bool save();
     bool save(QString s);
     int countParameters();
+    void loadArchive(QString dir);
     bool loadCsv(QString filename);
     int indexOf(Parameter*c);
     void save(QDataStream&c);
@@ -55,11 +56,15 @@ public:
 
     void saveCsv(QString file);
 
+    float getResult() const;
+    void setResult(float newResult);
+
 private:
     QList<Parameter*> m_parameters;
     Events* m_events;
     QString m_name;
     int m_maXHours;
+    float m_result;
 };
 
 

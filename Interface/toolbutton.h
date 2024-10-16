@@ -36,12 +36,14 @@ protected:
     QLabel* m_title;
     LayoutMode m_layoutMode;
 };
+
+
 class ToolButtonText : public ToolButton
 {
     Q_OBJECT
 public:
 
-    explicit ToolButtonText(QWidget *parent = nullptr);
+    explicit ToolButtonText(QString title,QString icon="",QString subText="",QWidget *parent = nullptr);
     void setSubText(QString );
     QString subText();
 
@@ -52,20 +54,6 @@ public slots:
 protected:
     QLabel* m_subText;
 
-};
-
-
-class ToolCenterButton : public ToolButtonText
-{
-    Q_OBJECT
-public:
-    explicit ToolCenterButton(QWidget *parent = nullptr);
-
-signals:
-
-public slots:
-
-private:
 };
 
 

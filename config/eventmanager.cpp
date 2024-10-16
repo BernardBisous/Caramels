@@ -2,6 +2,7 @@
 #include "qboxlayout.h"
 #include "qdatetime.h"
 #include "config/parameter.h"
+#include "widgets/eventwizzard.h"
 EventManager::EventManager(QWidget *parent)
     : QWidget{parent},m_tent(nullptr),m_abstracted(true),
       m_eventStart(),m_client(nullptr)
@@ -65,6 +66,7 @@ void EventManager::handle(Events *e, Tent *t)
     refresh();
 }
 
+
 void EventManager::refresh()
 {
     if(!m_tent || !m_client)
@@ -107,6 +109,24 @@ void EventManager::refresh()
 
     }
     m_listLabel->setText(sl);
+}
+
+void EventManager::wizzardFinished()
+{
+    qDebug()<<"finishh";
+    int m=m_eventStart.secsTo(QDateTime::currentDateTime());
+    m_tent->console("Event start "+m_client->list().first().name);
+    m_eventStart=QDateTime();
+    m_startButton->setText("Start");
+    m_skipButton->setText("Skip");
+    m_client->registerLastEvent(m);
+    m_client->skipNext();
+}
+
+void EventManager::wizzardCanceled()
+{
+    qDebug()<<"cancelll";
+    cancel();
 }
 
 void EventManager::showAll(bool s)
@@ -152,22 +172,18 @@ void EventManager::start()
 
     if(m_eventStart.isValid())
     {
-        int m=m_eventStart.secsTo(QDateTime::currentDateTime());
-
-        m_tent->console("Event start "+m_client->list().first().name);
-        m_eventStart=QDateTime();
-        m_startButton->setText("Start");
-        m_skipButton->setText("Skip");
-        m_client->registerLastEvent(m);
-        m_client->skipNext();
+        wizzardFinished();
     }
     else
     {
+        EventWizzard* ew=EventWizzard::executeEvent(m_client->nextAddr());
+        connect(ew,SIGNAL(canceled()),this,SLOT(wizzardCanceled()));
+        connect(ew,SIGNAL(finished()),this,SLOT(wizzardFinished()));
+
         m_eventStart=QDateTime::currentDateTime();
         m_skipButton->setText("Cancel");
         m_startButton->setText("Done");
         m_tent->console("Event skip "+m_client->list().first().name);
-
     }
 
     refresh();

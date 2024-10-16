@@ -9,7 +9,7 @@
 ActionWidget::ActionWidget(QWidget *parent)
     : QWidget{parent},m_hover(false),m_press(false),
       m_appear(false),m_radius(15),m_checked(false),
-    m_hoverable(true),m_invertText(true), m_ignoreClick(false),m_mode(normal)
+    m_hoverable(true),m_invertText(true), m_ignoreClick(false),m_mode(appearingBorder)
 {
 
 }
@@ -128,12 +128,8 @@ void ActionWidget::mouseReleaseEvent(QMouseEvent *e)
 QBrush ActionWidget::backgroundBrush()
 {
     QBrush b1;
-
-    if (m_checked)
+    if(m_press && !m_ignoreClick)
         b1= palette().highlight();
-
-    else if(m_press && !m_ignoreClick)
-        b1= palette().button();
 
     else if(!m_hover)
         b1= palette().base();
@@ -150,7 +146,10 @@ QPen ActionWidget::borderPen()
     QPen p;
     p.setColor(palette().highlight().color());
 
-    if(m_mode==noBorder || (m_appear && !m_hover))
+    if(m_checked)
+        p.setColor(palette().highlight().color());
+
+    else if(m_mode==noBorder || (m_appear && !m_hover))
         p.setColor(b.color());
 
     else if(m_mode==highlighted)

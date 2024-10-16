@@ -68,6 +68,14 @@ Event Events::next()
     return m_list.first();
 }
 
+Event *Events::nextAddr()
+{
+    if(m_list.isEmpty())
+        return nullptr;
+
+    return &m_list[0];
+}
+
 Event Events::at(int i)
 {
     if(i<0 || m_list.isEmpty()||i>m_list.count())

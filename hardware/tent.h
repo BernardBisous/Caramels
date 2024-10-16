@@ -29,6 +29,9 @@ class Tent : public QObject
 {
     Q_OBJECT
 public:
+    typedef enum growingMode{undefined_mode, conventionnal, aquapony,aeropony}GrowingMode;
+    typedef enum chemicalMode{undefined_chemichals, no_injection, PH_injection,Full_injection}ChemicalMode;
+
     explicit Tent(QObject *parent = nullptr);
     void initDevices();
     void begin();
@@ -37,6 +40,7 @@ public:
     void start();
     void finish();
     void setStartDate(QDateTime t);
+
 
     void clearAllData();
     void mapDevices();
@@ -56,6 +60,7 @@ public:
     QList<HardwareUnit *> units() const;
     QList<HardwareUnit *> unitsForParameter(Parameter*p);
     QList<Device *> devices() const;
+    QList<Actuator*> externalDevices();
     int indexOfDevice(Device*);
     QString name() const;
     void setName(const QString &newName);
@@ -97,6 +102,16 @@ public:
 
     void setInternalColorId(int id);
     void updateInternalColor();
+
+
+    bool needsInstall();
+    GrowingMode currentGrowingMode();
+    void setGrowingMode(GrowingMode m);
+    ChemicalMode currentChemical();
+    void setChemicalMode(ChemicalMode m);
+
+
+    GeneralManager *general() const;
 
 public slots:
     void console(QString s);

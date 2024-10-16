@@ -46,4 +46,14 @@ void GeneralManager::begin()
     m_relay->setStateHigh(true);
 }
 
+AnalogSensor *GeneralManager::sensor() const
+{
+    return m_sensor;
+}
+
+AnalogSensor *GeneralManager::sensor12() const
+{
+    return m_sensor12;
+}
+
 

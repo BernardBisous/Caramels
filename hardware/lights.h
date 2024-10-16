@@ -51,6 +51,8 @@ public:
     Parameter* spectrum(){return parameterFromId(LIGHTS_SPECTRUM);}
     Parameter* power(){return parameterFromId(LIGHTS_POWER);}
 
+    SwitchedActuator *switchPower() const;
+
 public slots:
     void regulatorSlot(bool s);
 

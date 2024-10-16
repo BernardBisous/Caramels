@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "progressbar.h"
-#include "toolbutton.h"
 
 class QLabel;
 class QPushButton;
@@ -22,6 +21,8 @@ public:
     void setDeleteAtEnd(bool newDeleteAtEnd);
     void hideSpacers(bool s);
 
+    QWidget *middleWidget() const;
+
 private slots:
     void timerSlot();
 signals:
@@ -35,6 +36,7 @@ protected:
     QWidget* m_topSpacer;
     QWidget* m_rightSpacer;
     QWidget* m_bottomSpacer;
+    QWidget* m_middleWidget;
     QWidget* m_central;
 
 private:

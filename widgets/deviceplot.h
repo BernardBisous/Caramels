@@ -22,8 +22,10 @@ public:
     void setXrange(int ms);
     void initStyle();
     void setRefreshEnabled(bool s);
-    void setXRangeSecs(int newXRangeMs);
+    void setXRangeSecs(int newXRangeS);
     void updateScale();
+    void setSliderValue(int i);
+    void setRealTime(bool s);
     void mousePressEvent(QMouseEvent *event) override
         {
             if (event->button() == Qt::LeftButton) {

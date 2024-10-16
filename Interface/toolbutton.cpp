@@ -178,67 +178,10 @@ QMovie *ToolButton::movie() const
 
 
 
-ToolCenterButton::ToolCenterButton(QWidget *parent):
-    ToolButtonText(parent)
-{
-    //  setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
 
 
-
-
-    /*
-
-    QWidget* w=new QWidget;
-    w->setLayout(new QVBoxLayout);
-    w->layout()->addWidget(m_textLabel=new QLabel("text"));
-    w->layout()->addWidget(m_descriptionLabel=new QLabel("subtext"));
-    w->layout()->setContentsMargins(0,0,0,0);
-    w->setSizePolicy (QSizePolicy::Expanding,QSizePolicy::Minimum);
-
-    setLayout(new QHBoxLayout);
-    layout()->addWidget(m_icon=new QLabel);
-    m_icon->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    m_icon->setFixedWidth(60);
-    layout()->addWidget(w);
-
-    QFont f=m_textLabel->font();
-    f.setPointSize(16);
-    m_textLabel->setFont(f);
-    m_textLabel->setWordWrap(false);
-    m_descriptionLabel->setWordWrap(false);
-
- */
-
-    /*
-    layout()->addWidget(m_nextButton=new ToolButton);
-    layout()->addWidget(m_playButton=new ToolButton);
-
-    m_nextButton->setIcon(":/icons/playNext");
-    m_playButton->setIcon(":/icons/play");
-
-    m_nextButton->setIconSize(QSize(30,30));
-    m_playButton->setIconSize(QSize(30,30));
-
-
-*/
-
-    setCheckable(true);
-
-}
-
-/*
-ToolButton *ToolCenterButton::playButton() const
-{
-    return m_playButton;
-}
-
-ToolButton *ToolCenterButton::nextButton() const
-{
-    return m_nextButton;
-}
-*/
-
-ToolButtonText::ToolButtonText(QWidget *parent): ToolButton{QString(),QString(),parent}
+ToolButtonText::ToolButtonText(QString title, QString icon, QString subText, QWidget *parent):
+    ToolButton(title,icon,parent)
 {
     while(layout()->takeAt(0));
 
@@ -259,9 +202,11 @@ ToolButtonText::ToolButtonText(QWidget *parent): ToolButton{QString(),QString(),
     m_title->setFont(f);
 
     m_subText->setWordWrap(true);
+    setSubText(subText);
 
-  //  m_title->setAlignment(Qt::AlignLeft);
+
 }
+
 
 void ToolButtonText::setSubText(QString s)
 {
