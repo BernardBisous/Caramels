@@ -2,6 +2,7 @@
 #define TENT_H
 
 
+#include "config/archive.h"
 #include "config/growconfig.h"
 #include "hardware/co2manager.h"
 #include "hardware/hardwareunit.h"
@@ -40,7 +41,6 @@ public:
     void start();
     void finish();
     void setStartDate(QDateTime t);
-
 
     void clearAllData();
     void mapDevices();

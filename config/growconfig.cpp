@@ -286,7 +286,7 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
             if(event)
             {
-                m_events->add(s,hour);
+                m_events->add(s.toInt(),hour);
             }
             else
             {

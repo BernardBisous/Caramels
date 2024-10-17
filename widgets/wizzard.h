@@ -4,8 +4,11 @@
 #include "Interface/progresswidget.h"
 #include "Interface/scrollarea.h"
 #include "Interface/toolbutton.h"
+#include "hardware/webcam.h"
 #include "qgraphicsview.h"
+#include "qlineedit.h"
 #include "qstackedwidget.h"
+#include "widgets/webcamwidget.h"
 
 #include <QWidget>
 
@@ -22,6 +25,8 @@ class WizzardSequence: public QWidget
 {
     Q_OBJECT
 public:
+
+
     explicit WizzardSequence(bool anim=false,QWidget *parent = nullptr);
     virtual WizzardResult computeResult();
     virtual void start();
@@ -29,6 +34,7 @@ public:
     QWidget* anchorWidget();
     void loadData(QString s );
     void load(QJsonObject a,QString prefix);
+    void addWidget(QWidget* w);
 
 
     void setTexts(QString title,QString sub);
@@ -64,6 +70,41 @@ protected:
     bool m_isWelcome;
     int m_writeCounter;
     bool m_writeSubs;
+
+};
+
+class WizzardValue: public WizzardSequence
+{
+    Q_OBJECT
+public:
+    explicit WizzardValue(QString valName="", QString valDefaul="", QString description="", QString units="", QWidget *parent = nullptr);
+    void setUnits(QString s);
+    QString stringValue();
+    virtual WizzardResult computeResult();
+
+private slots:
+    void editSlot();
+
+private:
+    QLineEdit* m_value;
+    QLabel* m_units;
+};
+
+class WizzardCapture: public WizzardSequence
+{
+    Q_OBJECT
+public:
+    explicit WizzardCapture(Webcam* w,QWidget*parent=nullptr);
+    virtual WizzardResult computeResult();
+    QPixmap pixmapResult();
+
+private slots:
+    void savedSlot(QString s);
+private:
+    WebcamWidget* m_camWidget;
+    Webcam* m_cam;
+    QString m_path;
+
 
 };
 
@@ -103,13 +144,13 @@ public:
     virtual void start(int timeout=0);
     virtual void reactToSequenceFinished(WizzardSequence*s,WizzardResult r);
     void load(QString sPath,QString prefix);
-    void finish();
+    virtual void finish();
     void addSequence(WizzardSequence*r);
     void startSequence(int i);
     void setClosable(bool newClosable);
     void resizeEvent(QResizeEvent *event) ;
     void load(QJsonObject a,QString prefix);
-    virtual WizzardSequence* sequenceFactory(QJsonArray o , int id,QString prefix);
+    WizzardSequence* sequenceFactory(QJsonArray o , int id,QString prefix);
     virtual WizzardSequence* sequenceFactory(int id);
     WizzardSequence* currentSequence();
     QStringList names();

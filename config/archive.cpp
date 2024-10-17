@@ -4,7 +4,7 @@
 #include "qjsonobject.h"
 #include <QFile>
 
-Archive::Archive()
+Archive::Archive():result(0),pixmap(),plants(0),meta()
 {
 
 }
@@ -55,7 +55,7 @@ void Archive::load(QString path)
    end= QDate::fromString(o["END"].toString(),"dd.MM.yyyy");
    pixmap=QPixmap(path+"/"+o["PICTURE"].toString());
 
-   qDebug()<<"loaded resss"<<result<<o["RESULT"];
+
 
 }
 
@@ -65,19 +65,7 @@ void Archive::save(QString path)
     p.remove(" ");
 
     QDir d(path);
-    QStringList s = d.entryList(QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
 
-    int i=1;
-    while(s.contains(p))
-    {
-        p=name;
-        p.remove(" ");
-        p.append(QString::number(i));
-        i++;
-    }
-
-    d.mkdir(p);
-    d.cd(p);
 
     QJsonObject o;
     o["NAME"]=name;
@@ -97,13 +85,13 @@ void Archive::save(QString path)
         o[k]=meta[k];
     }
 
-
-
     QFile file(d.absoluteFilePath("archive.json"));
+
     QJsonDocument jsonDocument(o);
+    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     file.write(jsonDocument.toJson());
     file.close();
 
-    pixmap.save("picture.png");
+    pixmap.save(d.absoluteFilePath("picture.png"));
 
 }

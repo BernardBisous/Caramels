@@ -125,7 +125,6 @@ void Tent::exportAll(QString dir)
     QDesktopServices::openUrl(root.absolutePath());
 }
 
-
 int Tent::currentHourIndex()
 {
     int h=m_startedDate.secsTo(QDateTime::currentDateTime())/Parameter::timeMultiplicator();
@@ -271,6 +270,8 @@ void Tent::setStartDate(QDateTime t)
     start();
     emit dateChanged(t);
 }
+
+
 
 void Tent::clearAllData()
 {

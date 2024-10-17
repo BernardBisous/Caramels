@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/Images">
         <file alias="default">lib/defaultImage.png</file>
+        <file alias="archive">lib/ArchivePic.png</file>
+        <file alias="balance">lib/balance.png</file>
     </qresource>
 </RCC>

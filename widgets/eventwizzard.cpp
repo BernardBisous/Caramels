@@ -1,23 +1,22 @@
 #include "eventwizzard.h"
+#include "hardware/tent.h"
 #include "qapplication.h"
 #define PATH_FILES "events"
-EventWizzard::EventWizzard(Event *e, QWidget *parent)
-    : Wizzard{parent},m_client(e)
+#include "constants.h"
+
+EventWizzard::EventWizzard(Tent *t, Event *e, QWidget *parent)
+    : Wizzard{parent},m_client(e),m_tente(t)
 {
     m_deleteAtEnd=true;
     loadEventName(e->name);
 
 }
 
-EventWizzard* EventWizzard::executeEvent(Event *e)
+EventWizzard* EventWizzard::executeEvent(Tent *t, Event *e)
 {
     if(e)
     {
-        EventWizzard*w=nullptr;
-        if(e->type==1)
-            w=new FinalWizzard(e,QApplication::activeWindow());
-        else
-            w=new EventWizzard(e,QApplication::activeWindow());
+        EventWizzard*w=new EventWizzard(t,e,QApplication::activeWindow());
 
         w->start();
 
@@ -31,7 +30,14 @@ void EventWizzard::loadEventName(QString name)
     load(name+".json",QString(PATH_FILES)+"/");
 }
 
-FinalWizzard::FinalWizzard(Event *e, QWidget *parent):EventWizzard(e,parent)
+
+
+ArchiveSequence::ArchiveSequence(Tent *e, QWidget *parent):
+    WizzardSequence(false,parent),m_tente(e)
 {
-    qDebug()<<"Loaded finL ";
+    setName("Archivage");
+    setTexts("Concluons la récolte avec quelques données",
+             "Cela est la dernière étape ! Tout devrait être terminé:\n - Le produit est conditionné\n - La tente est propre et prette à recommancer");
+
+
 }

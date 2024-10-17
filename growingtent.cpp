@@ -1,7 +1,7 @@
 #include "growingtent.h"
 #include "widgets/archivewidget.h"
 #include "widgets/setupwizzard.h"
-
+#include "widgets/archivewizzard.h"
 
 #define HELP_FILE "help.pdf"
 #include <QDesktopServices>
@@ -91,6 +91,7 @@ GrowingTent::GrowingTent(QWidget* parent)
 
 
    // settings();
+    archive();
 
 
 
@@ -298,3 +299,16 @@ void GrowingTent::settings()
     SetupWizzard* setup=new SetupWizzard(m_tent,this);
     setup->start();
 }
+
+void GrowingTent::archive()
+{
+    auto a=ArchiveWizzard::archive(m_tent,this);
+    connect(a,SIGNAL(archived(Archive)),this,SLOT(archivedSlot()));
+}
+
+void GrowingTent::archivedSlot()
+{
+     m_archives->load();
+
+}
+

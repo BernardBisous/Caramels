@@ -176,7 +176,7 @@ void EventManager::start()
     }
     else
     {
-        EventWizzard* ew=EventWizzard::executeEvent(m_client->nextAddr());
+        EventWizzard* ew=EventWizzard::executeEvent(m_tent,m_client->nextAddr());
         connect(ew,SIGNAL(canceled()),this,SLOT(wizzardCanceled()));
         connect(ew,SIGNAL(finished()),this,SLOT(wizzardFinished()));
 

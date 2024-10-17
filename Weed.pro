@@ -46,6 +46,7 @@ SOURCES += \
     SMTP/quotedprintable.cpp \
     SMTP/smtpclient.cpp \
     widgets/archivewidget.cpp \
+    widgets/archivewizzard.cpp \
     widgets/configeditor.cpp \
     widgets/configoverview.cpp \
     widgets/configprogress.cpp \
@@ -132,8 +133,10 @@ HEADERS += \
     SMTP/smtpmime_global.h \
     config/archive.h \
     config/events.h \
+    constants.h \
     hardware/devicetester.h \
     widgets/archivewidget.h \
+    widgets/archivewizzard.h \
     widgets/configeditor.h \
     widgets/configoverview.h \
     widgets/configprogress.h \

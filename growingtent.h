@@ -8,6 +8,7 @@
 #include "widgets/archivewidget.h"
 #include "widgets/uniteditor.h"
 #include "widgets/webcamwidget.h"
+#include "config/archive.h"
 #include <QMainWindow>
 #include <QWidget>
 #include <QStackedWidget>
@@ -21,10 +22,6 @@ public:
     HardwareUnit* currentUnit();
     void prepareSelector();
     void showSettings(bool s);
-
-
-
-
 public slots:
     void goToIndex(int i);
     void help();
@@ -35,7 +32,8 @@ public slots:
     void settingsSlot();
     void deviceTrigSlot(int i);
     void settings();
-
+    void archive();
+    void archivedSlot();
 signals:
 
 private:

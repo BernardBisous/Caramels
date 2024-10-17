@@ -9,11 +9,15 @@
 #include "qlabel.h"
 #include <QWidget>
 
+
+
+
 class ArchiveItem: public ActionWidget
 {
     Q_OBJECT
 public:
-    explicit ArchiveItem(Archive &c, QWidget *parent = nullptr);
+    explicit ArchiveItem(Archive c, QWidget *parent = nullptr);
+
 
 signals:
     void reuse();

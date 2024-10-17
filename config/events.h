@@ -19,7 +19,7 @@ public:
     void clear();
     void save(QDataStream&c);
     bool load(QDataStream&c);
-    void add(QString name, int h);
+    void add(int id, int h);
     void reset();
     Event next();
     Event* nextAddr();

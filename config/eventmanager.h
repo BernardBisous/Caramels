@@ -14,7 +14,7 @@ class EventManager : public QWidget
 public:
     explicit EventManager(QWidget *parent = nullptr);
     void handle(Events* e,Tent* t);
-    void startNext();
+
     void showAll(bool s);
 
 

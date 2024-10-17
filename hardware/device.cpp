@@ -371,7 +371,6 @@ void Device::exportHistoric(QString dir)
     QString se=",";
     auto l=historic();
 
-    qDebug()<<"export device"<<name()<<l.count();
     QFile f(dir+"/"+name()+".csv");
     f.open(QIODevice::WriteOnly|QIODevice::Truncate);
     QTextStream t(&f);

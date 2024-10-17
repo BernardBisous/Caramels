@@ -16,6 +16,7 @@ void Events::clear()
 void Events::save(QDataStream &c)
 {
 
+    /*
     int n=m_list.count();
     c<<n;
     for(int i=0;i<m_list.count();i++)
@@ -24,12 +25,13 @@ void Events::save(QDataStream &c)
         c<<m_list[i].name;
         c<<m_list[i].hourIndex;
     }
+    */
 }
 
 bool Events::load(QDataStream &c)
 {
 
-
+/*
     m_list.clear();
     int n;
     c>>n;
@@ -43,13 +45,14 @@ bool Events::load(QDataStream &c)
 
 
     }
+    */
     return true;
 }
 
-void Events::add(QString name, int h)
+void Events::add(int id, int h)
 {
     Event e;
-    e.name=name;
+    e.type=id;
     e.hourIndex=h;
     m_list.append(e);
     m_Totallist.append(e);
@@ -63,7 +66,7 @@ void Events::reset()
 Event Events::next()
 {
     if(m_list.isEmpty())
-        return Event{"",0};
+        return Event{"",0,0};
 
     return m_list.first();
 }
@@ -79,7 +82,7 @@ Event *Events::nextAddr()
 Event Events::at(int i)
 {
     if(i<0 || m_list.isEmpty()||i>m_list.count())
-       return Event{"",0};
+       return Event{"",0,0};
 
     return m_list[i];
 }

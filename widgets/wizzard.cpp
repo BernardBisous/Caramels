@@ -15,6 +15,9 @@
 
 #define WRITE_DELAY 50
 #define SUB_DELAY 500
+
+#include "constants.h"
+
 Wizzard::Wizzard(QWidget *parent)
     : TopWidget{parent},m_deleteAtEnd(false)
 {
@@ -305,8 +308,10 @@ WizzardSequence *Wizzard::sequenceFactory(int id)
 {
     switch(id)
     {
-    case 0: return new WizzardSequence(true,this);
-    case 1: return new WizzardChoice(this);
+    case NormalSequenceType: return new WizzardSequence(true);
+    case ChoiceSequenceType: return new WizzardChoice;
+    case ValueSequenceType: return new WizzardValue;
+    case WebcamSequenceType: return new WizzardCapture(nullptr);// change to real webcam
     default:return nullptr;
     }
 }
@@ -474,6 +479,11 @@ void WizzardSequence::load(QJsonObject a,QString prefix)
     QString pix=a.value("PICTURE").toString();
     if(!pix.isEmpty())
         loadPicture(prefix+pix);
+}
+
+void WizzardSequence::addWidget(QWidget *w)
+{
+    layout()->addWidget(w);
 }
 
 void WizzardSequence::setTexts(QString title, QString sub)
@@ -668,3 +678,74 @@ void WizzardChoice::select(int index)
         m_nextButton->setEnabled(index>-1);
     }
 }
+
+WizzardValue::WizzardValue(QString valName,QString valDefaul,QString desc,QString units,QWidget *parent)
+    :WizzardSequence(false,parent)
+{
+
+    addWidget(m_value=new QLineEdit);
+
+    QFont f=font();
+    f.setPointSize(18);
+    m_value->setFont(f);
+    setTexts("Quel est le "+valName+" ?",desc);
+    setName(valName);
+
+    m_value->setPlaceholderText("Enter the value in "+units);
+    m_value->setText(valDefaul);
+    connect(m_value, SIGNAL(editingFinished()),this,SLOT(editSlot()));
+}
+
+QString WizzardValue::stringValue()
+{
+    return m_value->text();
+}
+
+WizzardResult WizzardValue::computeResult()
+{
+    WizzardResult out;
+    out.result=m_value->text();
+    out.sequence=name();
+    return out;
+}
+
+void WizzardValue::editSlot()
+{
+    finish();
+}
+
+WizzardCapture::WizzardCapture(Webcam *w, QWidget *parent):
+   WizzardSequence(false,parent)
+{
+    m_name="Capture";
+    setTexts("Immortalisez ce moment","Approchez la web cam et cliquez pour capturer");
+    addWidget(m_camWidget=new WebcamWidget);
+    m_picture->hide();
+    m_camWidget->handle(w);
+    connect(w,SIGNAL(saved(QString)),this,SLOT(savedSlot(QString)));
+}
+
+WizzardResult WizzardCapture::computeResult()
+{
+    auto a=WizzardSequence::computeResult();
+    a.result=m_path;
+    return a;
+
+}
+
+QPixmap WizzardCapture::pixmapResult()
+{
+    return QPixmap(m_path);
+}
+
+void WizzardCapture::savedSlot(QString s)
+{
+
+   m_path=s;
+   setTexts("C'est joli?","Passez à l'étape suivante ou cliquez sur l'image pour la refaire");
+
+   finish();
+
+}
+
+

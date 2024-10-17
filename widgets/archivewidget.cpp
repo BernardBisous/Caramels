@@ -1,6 +1,6 @@
 #include "archivewidget.h"
 #include "config/archive.h"
-#include "config/growconfig.h"
+#include "constants.h"
 #include "qboxlayout.h"
 #include "qdir.h"
 
@@ -31,8 +31,9 @@ ArchiveWidget::ArchiveWidget(QWidget *parent)
 
 void ArchiveWidget::load()
 {
-    QDir dir("archives");
+    m_list->clear();
 
+    QDir dir(ARCHIVE_PATH);
 
     QStringList subdirs = dir.entryList(QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
 
@@ -41,8 +42,6 @@ void ArchiveWidget::load()
         QDir de=dir;
         de.cd(subdirs[i]);
         loadArchive(de.absolutePath());
-
-
     }
 }
 
@@ -54,24 +53,35 @@ void ArchiveWidget::loadArchive(QString s)
     m_list->addActionWidget(we);
 }
 
-ArchiveItem::ArchiveItem(Archive &c, QWidget *parent):ActionWidget(parent)
+ArchiveItem::ArchiveItem(Archive c, QWidget *parent):ActionWidget(parent)
 {
 
     setFixedWidth(400);
     setLayout(new QVBoxLayout);
     layout()->setContentsMargins(20,20,20,20);
-    layout()->addWidget(m_pix=new QLabel);
+
+    if(!c.pixmap.isNull())
+    {
+        layout()->addWidget(m_pix=new QLabel);
+        m_pix->setPixmap(c.pixmap.scaled(400,400,Qt::KeepAspectRatio,Qt::SmoothTransformation));
+
+    }
+
     layout()->addWidget(m_name=new QLabel(c.name));
 
     if(!c.description.isEmpty())
         layout()->addWidget(m_desc=new QLabel(c.description));
+
 
     QWidget* fw=new QWidget;
     fw->setLayout(m_form=new QFormLayout);
 
     m_form->addRow("Date",m_date=new QLabel(c.start.toString("dd.MM.yy")+" - "+c.end.toString("dd.MM.yy")));
     m_form->addRow("Volume",m_result=new QLabel(QString::number(c.result)+"g"));
-    m_form->addRow("Rendement",m_date=new QLabel(QString::number(c.result/c.plants)+"g/plants"));
+
+    if(c.plants)// generates crashes !
+        m_form->addRow("Rendement",m_plants=new QLabel(QString::number(c.result/c.plants)+"g/plants"));
+
 
     layout()->addWidget(fw);
 
@@ -110,8 +120,10 @@ ArchiveItem::ArchiveItem(Archive &c, QWidget *parent):ActionWidget(parent)
     QFont f=font();
     f.setPointSize(18);
     m_name->setFont(f);
-    m_pix->setPixmap(c.pixmap.scaled(400,400,Qt::KeepAspectRatio,Qt::SmoothTransformation));
+
+
 }
+
 
 void ArchiveItem::reuseSlot()
 {
