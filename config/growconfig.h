@@ -27,7 +27,6 @@ public:
     void clear();
 
     Parameter* loadParameterCSVLine(QString s,QStringList header);
-    Events* loadEventsLine(QString s);
     bool openDefault();
     bool browse();
 

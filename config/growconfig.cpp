@@ -42,6 +42,7 @@ void GrowConfig::save(QDataStream &c)
 {
 
 
+    /*
     c <<name();
     int t=m_parameters.size();
     c << t;
@@ -52,6 +53,7 @@ void GrowConfig::save(QDataStream &c)
     }
 
     m_events->save(c);
+    */
 }
 
 int GrowConfig::countParameters()
@@ -179,6 +181,7 @@ void GrowConfig::setResult(float newResult)
 
 bool GrowConfig::load(QDataStream& c) {
 
+    /*
     if(c.atEnd())
         return false;
 
@@ -197,7 +200,9 @@ bool GrowConfig::load(QDataStream& c) {
 
     m_events->load(c);
  //   qDebug()<<"loaded config"<<m_parameters.count()<<m_events->count();
-    return true;
+
+    */
+     return true;
 }
 
 int GrowConfig::computeMaxHours()
@@ -233,7 +238,6 @@ void GrowConfig::clear()
         delete m_parameters[i];
 
     m_parameters.clear();
-
     m_events->clear();
 }
 
@@ -258,7 +262,7 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
     bool event=id==EVENTS;
     if(event)
     {
-        m_events->clear();
+          m_events->clear();
     }
 
 
@@ -276,9 +280,12 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
 
 
+
     for(int i=Values;i<line.count();i++)
     {
         QString s=line[i];
+        s.remove("\n");
+        s.remove(" ");
         int hour=header[i].toInt();
 
         if(!s.isEmpty())
@@ -286,7 +293,8 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
             if(event)
             {
-                m_events->add(s.toInt(),hour);
+
+                m_events->add(s,hour);
             }
             else
             {
@@ -317,12 +325,9 @@ Parameter *GrowConfig::loadParameterCSVLine(QString dataLine, QStringList header
 
 bool GrowConfig::openDefault()
 {
-
-
-
     if(!loadCsv(COMFIG_CSV_FILE_PATH))
     {
-        qDebug()<<"dfgergwssss";
+
 
         if(QFile::exists(COMFIG_CSV_FILE_PATH))
             QFile::remove(COMFIG_CSV_FILE_PATH);
@@ -337,11 +342,10 @@ bool GrowConfig::openDefault()
         ft.close();
         fe.close();
 
-        qDebug()<<"dfgergwer";
+         return loadCsv(COMFIG_CSV_FILE_PATH);
     }
 
-    return loadCsv(COMFIG_CSV_FILE_PATH);
-
+    return true;
 }
 bool GrowConfig::loadCsv(QString filename) {
 
@@ -367,7 +371,6 @@ bool GrowConfig::loadCsv(QString filename) {
        // Check if the header has the expected format
 
 
-       // Read the data rows
        while (!file.atEnd()) {
            QString dataLine = file.readLine();
            loadParameterCSVLine(dataLine,header);

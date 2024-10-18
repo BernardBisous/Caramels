@@ -27,6 +27,7 @@ public:
     virtual QStringList trigKeys(){return QStringList();}
     virtual void trigKey(QString s);
 
+    void clearParameters();
     virtual AnalogSensor*regulatingSensor();
 
 

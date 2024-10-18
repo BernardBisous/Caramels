@@ -10,6 +10,7 @@ EventWizzard::EventWizzard(Tent *t, Event *e, QWidget *parent)
     m_deleteAtEnd=true;
     loadEventName(e->name);
 
+
 }
 
 EventWizzard* EventWizzard::executeEvent(Tent *t, Event *e)
@@ -27,6 +28,7 @@ EventWizzard* EventWizzard::executeEvent(Tent *t, Event *e)
 
 void EventWizzard::loadEventName(QString name)
 {
+    setName(name+":");
     load(name+".json",QString(PATH_FILES)+"/");
 }
 

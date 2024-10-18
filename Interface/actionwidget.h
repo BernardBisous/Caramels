@@ -46,6 +46,7 @@ public:
 
     bool checked() const;
 
+
 signals:
     void clicked();
     void hovered(bool s);
@@ -62,7 +63,6 @@ protected:
     bool m_ignoreClick;
     QPen m_borderPen;
     DisplayMode m_mode;
-
 };
 
 #endif // ACTIONWIDGET_H

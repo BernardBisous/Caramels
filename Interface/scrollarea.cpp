@@ -9,7 +9,7 @@
 
 
 ScrollArea::ScrollArea(bool h,QWidget *parent)
-    : QScrollArea{parent}
+    : QScrollArea{parent},m_space(nullptr)
 {
 
     QWidget* w=new QWidget(this);
@@ -71,27 +71,23 @@ void ScrollArea::setHorizontal(bool b)
 
 void ScrollArea::clear()
 {
-
     if(!widget())
-    {
         return;
-    }
+
     while(widget()->layout()->count())
     {
         auto i= widget()->layout()->takeAt(0);
         if(i)
         {
-
-
-            if(i->widget())
+            if(i->widget() && i->widget()!= m_space)
             {
                 ActionWidget*a=dynamic_cast<ActionWidget*>(i->widget());
                 if(a)
                   disconnect(a, SIGNAL(clicked()),this,SLOT(trigSlot()));
 
                 delete i->widget();
+                delete i;
             }
-            delete i;
         }
     }
 }
@@ -120,6 +116,13 @@ void ScrollArea::setCurrent(int index)
     }
 }
 
+void ScrollArea::setMaxHeigh(int h)
+{
+    auto l=widgets();
+    for(int i=0;i<l.count();i++)
+        l[i]->setMaximumHeight(h);
+}
+
 void ScrollArea::addWidget(QWidget*w)
 {
     if(!widget())
@@ -127,7 +130,23 @@ void ScrollArea::addWidget(QWidget*w)
         return;
     }
 
-    widget()->layout()->addWidget(w);
+
+
+
+    QBoxLayout* t=static_cast<QBoxLayout*>(widget()->layout());
+    int n=t->count();
+
+    if(m_space)
+    {
+
+        t->addWidget(w);
+       // t->insertWidget(n-2,w);
+        t->addWidget(m_space);
+    }
+    else
+    {
+        t->addWidget(w);
+    }
 }
 
 void ScrollArea::addActionText(QString s)
@@ -231,6 +250,7 @@ void ScrollArea::addSpacer()
     QWidget* sp=new QWidget;
     sp->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     addWidget(sp);
+    m_space=sp;
 }
 
 

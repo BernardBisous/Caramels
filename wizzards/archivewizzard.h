@@ -3,7 +3,7 @@
 
 #include "hardware/tent.h"
 #include "widgets/archivewidget.h"
-#include "widgets/wizzard.h"
+#include "wizzard.h"
 #include <QWidget>
 
 class ArchiveOverviewSequence: public WizzardSequence

@@ -1,7 +1,7 @@
 #include "growingtent.h"
 #include "widgets/archivewidget.h"
-#include "widgets/setupwizzard.h"
-#include "widgets/archivewizzard.h"
+#include "wizzards/setupwizzard.h"
+#include "wizzards/archivewizzard.h"
 
 #define HELP_FILE "help.pdf"
 #include <QDesktopServices>
@@ -16,6 +16,7 @@ GrowingTent::GrowingTent(QWidget* parent)
 
     m_currentConfig=new GrowConfig;
     m_tent=new Tent;
+    connect(m_tent,SIGNAL(done()),this,SLOT(doneSlot()));
     m_tent->setConfig(m_currentConfig);
     m_tent->begin();
 
@@ -77,7 +78,7 @@ GrowingTent::GrowingTent(QWidget* parent)
     m_stack->addWidget(m_overview=new ConfigOverview);
     m_overview->setTent(m_tent);
     m_stack->addWidget(m_tentEdit=new UnitEditor(this));
-    m_stack->addWidget(m_archives=new ArchiveWidget);
+    m_stack->addWidget(m_archives=new ArchiveWidget(false,this));
     prepareSelector();
     setCentralWidget(c);
 
@@ -91,7 +92,7 @@ GrowingTent::GrowingTent(QWidget* parent)
 
 
    // settings();
-    archive();
+   // archive();
 
 
 
@@ -302,6 +303,7 @@ void GrowingTent::settings()
 
 void GrowingTent::archive()
 {
+
     auto a=ArchiveWizzard::archive(m_tent,this);
     connect(a,SIGNAL(archived(Archive)),this,SLOT(archivedSlot()));
 }
@@ -310,5 +312,15 @@ void GrowingTent::archivedSlot()
 {
      m_archives->load();
 
+}
+
+void GrowingTent::dateSlot(QDateTime t)
+{
+
+}
+
+void GrowingTent::doneSlot()
+{
+    archive();
 }
 

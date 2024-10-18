@@ -14,12 +14,9 @@ class EventManager : public QWidget
 public:
     explicit EventManager(QWidget *parent = nullptr);
     void handle(Events* e,Tent* t);
-
     void showAll(bool s);
-
-
-
     QDateTime startedDate() const;
+    Event pending();
 
 public slots:
     void setStartedDate(QDateTime newStartedDate);
@@ -30,11 +27,7 @@ public slots:
     void wizzardFinished();
     void wizzardCanceled();
 
-
-
-
 private :
-
     Tent* m_tent;
     bool m_abstracted;
     QDateTime m_eventStart;

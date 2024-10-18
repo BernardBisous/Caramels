@@ -49,6 +49,7 @@ void HardwareUnit::finish()
     if(m_regulator)
         m_regulator->reset();
 
+    clearParameters();
     m_startTime=QDateTime();
     computeEndTime();
 }
@@ -88,6 +89,11 @@ void HardwareUnit::attachParameter(Parameter *p)
 void HardwareUnit::trigKey(QString s)
 {
     qDebug()<<"KeyTriggered "<<name()<<s;
+}
+
+void HardwareUnit::clearParameters()
+{
+    m_parameters.clear();
 }
 
 AnalogSensor *HardwareUnit::regulatingSensor()

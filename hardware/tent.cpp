@@ -98,7 +98,7 @@ void Tent::begin()
 }
 
 
-void Tent::exportAll(QString dir)
+void Tent::exportAll(QString dir,bool open)
 {
 
     if(dir.isEmpty())
@@ -117,12 +117,13 @@ void Tent::exportAll(QString dir)
     QDir dc(root.absolutePath()+"/Camera");
     m_cam->exportAll(dc.absolutePath());
 
-    QFile::copy(LOGS_FILE,dir+"/ReadMe.txt");
+    QFile::copy(LOGS_FILE,dir+"/logs.txt");
 
     if(m_config)
-        m_config->saveCsv(dir+"/ConfigDone.csv");
+        m_config->saveCsv(root.absoluteFilePath(Archive::configName()));
 
-    QDesktopServices::openUrl(root.absolutePath());
+    if(open)
+        QDesktopServices::openUrl(root.absolutePath());
 }
 
 int Tent::currentHourIndex()
@@ -143,9 +144,7 @@ QString Tent::configName() const
 void Tent::setConfig(GrowConfig *e)
 {
     m_config=e;
-    mapDevices();
-
-
+    mapParameters();
 }
 
 HardwareUnit *Tent::unitForId(int id)
@@ -170,15 +169,18 @@ float Tent::height()
 
 
 
-void Tent::mapDevices()
+void Tent::mapParameters()
 {
+    clearAllData();
+    for(int i=0;i<m_units.count();i++)
+        m_units[i]->clearParameters();
+
     for(int i=0;i<m_config->countParameters();i++)
     {
         Parameter* p=m_config->parameterAddr(i);
         HardwareUnit*d=unitForId(p->id());
         if(d)
         {
-
              d->attachParameter(p);
         }
     }
@@ -225,11 +227,14 @@ void Tent::loadSetting()
     m_serialPort= settings.value("SerialPort").toString();
 
    // qDebug()<<"loaded serial"<<m_serialPort;
+
+    /*
     if(d.isValid())
     {
         setStartDate(d);
         start();
     }
+    */
 }
 
 
@@ -269,6 +274,19 @@ void Tent::setStartDate(QDateTime t)
     saveSettings();
     start();
     emit dateChanged(t);
+}
+
+void Tent::startArchive(Archive t)
+{
+    clearAllData();
+
+    console("Loading archive "+t.name);
+    m_config->loadCsv(t.configPath());
+    m_configName=t.name;
+
+    mapParameters();
+
+    setStartDate(QDateTime::currentDateTime());
 }
 
 
@@ -427,6 +445,7 @@ void Tent::finish()
     setStartDate(QDateTime());
     stopAll();
     console("Finished config");
+    emit done();
 }
 
 void Tent::console(QString s)
@@ -485,7 +504,7 @@ void Tent::timerSlot()
     if(h<0)
     {
         finish();
-        emit done();
+
         return;
     }
 
@@ -518,6 +537,8 @@ GeneralManager *Tent::general() const
 {
     return m_general;
 }
+
+
 
 StateNotifier *Tent::state() const
 {

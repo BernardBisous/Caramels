@@ -46,11 +46,14 @@ public:
 
     bool isWelcome() const;
 
+
+
 signals:
     void result(WizzardResult r);
 
 private slots:
     void writeSlot();
+
 
 protected:
     QLabel* m_title;
@@ -84,6 +87,7 @@ public:
 
 private slots:
     void editSlot();
+    void changedSlot();
 
 private:
     QLineEdit* m_value;
@@ -161,8 +165,11 @@ public:
     void setDeleteAtEnd(bool newDeleteAtEnd);
     void setClosableButton(bool s);
 
+    QString name() const;
+    void setName(const QString &newName);
+
 public slots:
-    void close();
+    void closeWizzard();
     void next();
     void back();
     void execute();
@@ -189,6 +196,7 @@ protected:
     QGraphicsView* m_connectingView;
     QGraphicsPathItem* m_connectingItem;
     bool m_deleteAtEnd;
+    QString m_name;
 };
 
 

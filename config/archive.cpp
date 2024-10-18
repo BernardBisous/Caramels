@@ -4,15 +4,19 @@
 #include "qjsonobject.h"
 #include <QFile>
 
+
+#define CONFIG_NAME "config.csv"
+
 Archive::Archive():result(0),pixmap(),plants(0),meta()
 {
 
 }
 
-void Archive::load(QString path)
+void Archive::load(QString p)
 {
 
-   QFile jsonFile(path+"/archive.json");
+   path=p;
+   QFile jsonFile(p+"/archive.json");
 
    if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 
@@ -29,21 +33,6 @@ void Archive::load(QString path)
 
    QJsonObject o = jsonDoc.object();
 
-   QStringList ls=o.keys();
-   ls.removeOne("NAME");
-   ls.removeOne("PLANTS");
-   ls.removeOne("RESULT");
-   ls.removeOne("START");
-   ls.removeOne("END");
-   ls.removeOne("LINK");
-   ls.removeOne("DESC");
-    ls.removeOne("SUPPLIER");
-   ls.removeOne("PICTURE");
-
-   for(int i=0;i<ls.count();i++)
-   {
-       meta.insert(ls[i],o[ls[i]].toString());
-   }
 
    name=o["NAME"].toString();
    description=o["DESC"].toString();
@@ -54,6 +43,16 @@ void Archive::load(QString path)
    start= QDate::fromString(o["START"].toString(),"dd.MM.yyyy");
    end= QDate::fromString(o["END"].toString(),"dd.MM.yyyy");
    pixmap=QPixmap(path+"/"+o["PICTURE"].toString());
+
+
+
+
+   QJsonObject obs=o["STATS"].toObject();
+   QStringList lso=obs.keys();
+   for(int i=0;i<lso.count();i++)
+   {
+        stats.insert(lso[i],obs.value(lso[i]).toInt());
+   }
 
 
 
@@ -85,6 +84,18 @@ void Archive::save(QString path)
         o[k]=meta[k];
     }
 
+    QJsonObject obk;
+    QStringList lss=stats.keys();
+    for(int i=0;i<lss.count();i++)
+    {
+        QString k=lss[i];
+        obk[k]=stats[k];;
+    }
+    o["STATS"]=obk;
+
+
+
+
     QFile file(d.absoluteFilePath("archive.json"));
 
     QJsonDocument jsonDocument(o);
@@ -94,4 +105,36 @@ void Archive::save(QString path)
 
     pixmap.save(d.absoluteFilePath("picture.png"));
 
+
+
+}
+
+bool Archive::hasConfig()
+{
+    QFile f(configPath());
+    return f.exists();
+}
+
+void Archive::addStats(QString s, int v)
+{
+    stats.insert(s,v);
+}
+
+QString Archive::configName()
+{
+    return CONFIG_NAME;
+
+}
+
+void Archive::setDir(QDir d)
+{
+    path=d.absolutePath();
+}
+
+QString Archive::configPath()
+{
+    QDir d(path);
+    if(d.exists())
+        return d.absoluteFilePath(configName());
+    return "";
 }

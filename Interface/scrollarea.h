@@ -42,6 +42,8 @@ public:
     void fillList(QStringList s);
     void setCurrent(int i);
 
+    void setMaxHeigh(int h);
+
     void addWidget(QWidget *w);
     void addActionText(QString s);
     void addActionWidget(ActionWidget*a);
@@ -62,6 +64,7 @@ private slots:
     void trigSlot();
 private:
     bool m_horizontal;
+    QWidget* m_space;
 };
 
 #endif // SCROLLAREA_H

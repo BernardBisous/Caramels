@@ -9,7 +9,7 @@ class Event
 public:
     QString name;
     int hourIndex;
-    int type;
+
 };
 
 class Events
@@ -17,9 +17,7 @@ class Events
 public:
     Events();
     void clear();
-    void save(QDataStream&c);
-    bool load(QDataStream&c);
-    void add(int id, int h);
+    void add(QString name, int h);
     void reset();
     Event next();
     Event* nextAddr();
@@ -29,6 +27,7 @@ public:
     void skipNext();
     QString storageFile(){return "events.txt";}
     void registerLastEvent(int secnds);
+
 
 private:
     QList<Event> m_list;

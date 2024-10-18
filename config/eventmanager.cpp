@@ -2,7 +2,7 @@
 #include "qboxlayout.h"
 #include "qdatetime.h"
 #include "config/parameter.h"
-#include "widgets/eventwizzard.h"
+#include "wizzards/eventwizzard.h"
 EventManager::EventManager(QWidget *parent)
     : QWidget{parent},m_tent(nullptr),m_abstracted(true),
       m_eventStart(),m_client(nullptr)
@@ -113,19 +113,27 @@ void EventManager::refresh()
 
 void EventManager::wizzardFinished()
 {
-    qDebug()<<"finishh";
+
+
     int m=m_eventStart.secsTo(QDateTime::currentDateTime());
-    m_tent->console("Event start "+m_client->list().first().name);
     m_eventStart=QDateTime();
-    m_startButton->setText("Start");
-    m_skipButton->setText("Skip");
     m_client->registerLastEvent(m);
     m_client->skipNext();
+
+    bool end=( !m_client->count());
+
+    if(end)
+    {
+        m_tent->setEventsDone();
+        return;
+    }
+
+    refresh();
 }
 
 void EventManager::wizzardCanceled()
 {
-    qDebug()<<"cancelll";
+
     cancel();
 }
 
@@ -146,6 +154,23 @@ void EventManager::showAll(bool s)
 QDateTime EventManager::startedDate() const
 {
     return m_startedDate;
+}
+
+Event EventManager::pending()
+{
+    Event out{"",0};
+
+    if(!m_startedDate.isValid())
+        return out;
+
+    Event e=m_client->next();
+    QDateTime t=m_startedDate.addSecs(Parameter::timeMultiplicator()*e.hourIndex);
+
+    if(t<QDateTime::currentDateTime())
+    {
+        return e;
+    }
+    return out;
 }
 
 void EventManager::setStartedDate(QDateTime newStartedDate)
@@ -170,21 +195,15 @@ void EventManager::start()
     if(!m_client)
         return;
 
-    if(m_eventStart.isValid())
-    {
-        wizzardFinished();
-    }
-    else
-    {
-        EventWizzard* ew=EventWizzard::executeEvent(m_tent,m_client->nextAddr());
-        connect(ew,SIGNAL(canceled()),this,SLOT(wizzardCanceled()));
-        connect(ew,SIGNAL(finished()),this,SLOT(wizzardFinished()));
+    EventWizzard* ew=EventWizzard::executeEvent(m_tent,m_client->nextAddr());
+    connect(ew,SIGNAL(canceled()),this,SLOT(wizzardCanceled()));
+    connect(ew,SIGNAL(finished()),this,SLOT(wizzardFinished()));
 
-        m_eventStart=QDateTime::currentDateTime();
-        m_skipButton->setText("Cancel");
-        m_startButton->setText("Done");
-        m_tent->console("Event skip "+m_client->list().first().name);
-    }
+    m_eventStart=QDateTime::currentDateTime();
+   // m_skipButton->setText("Cancel");
+   // m_startButton->setText("Done");
+    //m_tent->console("Event skip "+m_client->list().first().name);
+
 
     refresh();
 

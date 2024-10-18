@@ -10,6 +10,6 @@ Wind,Force du vent,%,9,Quantité de mouvement du vent,20,,,,,,,40,,,60,,100,,,80
 PH,PH,ph,10,Acidité de l'eau,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,7,7,7,7,7,7,6,6,6,6,6,6,6,6,6,6,6
 Water ,Temps sec,s,11,Longueur du séchage en S,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
 Water ,Temps imergé,h,12,Temps entre les séchages en h,6,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8
-Events,Taillages,,19,Evenements & taches,Rempotage,,,,Taille,,,,,,,,,,,Taille,,,,,,,,,,,Taille,,,,,,Manucure
+Events,Taillages,,19,Evenements & taches,Rempotage,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,Manucure
 Dosage,Mélasse,mL/L,20,Concentration de produit 1,2,,,,,4.5,,,,,,,,,,4,,,,,,,,,3,,,,,3,6,6.5,7
 Dosage,Boost,ml/L,21,Concentration de produit 2,4,,,,,,,,,,,,,,,,,,6,,,,,,,,,,,6,6,6,6

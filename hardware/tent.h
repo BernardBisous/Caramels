@@ -41,9 +41,10 @@ public:
     void start();
     void finish();
     void setStartDate(QDateTime t);
+    void startArchive(Archive t);
 
     void clearAllData();
-    void mapDevices();
+    void mapParameters();
 
     void addUnit(HardwareUnit* u);
     void addDevice(QList<Device*> l);
@@ -51,7 +52,7 @@ public:
 
     void saveSettings();
     void loadSetting();
-    void exportAll(QString dir);
+    void exportAll(QString dir,bool open=true);
 
     int currentHourIndex();
     QString configName() const;
@@ -113,6 +114,8 @@ public:
 
     GeneralManager *general() const;
 
+
+
 public slots:
     void console(QString s);
     void hardwareSlot(QByteArray& d);
@@ -128,6 +131,7 @@ signals:
     void dateChanged(QDateTime t);
     void connectedHardware(bool s);
     void consoleRequest(QString s);
+
 
 private slots:
     void timerSlot();

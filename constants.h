@@ -8,6 +8,6 @@ typedef enum wizzardSequenceType
     WebcamSequenceType}
 WizzardSequenceType;
 
-
+#define CONFIGS_PATH "configs"
 #define ARCHIVE_PATH "archives"
 #endif // CONSTANTS_H

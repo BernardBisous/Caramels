@@ -34,6 +34,8 @@ public slots:
     void settings();
     void archive();
     void archivedSlot();
+    void dateSlot(QDateTime t);
+    void doneSlot();
 signals:
 
 private:

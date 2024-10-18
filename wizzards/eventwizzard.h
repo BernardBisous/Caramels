@@ -6,7 +6,7 @@
 #include "qlineedit.h"
 #include "qtextedit.h"
 #include "widgets/webcamwidget.h"
-#include "widgets/wizzard.h"
+#include "wizzard.h"
 #include <QWidget>
 
 

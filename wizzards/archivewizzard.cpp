@@ -7,6 +7,7 @@
 ArchiveWizzard::ArchiveWizzard(Tent *t, QWidget *parent)
     : Wizzard{parent},m_archive(),m_tente(t)
 {
+
     m_deleteAtEnd=true;
     m_welcome=new WizzardSequence(true);
     m_capture=new WizzardCapture(t->cam());
@@ -34,6 +35,7 @@ ArchiveWizzard::ArchiveWizzard(Tent *t, QWidget *parent)
     addSequence(m_final);
 
     m_result->loadPicture(":/Images/balance");
+    setName("archivage");
     start();
 }
 
@@ -83,7 +85,7 @@ void ArchiveWizzard::archiveExport()
 
 void ArchiveWizzard::archiveExport(QDir d)
 {
-    m_tente->exportAll(d.path());
+    m_tente->exportAll(d.path(),false);
     m_archive.save(d.path());
     emit archived(m_archive);
 }
@@ -99,7 +101,7 @@ void ArchiveWizzard::finish()
 ArchiveOverviewSequence::ArchiveOverviewSequence(QWidget *parent):
     WizzardSequence(parent),m_archive(nullptr),m_preview(nullptr)
 {
-    m_name="Confirmation";
+    setName("Confirmation");
     addWidget(m_previewWidget=new QWidget);
     m_previewWidget->setLayout(new QHBoxLayout);
 }

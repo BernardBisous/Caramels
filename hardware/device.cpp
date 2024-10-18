@@ -734,7 +734,6 @@ float Motor::maxSpeed()
 void Motor::move(float t)
 {
 
-    qDebug()<<"motor moving to "<<t;
     if(t==0)
         return;
 

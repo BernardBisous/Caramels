@@ -19,50 +19,41 @@
 #include "constants.h"
 
 Wizzard::Wizzard(QWidget *parent)
-    : TopWidget{parent},m_deleteAtEnd(false)
+    : TopWidget{parent},m_deleteAtEnd(false),m_name("Procédure: ")
 {
-
     m_central->setLayout(new QVBoxLayout);
-
-
-    QWidget* buttons=new QWidget;
-    buttons->setLayout(new QHBoxLayout);
-    buttons->layout()->addWidget(m_backButton=new ToolButton("Back",":/icons/left"));
-    buttons->layout()->addWidget(m_title=new QLabel);
-    buttons->layout()->setContentsMargins(5,30,5,5);
-
-
-    m_title->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    m_title->setAlignment(Qt::AlignCenter);
-    m_backButton->setRound();
-
-
-    QFont f=font();
-    f.setPointSize(18);
- //   m_title->setAlignment(Qt::AlignCenter);
-    m_title->setFont(f);
-
-
-    auto sl=static_cast<QBoxLayout*>(m_middleWidget->layout());
-    sl->insertWidget(0,buttons);
-
     m_central->layout()->addWidget(m_stack=new QStackedWidget);
 
+    QHBoxLayout*hb=new QHBoxLayout;
     QWidget* okBar=new QWidget;
-    okBar->setLayout(new QHBoxLayout);
-    QWidget*ls=new QWidget;
-    ls->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
-    okBar->layout()->addWidget(ls);
-    okBar->layout()->addWidget(m_nextButton=new ToolButton("Next",":/icons/right"));
+    okBar->setLayout(hb);
+    hb->addWidget(m_backButton=new ToolButton("Back",":/icons/left"));
+    hb->addStretch();
+    hb->addWidget(m_nextButton=new ToolButton("Next",":/icons/right"));
+
+    m_backButton->setRound();
     m_nextButton->setRadius(25);
     m_nextButton->layout()->setSpacing(10);
     m_nextButton->layout()->setContentsMargins(5,5,15,5);
      m_nextButton->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
 
     m_middleWidget->layout()->addWidget(okBar);
-    m_leftSpacer->setLayout(new QHBoxLayout);
+    m_leftSpacer->setLayout(new QVBoxLayout);
+    m_leftSpacer->setContentsMargins(50,50,50,50);
+    m_leftSpacer->layout()->addWidget(m_title=new QLabel);
     m_leftSpacer->layout()->addWidget(m_list=new ScrollArea);
+    m_leftSpacer->layout()->setSpacing(30);
+    m_list->setMaximumWidth(200);
     m_list->removeMargins();
+
+    m_title->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+    QFont f=font();
+    f.setPointSize(18);
+ //   m_title->setAlignment(Qt::AlignCenter);
+    m_title->setFont(f);
+
+
+    /*
     m_leftSpacer->layout()->addWidget(m_connectingView= new QGraphicsView);
     m_connectingView->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     m_connectingView->setBackgroundRole(QPalette::Window);
@@ -73,9 +64,12 @@ Wizzard::Wizzard(QWidget *parent)
     m_connectingItem=new QGraphicsPathItem;
     m_connectingScene->addItem(m_connectingItem);
     m_connectingView->setFixedWidth(100);
+    */
 
     m_leftSpacer->layout()->setContentsMargins(30,30,30,30);
-    m_leftSpacer->layout()->setSpacing(0);
+
+    m_list->addSpacer();
+
 
 
     connect(m_backButton,SIGNAL(clicked()),this,SLOT(back()));
@@ -85,7 +79,7 @@ Wizzard::Wizzard(QWidget *parent)
 
 
     m_closeButton=new ToolButton("Close",":/icons/delete",this);
-    connect(m_closeButton,SIGNAL(clicked()),this,SLOT(close()));
+    connect(m_closeButton,SIGNAL(clicked()),this,SLOT(closeWizzard()));
 
     m_central->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
 
@@ -96,6 +90,7 @@ void Wizzard::start(int timeout)
 
     TopWidget::start(timeout);
 
+     m_title->setText(name());
     placeCloseButton();
 
 
@@ -117,6 +112,7 @@ void Wizzard::load(QString filePath,QString prefix)
 
        if (!jsonFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 
+           qDebug()<<"cannot find event file "<<prefix+filePath;
            return;
        }
 
@@ -141,8 +137,7 @@ void Wizzard::finish()
 {
     emit finished();
 
-    if(m_deleteAtEnd)
-        delete this;
+   stop();
 }
 
 void Wizzard::next()
@@ -162,7 +157,7 @@ void Wizzard::back()
         startSequence(i-1);
     else
     {
-       close();
+       closeWizzard();
     }
 }
 
@@ -217,7 +212,11 @@ void Wizzard::addSequence(WizzardSequence *r)
     connect(r,SIGNAL(result(WizzardResult)),this,SLOT(sequenceFinished(WizzardResult)));
     m_stack->addWidget(r);
     r->setButtons(m_backButton,m_nextButton);
+
+
+
     m_list->addActionText(r->name());
+
 
 }
 
@@ -238,13 +237,30 @@ void Wizzard::startSequence(WizzardSequence *s)
     if(!s || n<0)
         return;
 
-    m_title->setText(s->name());
+
     m_list->setCurrent(n);
     m_stack->setCurrentWidget(s);
     m_list->setHidden(n==0 && s->isWelcome());
-    m_connectingView->setHidden(m_list->isHidden());
-    redrawConnection();
+ //   m_connectingView->setHidden(m_list->isHidden());
+ //   redrawConnection();
     s->start();
+}
+
+QString Wizzard::name() const
+{
+    return m_name;
+}
+
+void Wizzard::setName(const QString &newName)
+{
+    m_name = newName;
+    m_title->setText(m_name);
+}
+
+void Wizzard::closeWizzard()
+{
+    emit canceled();
+    stop();
 }
 
 bool Wizzard::deleteAtEnd() const
@@ -293,6 +309,7 @@ WizzardSequence *Wizzard::sequenceFactory(QJsonArray sa, int id, QString prefix)
         int type=ob.value("TYPE").toInt();
         if(ids==id)
         {
+
            WizzardSequence* s=sequenceFactory(type);
            if(s)
            {
@@ -347,6 +364,7 @@ QList<WizzardSequence *> Wizzard::sequences()
 
 void Wizzard::redrawConnection()
 {
+    /*
     QPainterPath p;
 
     QWidget* as=m_list->currentAction();
@@ -368,14 +386,10 @@ void Wizzard::redrawConnection()
 
     m_connectingItem->setPen(QPen(palette().highlight().color()));
     m_connectingItem->setPath(p);
+    */
 }
 
-void Wizzard::close()
-{
-    emit canceled();
-    if(m_deleteAtEnd)
-        delete this;
-}
+
 
 WizzardSequence::WizzardSequence(bool anim, QWidget *parent):
     QWidget(parent),m_titleToWrite(""), m_writingTimer(nullptr),
@@ -394,11 +408,10 @@ WizzardSequence::WizzardSequence(bool anim, QWidget *parent):
     layout()->setSpacing(20);
     layout()->addWidget(m_picture=new QLabel);
     layout()->addWidget(m_subtitle=new QLabel);
+    m_subtitle->setHidden(true);
 
     m_picture->setAlignment(Qt::AlignCenter);
-
-
-    loadPicture(":/Images/default");
+    m_picture->hide();
 
 
     if(anim)
@@ -436,6 +449,14 @@ void WizzardSequence::start()
 
 void WizzardSequence::loadPicture(QString p)
 {
+    QPixmap pix(p);
+
+    if(pix.isNull())
+    {
+        m_picture->setHidden(true);
+        return;
+    }
+    m_picture->setHidden(false);
     m_picture->setPixmap(QPixmap(p).scaledToWidth(400,Qt::SmoothTransformation));
 }
 
@@ -501,7 +522,9 @@ void WizzardSequence::setTexts(QString title, QString sub)
     {
         m_subtitle->setText(sub);
         m_title->setText(title);
+
     }
+    m_subtitle->setHidden(sub.isEmpty());
 }
 
 WizzardChoice::WizzardChoice(QWidget *parent):
@@ -583,6 +606,7 @@ void WizzardSequence::writeSlot()
         se.resize(m_writeCounter++);
         m_title->setText(se);
 
+
         if(m_writeCounter>m_titleToWrite.size())
         {
             m_writeSubs=true;
@@ -593,13 +617,13 @@ void WizzardSequence::writeSlot()
         }
     }
 
-    else{
-
+    else if (!m_subToWrite.isEmpty())
+    {
         QString se=m_subToWrite;
         QStringList sel=se.split("\n",Qt::SkipEmptyParts);
         sel.resize(m_writeCounter++);
         m_subtitle->setText(sel.join("\n"));
-
+        m_subtitle->setHidden(false);
         if(m_writeCounter>m_subToWrite.split("\n",Qt::SkipEmptyParts).count())
         {
             m_writeSubs=true;
@@ -612,6 +636,8 @@ bool WizzardSequence::isWelcome() const
 {
     return m_isWelcome;
 }
+
+
 
 QString WizzardSequence::name() const
 {
@@ -694,6 +720,7 @@ WizzardValue::WizzardValue(QString valName,QString valDefaul,QString desc,QStrin
     m_value->setPlaceholderText("Enter the value in "+units);
     m_value->setText(valDefaul);
     connect(m_value, SIGNAL(editingFinished()),this,SLOT(editSlot()));
+    connect(m_value, SIGNAL(textChanged(QString)),this,SLOT(changedSlot()));
 }
 
 QString WizzardValue::stringValue()
@@ -712,6 +739,11 @@ WizzardResult WizzardValue::computeResult()
 void WizzardValue::editSlot()
 {
     finish();
+}
+
+void WizzardValue::changedSlot()
+{
+    //m_nextButton->setEnabled(!stringValue().isEmpty());
 }
 
 WizzardCapture::WizzardCapture(Webcam *w, QWidget *parent):

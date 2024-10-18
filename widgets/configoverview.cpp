@@ -1,15 +1,16 @@
 #include "configoverview.h"
-#include "qboxlayout.h"
-#include "unitplot.h"
 
 #include <QFileDialog>
-
+#include "qboxlayout.h"
+#include "wizzards/startwizzard.h"
+#include "widgets/eventpendingprogress.h"
 
 ConfigOverview::ConfigOverview(QWidget *parent)
-    : QWidget{parent},m_client(nullptr),m_topStart(nullptr)
+    : QWidget{parent},m_client(nullptr),m_topStart(nullptr),m_eventStart(nullptr)
 {
     setLayout(new QHBoxLayout);
     QWidget* center=new QWidget;
+
     center->setLayout(new QVBoxLayout);
     layout()->addWidget(center);
 
@@ -37,7 +38,13 @@ ConfigOverview::ConfigOverview(QWidget *parent)
     m_progress->layout()->setContentsMargins(0,0,0,0);
 
     center->layout()->addWidget(na);
-    center->layout()->addWidget(m_cam=new WebcamWidget);
+
+
+    m_central=new QWidget;
+    m_central->setLayout(new QVBoxLayout);
+    center->layout()->addWidget(m_central);
+    m_central->layout()->addWidget(m_cam=new WebcamWidget);
+    m_central->layout()->setContentsMargins(0,0,0,0);
 
     QFont f=font();
     f.setPointSize(36);
@@ -61,6 +68,7 @@ void ConfigOverview::setTent(Tent *t)
     m_state->handle(t->state());
     m_cam->handle(t->cam());
     updateDate();
+    updateEvent();
     refresh();
 }
 
@@ -79,17 +87,37 @@ void ConfigOverview::refresh()
 
 }
 
+void ConfigOverview::presentEvent(Event e)
+{
+
+    if(!m_eventStart)
+    {
+        m_eventStart=new EventPendingProgress(m_central);
+        connect(m_eventStart,SIGNAL(actionTrigg(QString,ActionWidget*)),this,SLOT(eventAction(QString,ActionWidget*)));
+    }
+
+    m_eventStart->setEvent(e);
+}
+
+void ConfigOverview::updateEvent()
+{
+
+
+    Event e=m_event->pending();
+    if(e.name.isEmpty())
+    {
+        if(m_eventStart)
+            m_eventStart->stop();
+        return;
+    }
+
+    presentEvent(e);
+
+}
+
 void ConfigOverview::restart()
 {
-    m_client->restart();
-
-    if(m_topStart)
-    {
-        delete m_topStart;
-        m_topStart=nullptr;
-    }
-    refresh();
-
+    StartWizzard::execute(m_client);
 }
 
 void ConfigOverview::updateDate()
@@ -101,8 +129,8 @@ void ConfigOverview::updateDate()
         if(!m_topStart)
         {
             m_topStart=new ProgressWidget(this);
-            m_topStart->setText("Tente inactive","Commencer une nouvelle plantation ou exporter les fichiers de la précédente (les fichiers non exportés seront écrasés)");
-            m_topStart->addActions(QStringList()<<"Commencer"<<"Exporter");
+            m_topStart->setText("Tente inactive","Etes-vous pret à lancer une nouvelle plantation ?");
+            m_topStart->addActions(QStringList()<<"Commencer");
             connect(m_topStart,SIGNAL(actionTrigg(QString,ActionWidget*)),this,SLOT(actionTop(QString,ActionWidget*)));
             m_topStart->start();
         }
@@ -110,13 +138,20 @@ void ConfigOverview::updateDate()
         return;
     }
 
+    if(m_topStart)
+    {
+        m_topStart->stop();
+    }
+
     m_event->setStartedDate(m_client->startedDate());
+    updateEvent();
 
 }
 
-void ConfigOverview::valueSlot(int )
+void ConfigOverview::valueSlot(int)
 {
     refresh();
+    updateEvent();
 }
 
 void ConfigOverview::actionTop(QString s, ActionWidget *)
@@ -124,21 +159,22 @@ void ConfigOverview::actionTop(QString s, ActionWidget *)
     if(s=="Commencer")
     {
         restart();
-
-
     }
-    else if(s=="Exporter")
+}
+
+void ConfigOverview::eventAction(QString s, ActionWidget *)
+{
+    //TODO , clean this using ids not strings
+
+    if(s=="Commencer")
     {
-
-        QString initialDirectory = "/home/user"; // Replace with your desired initial directory
-
-           // Open the directory dialog
-           QString directory = QFileDialog::getExistingDirectory(
-               nullptr,
-               "Select a Directory",
-               initialDirectory
-           );
-
-           m_client->exportAll(directory);
+        m_event->start();
     }
+    else if (s=="Ignorer")
+    {
+        m_event->skip();
+    }
+
+    m_eventStart->stop();
+    m_eventStart=nullptr;
 }

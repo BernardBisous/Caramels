@@ -13,6 +13,7 @@ SOURCES += \
     Interface/devicelistwidget.cpp \
     Interface/drawerselector.cpp \
     Interface/emailnotifier.cpp \
+    Interface/statswidget.cpp \
     config/archive.cpp \
     config/events.cpp \
     hardware/devicetester.cpp \
@@ -46,7 +47,6 @@ SOURCES += \
     SMTP/quotedprintable.cpp \
     SMTP/smtpclient.cpp \
     widgets/archivewidget.cpp \
-    widgets/archivewizzard.cpp \
     widgets/configeditor.cpp \
     widgets/configoverview.cpp \
     widgets/configprogress.cpp \
@@ -74,7 +74,7 @@ SOURCES += \
     hardware/tolleveler.cpp \
     hardware/waterlevelmanager.cpp \
     hardware/webcam.cpp \
-    widgets/eventwizzard.cpp \
+    widgets/eventpendingprogress.cpp \
     widgets/hardwareoverview.cpp \
     widgets/integralplot.cpp \
     main.cpp \
@@ -85,7 +85,6 @@ SOURCES += \
     widgets/parametervalueeditor.cpp \
     widgets/regulatorwidget.cpp \
     hardware/statenotifier.cpp \
-    widgets/setupwizzard.cpp \
     widgets/statewidget.cpp \
     hardware/tent.cpp \
     widgets/tenteditor.cpp \
@@ -94,7 +93,11 @@ SOURCES += \
     widgets/unitplot.cpp \
     widgets/webcamoverview.cpp \
     widgets/webcamwidget.cpp \
-    widgets/wizzard.cpp
+    wizzards/archivewizzard.cpp \
+    wizzards/eventwizzard.cpp \
+    wizzards/setupwizzard.cpp \
+    wizzards/startwizzard.cpp \
+    wizzards/wizzard.cpp
 
 HEADERS += \
     Interface/actionwidget.h \
@@ -110,6 +113,7 @@ HEADERS += \
     Interface/scrollarea.h \
     Interface/serialeditor.h \
     Interface/slider.h \
+    Interface/statswidget.h \
     Interface/switchcheckbox.h \
     Interface/toolbutton.h \
     SMTP/SmtpMime \
@@ -136,7 +140,6 @@ HEADERS += \
     constants.h \
     hardware/devicetester.h \
     widgets/archivewidget.h \
-    widgets/archivewizzard.h \
     widgets/configeditor.h \
     widgets/configoverview.h \
     widgets/configprogress.h \
@@ -166,7 +169,7 @@ HEADERS += \
     hardware/tolleveler.h \
     hardware/waterlevelmanager.h \
     hardware/webcam.h \
-    widgets/eventwizzard.h \
+    widgets/eventpendingprogress.h \
     widgets/hardwareoverview.h \
     widgets/integralplot.h \
     config/parameter.h \
@@ -176,7 +179,6 @@ HEADERS += \
     widgets/parametervalueeditor.h \
     widgets/regulatorwidget.h \
     hardware/statenotifier.h \
-    widgets/setupwizzard.h \
     widgets/statewidget.h \
     hardware/tent.h \
     widgets/tenteditor.h \
@@ -185,7 +187,11 @@ HEADERS += \
     widgets/unitplot.h \
     widgets/webcamoverview.h \
     widgets/webcamwidget.h \
-    widgets/wizzard.h
+    wizzards/archivewizzard.h \
+    wizzards/eventwizzard.h \
+    wizzards/setupwizzard.h \
+    wizzards/startwizzard.h \
+    wizzards/wizzard.h
 
 FORMS +=
 

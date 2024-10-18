@@ -11,48 +11,13 @@ Events::Events()
 void Events::clear()
 {
     m_list.clear();
+    m_Totallist.clear();
 }
 
-void Events::save(QDataStream &c)
-{
-
-    /*
-    int n=m_list.count();
-    c<<n;
-    for(int i=0;i<m_list.count();i++)
-    {
-
-        c<<m_list[i].name;
-        c<<m_list[i].hourIndex;
-    }
-    */
-}
-
-bool Events::load(QDataStream &c)
-{
-
-/*
-    m_list.clear();
-    int n;
-    c>>n;
-    for(int i=0;i<n;i++)
-    {
-        QString name;
-        c>>name;
-        int index;
-        c>>index;
-        add(name,index);
-
-
-    }
-    */
-    return true;
-}
-
-void Events::add(int id, int h)
+void Events::add(QString name, int h)
 {
     Event e;
-    e.type=id;
+    e.name=name;
     e.hourIndex=h;
     m_list.append(e);
     m_Totallist.append(e);
@@ -66,7 +31,7 @@ void Events::reset()
 Event Events::next()
 {
     if(m_list.isEmpty())
-        return Event{"",0,0};
+        return Event{"",0};
 
     return m_list.first();
 }
@@ -82,7 +47,7 @@ Event *Events::nextAddr()
 Event Events::at(int i)
 {
     if(i<0 || m_list.isEmpty()||i>m_list.count())
-       return Event{"",0,0};
+       return Event{"",0};
 
     return m_list[i];
 }
@@ -109,12 +74,8 @@ void Events::registerLastEvent(int secnds)
 
     Event e=next();
 
-
-
     if(e.hourIndex==0)
         return;
-
-    qDebug()<<"saving "<<e.name<<secnds;
 
     QFile file(storageFile());
     if (!file.open(QIODevice::Append)) {
@@ -132,3 +93,4 @@ void Events::registerLastEvent(int secnds)
 
     return;
 }
+

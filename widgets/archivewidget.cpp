@@ -3,37 +3,46 @@
 #include "constants.h"
 #include "qboxlayout.h"
 #include "qdir.h"
-
-ArchiveWidget::ArchiveWidget(QWidget *parent)
-    : QWidget{parent}
+#include<QDesktopServices>
+ArchiveWidget::ArchiveWidget(bool abstract,QWidget *parent)
+    : QWidget{parent},m_personnal(false),m_astracted(abstract)
 {
     setLayout(new QVBoxLayout);
 
-    QLabel* l=new QLabel("Précédentes récoltes:");
+    if(!abstract)
+    {
+        QLabel* l=new QLabel("Précédentes récoltes:");
 
-    QFont f=font();
-    f.setPointSize(28);
-    l->setFont(f);
+        QFont f=font();
+        f.setPointSize(28);
+        l->setFont(f);
 
-    QWidget* s=new QWidget;
-    s->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    layout()->addWidget(s);
+        QWidget* s=new QWidget;
+        s->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+        layout()->addWidget(s);
+        layout()->addWidget(l);
+    }
 
-    layout()->addWidget(l);
+    layout()->addWidget(m_source=new SwitchCheckBox("Réutiliser mes archives"));
+    m_source->setChecked(m_personnal);
+
+    connect(m_source,SIGNAL(stateChanged(int)),this,SLOT(sourceSlot()));
 
     layout()->addWidget(m_list=new ScrollArea);
-    s=new QWidget;
-    s->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    layout()->addWidget(s);
-    m_list->setHorizontal();
+    m_list->addSpacer();
     load();
 }
 
 void ArchiveWidget::load()
 {
+
     m_list->clear();
 
-    QDir dir(ARCHIVE_PATH);
+    QString path=CONFIGS_PATH;
+    if(m_personnal)
+        path=ARCHIVE_PATH;
+
+    QDir dir(path);
 
     QStringList subdirs = dir.entryList(QDir::Dirs | QDir::NoDot | QDir::NoDotDot);
 
@@ -43,55 +52,108 @@ void ArchiveWidget::load()
         de.cd(subdirs[i]);
         loadArchive(de.absolutePath());
     }
+
 }
 
 void ArchiveWidget::loadArchive(QString s)
 {
     Archive c;
     c.load(s);
-    ArchiveItem* we=new ArchiveItem(c);
+
+    ArchiveItem* we=new ArchiveItem(c,!m_astracted);
+
+
+    if(!m_astracted)
+        connect(we,SIGNAL(reuse()),this,SLOT(reuseSlot()));
+    else
+        connect(we,SIGNAL(clicked()),this,SLOT(reuseSlot()));
+
     m_list->addActionWidget(we);
+
 }
 
-ArchiveItem::ArchiveItem(Archive c, QWidget *parent):ActionWidget(parent)
+void ArchiveWidget::usePersonnal(bool s)
+{
+    m_personnal=s;
+    load();
+}
+
+void ArchiveWidget::reuseSlot()
+{
+    ArchiveItem* i=dynamic_cast<ArchiveItem* >(sender());
+    if(i)
+    {
+        Archive a=i->archive();
+        emit reuse(a);
+    }
+}
+
+void ArchiveWidget::sourceSlot()
+{
+    bool b=m_source->isChecked();
+    usePersonnal(b);
+}
+
+void ArchiveWidget::setAstracted(bool newAstracted)
+{
+    m_astracted = newAstracted;
+}
+
+ArchiveItem::ArchiveItem(Archive c,bool but, QWidget *parent):ActionWidget(parent),m_archive(c)
 {
 
-    setFixedWidth(400);
-    setLayout(new QVBoxLayout);
-    layout()->setContentsMargins(20,20,20,20);
+    connect(this,SIGNAL(hovered(bool)),this,SLOT(hoverSlot(bool)));
+    setFixedWidth(420);
 
+    setLayout(new QHBoxLayout);
+    layout()->setSpacing(20);
+    layout()->setContentsMargins(20,20,20,20);
     if(!c.pixmap.isNull())
     {
         layout()->addWidget(m_pix=new QLabel);
-        m_pix->setPixmap(c.pixmap.scaled(400,400,Qt::KeepAspectRatio,Qt::SmoothTransformation));
-
+        m_pix->setPixmap(c.pixmap.scaled(200,200,Qt::KeepAspectRatioByExpanding,Qt::SmoothTransformation));
     }
 
-    layout()->addWidget(m_name=new QLabel(c.name));
+
+    QWidget*dw=new QWidget;
+    QVBoxLayout* hb=new QVBoxLayout;
+    dw->setLayout(hb);
+    layout()->addWidget(dw);
+    dw->layout()->setContentsMargins(0,0,0,0);
+
+    dw->layout()->addWidget(m_name=new QLabel(c.name));
+    QFont f=font();
+    f.setPointSize(18);
+    m_name->setFont(f);
 
     if(!c.description.isEmpty())
-        layout()->addWidget(m_desc=new QLabel(c.description));
+        dw->layout()->addWidget(m_desc=new QLabel(c.description));
 
+
+    if(!c.stats.isEmpty())
+    {
+        dw->layout()->addWidget(m_stats=new StatsWidget);
+        m_stats->layout()->setContentsMargins(0,0,0,0);
+        m_stats->setHash(c.stats);
+    }
 
     QWidget* fw=new QWidget;
     fw->setLayout(m_form=new QFormLayout);
 
     m_form->addRow("Date",m_date=new QLabel(c.start.toString("dd.MM.yy")+" - "+c.end.toString("dd.MM.yy")));
     m_form->addRow("Volume",m_result=new QLabel(QString::number(c.result)+"g"));
-
+    m_form->setContentsMargins(0,0,0,0);
     if(c.plants)// generates crashes !
         m_form->addRow("Rendement",m_plants=new QLabel(QString::number(c.result/c.plants)+"g/plants"));
 
-
-    layout()->addWidget(fw);
+    dw->layout()->addWidget(fw);
+    hb->addStretch();
 
     QStringList ls=c.meta.keys();
     for(int i=0;i<ls.count();i++)
     {
        m_form->addRow(ls[i],new QLabel(c.meta.value(ls[i])));
     }
-
-
 
 
     if(!c.link.isEmpty() || !c.supplier.isEmpty())
@@ -114,19 +176,66 @@ ArchiveItem::ArchiveItem(Archive c, QWidget *parent):ActionWidget(parent)
 
 
 
-    setHoverable(false);
-    setIgnoreClick(true);
+    m_buttons=nullptr;
+    if(but)
+    {
+        setIgnoreClick(true);
 
-    QFont f=font();
-    f.setPointSize(18);
-    m_name->setFont(f);
+
+        m_buttons=new QWidget;
+        m_buttons->setLayout(new QVBoxLayout);
+
+        QWidget*wsb=new QWidget;
+        wsb->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Expanding);
+        m_buttons->layout()->addWidget(wsb);
+        m_buttons->layout()->setContentsMargins(0,0,0,0);
+
+        if(c.hasConfig())
+        {
+            m_buttons->layout()->addWidget(m_reuseButton=new ToolButton("Reuse",":/icons/left"));
+            connect(m_reuseButton,SIGNAL(clicked()),this,SLOT(reuseSlot()));
+
+            m_reuseButton->setRound();
+        }
+        if(!c.path.isEmpty())
+        {
+            m_buttons->layout()->addWidget(m_openButton=new ToolButton("Open",":/icons/logs"));
+            m_openButton->setRound();
+            connect(m_openButton,SIGNAL(clicked()),this,SLOT(openSlot()));
+        }
+        m_buttons->hide();
+
+        QWidget*wss=new QWidget;
+        wss->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Minimum);
+        layout()->addWidget(wss);
+        layout()->addWidget(m_buttons);
+    }
+
+
 
 
 }
+
 
 
 void ArchiveItem::reuseSlot()
 {
     emit reuse();
 
+}
+
+void ArchiveItem::hoverSlot(bool s)
+{
+    if(m_buttons)
+    m_buttons->setHidden(!s);
+}
+
+void ArchiveItem::openSlot()
+{
+    QDesktopServices::openUrl(m_archive.path);
+}
+
+Archive ArchiveItem::archive()
+{
+    return m_archive;
 }

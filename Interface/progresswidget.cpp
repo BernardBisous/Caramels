@@ -252,7 +252,7 @@ void ProgressWidget::setDefaultActionWidth(int newDefaultWidth)
 
 TopWidget::TopWidget(QWidget *parent):
     QWidget(parent),m_timer(nullptr),
-   m_deleteAtEnd(false)
+   m_deleteAtEnd(true)
 {
     hide();
     setAutoFillBackground(true);
